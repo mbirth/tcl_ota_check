@@ -26,6 +26,8 @@ def check(sess, serid, curef, fv="AAM481", mode=4, ftype="Firmware", cltp=2010, 
     req = sess.get(geturl, params=params)
     if req.status_code == 200:
         return(req.text)
+    else:
+        raise SystemExit
 
 
 def update_request(sess, serid, curef, tv, fwid, salt, vkh, fv="AAM481", mode=4, ftype="Firmware", cltp=2010):
@@ -34,6 +36,13 @@ def update_request(sess, serid, curef, tv, fwid, salt, vkh, fv="AAM481", mode=4,
     req = sess.post(posturl, data=params)
     if req.status_code == 200:
         return req.text
+    else:
+        raise SystemExit
+
+
+def getcode(url):
+    req = requests.head(url)
+    return req.status_code
 
 
 def vkhash(serid, curef, tv, fwid, salt, fv="AAM481", ftype="Firmware", mode=4, cltp=2010):
@@ -65,12 +74,12 @@ def parse_request(body):
 if __name__ == "__main__":
     sess = prep_sess()
     serid = "543212345000000"
-    curef = "PRD-63116-001"
+    curef = "PRD-63117-011"
     checktext = check(sess, serid, curef)
     tv, fwid, filename, filesize, filehash = parse_check(checktext)
     salt = salt()
     vkh = vkhash(serid, curef, tv, fwid, salt)
     updatetext = update_request(sess, serid, curef, tv, fwid, salt, vkh)
     downloadurl = parse_request(updatetext)
-    print(filename)
+    print("{0}: HTTP {1}".format(filename, getcode(downloadurl)))
     print(downloadurl)
