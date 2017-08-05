@@ -40,8 +40,8 @@ def update_request(sess, serid, curef, tv, fwid, salt, vkh, fv="AAM481", mode=4,
         raise SystemExit
 
 
-def getcode(url):
-    req = requests.head(url)
+def getcode(sess, url):
+    req = sess.head(url)
     return req.status_code
 
 
@@ -71,15 +71,19 @@ def parse_request(body):
     return "http://{0}{1}".format(slave, dlurl)
 
 
-if __name__ == "__main__":
-    sess = prep_sess()
-    serid = "543212345000000"
-    curef = "PRD-63117-011"
+def main(sess, serid, curef):
     checktext = check(sess, serid, curef)
     tv, fwid, filename, filesize, filehash = parse_check(checktext)
     salt = salt()
     vkh = vkhash(serid, curef, tv, fwid, salt)
     updatetext = update_request(sess, serid, curef, tv, fwid, salt, vkh)
     downloadurl = parse_request(updatetext)
-    print("{0}: HTTP {1}".format(filename, getcode(downloadurl)))
+    print("{0}: HTTP {1}".format(filename, getcode(sess, downloadurl)))
     print(downloadurl)
+
+
+if __name__ == "__main__":
+    sess = prep_sess()
+    serid = "543212345000000"
+    curef = "PRD-63117-011"
+    main(sess, serid, curef)
