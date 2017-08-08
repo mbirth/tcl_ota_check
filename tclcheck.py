@@ -1,5 +1,6 @@
 import hashlib
 import random
+import sys
 import time
 try:
     from defusedxml import ElementTree
@@ -74,9 +75,9 @@ def parse_request(body):
 def main(sess, serid, curef):
     checktext = check(sess, serid, curef)
     tv, fwid, filename, filesize, filehash = parse_check(checktext)
-    salt = salt()
-    vkh = vkhash(serid, curef, tv, fwid, salt)
-    updatetext = update_request(sess, serid, curef, tv, fwid, salt, vkh)
+    slt = salt()
+    vkh = vkhash(serid, curef, tv, fwid, slt)
+    updatetext = update_request(sess, serid, curef, tv, fwid, slt, vkh)
     downloadurl = parse_request(updatetext)
     print("{0}: HTTP {1}".format(filename, getcode(sess, downloadurl)))
     print(downloadurl)
@@ -85,5 +86,8 @@ def main(sess, serid, curef):
 if __name__ == "__main__":
     sess = prep_sess()
     serid = "543212345000000"
-    curef = "PRD-63117-011"
+    if len(sys.argv) > 1:
+        curef = sys.argv[1]
+    else:
+        curef = "PRD-63764-001"
     main(sess, serid, curef)
