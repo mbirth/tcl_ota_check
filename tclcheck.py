@@ -72,6 +72,11 @@ def parse_request(body):
     return "http://{0}{1}".format(slave, dlurl)
 
 
+def main2(sess, serid, curef):
+    checktext = check(sess, serid, curef)
+    tv, fwid, fn, fs, fh = parse_check(checktext)
+    print("{0}: {1}".format(curef, tv))
+
 def main(sess, serid, curef):
     checktext = check(sess, serid, curef)
     tv, fwid, filename, filesize, filehash = parse_check(checktext)
@@ -87,7 +92,14 @@ if __name__ == "__main__":
     sess = prep_sess()
     serid = "543212345000000"
     if len(sys.argv) > 1:
-        curef = sys.argv[1]
+        if sys.argv[1] == "l":
+            with open("prds.txt", "r") as afile:
+                prdx = afile.read()
+                prds = prdx.split("/n")
+            for prd in prds:
+                main2(sess, serid, prd)
+        else:
+            curef = sys.argv[1]
     else:
         curef = "PRD-63764-001"
     main(sess, serid, curef)
