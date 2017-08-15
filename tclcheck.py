@@ -80,10 +80,10 @@ def parse_request(body):
     return "http://{0}{1}".format(slave, dlurl)
 
 
-def main2(sess, serid, curef):
+def main2(sess, serid, curef, model="Unknown"):
     checktext = check(sess, serid, curef)
     tv, fwid, fn, fs, fh = parse_check(checktext)
-    print("{0}: {1}".format(curef, tv))
+    print("{0}: {1} ({2})".format(curef, tv, model))
 
 def main(sess, serid, curef):
     checktext = check(sess, serid, curef)
@@ -106,11 +106,12 @@ if __name__ == "__main__":
             with open("prds.txt", "r") as afile:
                 prdx = afile.read()
                 prds = list(filter(None, prdx.split("\n")))
-            for prd in prds:
+            for prdline in prds:
+                prd, model = prdline.split(" ", 1)
                 try:
-                    main2(sess, serid, prd)
+                    main2(sess, serid, prd, model)
                 except:
-                    print("{} failed.".format(prd))
+                    print("{} ({}) failed.".format(prd, model))
                     continue
         else:
             curef = sys.argv[1]
