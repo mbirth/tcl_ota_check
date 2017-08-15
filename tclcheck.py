@@ -99,9 +99,14 @@ if __name__ == "__main__":
                 prdx = afile.read()
                 prds = list(filter(None, prdx.split("\n")))
             for prd in prds:
-                main2(sess, serid, prd)
+                try:
+                    main2(sess, serid, prd)
+                except:
+                    print("{} failed.".format(prd))
+                    continue
         else:
             curef = sys.argv[1]
+            main(sess, serid, curef)
     else:
         curef = "PRD-63764-001"
-    main(sess, serid, curef)
+        main(sess, serid, curef)
