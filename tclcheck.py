@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import hashlib
 import random
 import sys
@@ -95,7 +97,7 @@ if __name__ == "__main__":
         if sys.argv[1] == "l":
             with open("prds.txt", "r") as afile:
                 prdx = afile.read()
-                prds = prdx.split("/n")
+                prds = list(filter(None, prdx.split("\n")))
             for prd in prds:
                 main2(sess, serid, prd)
         else:
