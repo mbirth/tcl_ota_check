@@ -23,9 +23,9 @@ def salt():
     return "{0}{1}".format(str(millis), tail)
 
 
-def check(sess, serid, curef, fv="AAM481", mode=4, ftype="Firmware", cltp=2010, cktp=2, rtd=1, chnl=2):
+def check(sess, serid, curef, fv="AAM481", osvs="7.1.1", mode=4, ftype="Firmware", cltp=2010, cktp=2, rtd=1, chnl=2):
     geturl = "http://g2master-us-east.tctmobile.com/check.php"
-    params = {"id": serid, "curef": curef, "fv": fv, "mode": mode, "type": ftype, "cltp": cltp, "cktp": cktp, "rtd": rtd, "chnl": chnl}
+    params = {"id": serid, "curef": curef, "fv": fv, "mode": mode, "type": ftype, "cltp": cltp, "cktp": cktp, "rtd": rtd, "chnl": chnl, "osvs": osvs}
     req = sess.get(geturl, params=params)
     if req.status_code == 200:
         return(req.text)
