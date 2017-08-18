@@ -19,6 +19,8 @@ import requests
 class FotaCheck:
     VDKEY = "1271941121281905392291845155542171963889169361242115412511417616616958244916823523421516924614377131161951402261451161002051042011757216713912611682532031591181861081836612643016596231212872211620511861302106446924625728571011411121471811641125920123641181975581511602312222261817375462445966911723844130106116313122624220514"
 
+    CKTP_CHECKAUTO = 1
+    CKTP_CHECKMANUAL = 2
     MODE_OTA = 2
     MODE_FULL = 4
     RTD_ROOTED = 2
@@ -34,7 +36,7 @@ class FotaCheck:
         self.mode  = self.MODE_FULL
         self.ftype = "Firmware"
         self.cltp  = 10
-        self.cktp  = 2
+        self.cktp  = self.CKTP_CHECKMANUAL
         self.rtd   = self.RTD_UNROOTED
         self.chnl  = self.CHNL_WIFI
         self.sess = requests.Session()
@@ -93,13 +95,13 @@ class FotaCheck:
         curef = root.find("CUREF").text
         fv = root.find("VERSION").find("FV").text
         tv = root.find("VERSION").find("TV").text
-        fwid = root.find("FIRMWARE").find("FW_ID").text
+        fw_id = root.find("FIRMWARE").find("FW_ID").text
         fileinfo = root.find("FIRMWARE").find("FILESET").find("FILE")
         fileid   = fileinfo.find("FILE_ID").text
         filename = fileinfo.find("FILENAME").text
         filesize = fileinfo.find("SIZE").text
         filehash = fileinfo.find("CHECKSUM").text
-        return curef, fv, tv, fwid, fileid, filename, filesize, filehash
+        return curef, fv, tv, fw_id, fileid, filename, filesize, filehash
 
     def get_vk2(self, params_dict):
         params_dict["cltp"] = 10
@@ -178,21 +180,20 @@ class FotaCheck:
 
 if __name__ == "__main__":
     fc = FotaCheck()
-    #fc.serid = "3531510"
+    fc.serid = "3531510"
     fc.curef = "PRD-63117-011"
     fc.fv    = "AAM481"
     fc.osvs  = "7.1.1"
     fc.mode  = fc.MODE_OTA
     fc.cltp  = 10
-    fc.cktp  = 2
 
     check_xml = fc.do_check()
     print(fc.pretty_xml(check_xml))
-    curef, fv, tv, fwid, fileid, fn, fs, fh = fc.parse_check(check_xml)
+    curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
 
-    req_xml = fc.do_request(curef, fv, tv, fwid)
+    req_xml = fc.do_request(curef, fv, tv, fw_id)
     #print(fc.pretty_xml(req_xml))
     fileid, fileurl, slaves = fc.parse_request(req_xml)
 
     for s in slaves:
-        print("https://{}{}".format(s, fileurl))
+        print("http://{}{}".format(s, fileurl))
