@@ -74,6 +74,7 @@ class FotaCheck:
         params["cktp"]  = self.cktp
         params["rtd"]   = self.rtd
         params["chnl"]  = self.chnl
+        #params["osvs"]  = self.osvs
 
         req = self.sess.get(url, params=params)
         if req.status_code == 200:
@@ -183,7 +184,7 @@ if __name__ == "__main__":
     fc.serid = "3531510"
     fc.curef = "PRD-63117-011"
     fc.fv    = "AAM481"
-    fc.osvs  = "7.1.1"
+    #fc.osvs  = "7.1.1"
     fc.mode  = fc.MODE_OTA
     fc.cltp  = 10
 
