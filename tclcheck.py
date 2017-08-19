@@ -189,11 +189,11 @@ if __name__ == "__main__":
     fc.cltp  = 10
 
     check_xml = fc.do_check()
-    print(fc.pretty_xml(check_xml))
+    #print(fc.pretty_xml(check_xml))
     curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
 
     req_xml = fc.do_request(curef, fv, tv, fw_id)
-    #print(fc.pretty_xml(req_xml))
+    print(fc.pretty_xml(req_xml))
     fileid, fileurl, slaves = fc.parse_request(req_xml)
 
     for s in slaves:
