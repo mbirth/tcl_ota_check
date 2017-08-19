@@ -154,6 +154,8 @@ class FotaCheck:
         params["cltp"]  = self.cltp
         params["cktp"]  = self.cktp
         params["rtd"]   = self.rtd
+        if self.mode == self.MODE_FULL:
+            params["foot"]  = 1
         params["chnl"]  = self.chnl
 
         #print(repr(dict(params)))
