@@ -182,7 +182,6 @@ class FotaCheck:
         return fileid, fileurl, slaves, encslaves
 
     def encrypt_header(self, address, encslave):
-        address2 = address.replace("/", "%2F")
         encs = dict()
         encs[b"YWNjb3VudA=="] = b"emhlbmdodWEuZ2Fv"
         encs[b"cGFzc3dvcmQ="] = b"cWFydUQ0b2s="
