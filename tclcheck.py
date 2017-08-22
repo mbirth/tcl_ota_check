@@ -3,6 +3,7 @@
 
 # pylint: disable=C0111,C0326
 
+import base64
 import hashlib
 import random
 import sys
@@ -175,10 +176,29 @@ class FotaCheck:
         fileid  = file.find("FILE_ID").text
         fileurl = file.find("DOWNLOAD_URL").text
         slave_list = root.find("SLAVE_LIST").findall("SLAVE")
-        slaves = []
-        for s in slave_list:
-            slaves.append(s.text)
-        return fileid, fileurl, slaves
+        enc_list = root.find("SLAVE_LIST").findall("ENCRYPT_SLAVE")
+        slaves = [s.text for s in slave_list]
+        encslaves = [s.text for s in enc_list]
+        return fileid, fileurl, slaves, encslaves
+
+    def encrypt_header(self, address, encslave):
+        address2 = address.replace("/", "%2F")
+        encs = dict()
+        encs[b"YWNjb3VudA=="] = b"emhlbmdodWEuZ2Fv"
+        encs[b"cGFzc3dvcmQ="] = b"cWFydUQ0b2s="
+        params = {base64.b64decode(key): base64.b64decode(val) for key, val in encs.items()}
+        params[b"address"] = bytes(address, "utf-8")
+        url = "http://" + encslave + "/encrypt_header.php"
+        req = self.sess.post(url, data=params)
+        if req.status_code == 206:  # partial
+            #return req.text
+            contentlength = int(req.headers["Content-Length"])
+            sentinel = "\nHEADER FOUND" if contentlength == 4194320 else "\nNO HEADER FOUND"
+            return sentinel
+        else:
+            print(repr(req))
+            print(repr(req.headers))
+            raise SystemExit
 
 
 if __name__ == "__main__":
@@ -196,7 +216,10 @@ if __name__ == "__main__":
 
     req_xml = fc.do_request(curef, fv, tv, fw_id)
     print(fc.pretty_xml(req_xml))
-    fileid, fileurl, slaves = fc.parse_request(req_xml)
+    fileid, fileurl, slaves, encslaves = fc.parse_request(req_xml)
 
     for s in slaves:
         print("http://{}{}".format(s, fileurl))
+
+    if fc.mode == fc.MODE_FULL:
+        print(fc.encrypt_header(fileurl, random.choice(encslaves)))
