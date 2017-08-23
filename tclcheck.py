@@ -105,8 +105,8 @@ class FotaCheck:
         filehash = fileinfo.find("CHECKSUM").text
         return curef, fv, tv, fw_id, fileid, filename, filesize, filehash
 
-    def get_vk2(self, params_dict):
-        params_dict["cltp"] = 10
+    def get_vk2(self, params_dict, cltp):
+        params_dict["cltp"] = cltp
         query = ""
         for k, v in params_dict.items():
             if len(query) > 0:
@@ -151,7 +151,7 @@ class FotaCheck:
         params["type"]  = self.ftype
         params["fw_id"] = fw_id
         params["mode"]  = self.mode
-        params["vk"]    = self.get_vk2(params)
+        params["vk"]    = self.get_vk2(params, self.cltp)
         params["cltp"]  = self.cltp
         params["cktp"]  = self.cktp
         params["rtd"]   = self.rtd
@@ -190,7 +190,7 @@ class FotaCheck:
         url = "http://" + encslave + "/encrypt_header.php"
         req = self.sess.post(url, data=params)
         if req.status_code == 206:  # partial
-            #return req.text
+            #return req.content
             contentlength = int(req.headers["Content-Length"])
             sentinel = "\nHEADER FOUND" if contentlength == 4194320 else "\nNO HEADER FOUND"
             return sentinel
@@ -202,11 +202,20 @@ class FotaCheck:
 
 if __name__ == "__main__":
     fc = FotaCheck()
+    if len(sys.argv) == 3:  # python tclcheck.py $PRD $FV = OTA delta for $PRD from $FV
+        fc.curef = sys.argv[1]
+        fc.fv = sys.argv[2]
+        fc.mode  = fc.MODE_OTA
+    elif len(sys.argv) == 2:  # python tclcheck.py $PRD = FULL for $PRD
+        fc.curef = sys.argv[1]
+        fc.fv = "AAM481"
+        fc.mode = fc.MODE_FULL
+    else:  # python tclcheck.py = OTA for default PRD, FV
+        fc.curef = "PRD-63117-011"
+        fc.fv    = "AAM481"
+        fc.mode  = fc.MODE_OTA
     fc.serid = "3531510"
-    fc.curef = "PRD-63117-011"
-    fc.fv    = "AAM481"
     #fc.osvs  = "7.1.1"
-    fc.mode  = fc.MODE_OTA
     fc.cltp  = 10
 
     check_xml = fc.do_check()
