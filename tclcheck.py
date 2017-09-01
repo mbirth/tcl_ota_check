@@ -81,7 +81,7 @@ class FotaCheck:
         if req.status_code == 200:
             return req.text
         else:
-            print(repr(req))
+            print("CHECK: " + repr(req))
             print(repr(req.headers))
             print(repr(req.text))
             raise SystemExit
@@ -164,7 +164,7 @@ class FotaCheck:
         if req.status_code == 200:
             return req.text
         else:
-            print(repr(req))
+            print("REQUEST: " + repr(req))
             print(repr(req.headers))
             print(repr(req.text))
             raise SystemExit
@@ -187,16 +187,18 @@ class FotaCheck:
         encs[b"cGFzc3dvcmQ="] = b"cWFydUQ0b2s="
         params = {base64.b64decode(key): base64.b64decode(val) for key, val in encs.items()}
         params[b"address"] = bytes(address, "utf-8")
-        url = "http://" + encslave + "/encrypt_header.php"
-        req = self.sess.post(url, data=params)
+        url = "https://" + encslave + "/encrypt_header.php"
+        req = self.sess.post(url, data=params, verify=False)
+        # Expect "HTTP 206 Partial Content" response
         if req.status_code == 206:  # partial
             #return req.content
             contentlength = int(req.headers["Content-Length"])
             sentinel = "\nHEADER FOUND" if contentlength == 4194320 else "\nNO HEADER FOUND"
             return sentinel
         else:
-            print(repr(req))
+            print("ENCRYPT: " + repr(req))
             print(repr(req.headers))
+            print(repr(req.text))
             raise SystemExit
 
 
@@ -217,6 +219,7 @@ if __name__ == "__main__":
     fc.serid = "3531510"
     #fc.osvs  = "7.1.1"
     fc.cltp  = 10
+    #fc.cltp  = 2010
 
     check_xml = fc.do_check()
     #print(fc.pretty_xml(check_xml))
