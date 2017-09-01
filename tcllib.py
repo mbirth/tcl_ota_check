@@ -116,6 +116,15 @@ class FotaCheck:
         hexhash = engine.hexdigest()
         return hexhash
 
+    @staticmethod
+    def get_creds():
+        creds = {
+            b"YWNjb3VudA==": b"emhlbmdodWEuZ2Fv",
+            b"cGFzc3dvcmQ=": b"cWFydUQ0b2s=",
+        }
+        params = {base64.b64decode(key): base64.b64decode(val) for key, val in creds.items()}
+        return params
+
     '''
         private HashMap<String, String> buildDownloadUrisParams(UpdatePackageInfo updatePackageInfo) {
             FotaLog.m28v(TAG, "doAfterCheck");
@@ -180,10 +189,7 @@ class FotaCheck:
         return fileid, fileurl, slaves, encslaves
 
     def encrypt_header(self, address, encslave):
-        encs = dict()
-        encs[b"YWNjb3VudA=="] = b"emhlbmdodWEuZ2Fv"
-        encs[b"cGFzc3dvcmQ="] = b"cWFydUQ0b2s="
-        params = {base64.b64decode(key): base64.b64decode(val) for key, val in encs.items()}
+        params = self.get_creds()
         params[b"address"] = bytes(address, "utf-8")
         url = "https://" + encslave + "/encrypt_header.php"
         req = self.sess.post(url, data=params, verify=False)

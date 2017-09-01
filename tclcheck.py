@@ -4,6 +4,7 @@
 # pylint: disable=C0111,C0326
 
 import tcllib
+import random
 import sys
 
 fc = tcllib.FotaCheck()
@@ -25,7 +26,7 @@ fc.cltp  = 10
 #fc.cltp  = 2010
 
 check_xml = fc.do_check()
-#print(fc.pretty_xml(check_xml))
+print(fc.pretty_xml(check_xml))
 curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
 
 req_xml = fc.do_request(curef, fv, tv, fw_id)
