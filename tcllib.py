@@ -84,9 +84,11 @@ class FotaCheck:
         req = self.sess.get(url, params=params, timeout=10)
         if req.status_code == 200:
             return req.text
+        elif req.status_code == 204:
+            raise requests.exceptions.HTTPError("No update available.", response=req)
         else:
             req.raise_for_status()
-            raise SystemExit
+            raise requests.exceptions.HTTPError("HTTP {}.".format(req.status_code), response=req)
 
     @staticmethod
     def pretty_xml(xmlstr):

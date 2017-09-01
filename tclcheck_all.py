@@ -27,7 +27,7 @@ for prdline in prds:
         fc.curef = prd
         check_xml = fc.do_check()
         curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
-        print("{}: {} ({})".format(prd, tv, model))
-    except (SystemExit, RequestException):
-        print("{} ({}) failed.".format(prd, model))
+        print("{}: {} {} ({})".format(prd, tv, fhash, model))
+    except (SystemExit, RequestException) as e:
+        print("{} failed. ({})".format(prd, str(e)))
         continue
