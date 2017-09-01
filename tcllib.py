@@ -38,10 +38,16 @@ class FotaCheck:
         self.cktp  = self.CKTP_CHECKMANUAL
         self.rtd   = self.RTD_UNROOTED
         self.chnl  = self.CHNL_WIFI
-        self.sess = requests.Session()
+        self.reset_session()
+
+    def reset_session(self):
         self.g2master = self.get_master_server()
-        #self.req.headers.update({"User-Agent": "com.tcl.fota/5.1.0.2.0029.0, Android"})
-        self.sess.headers.update({"User-Agent": "tcl"})
+        self.sess = requests.Session()
+        if self.mode == self.MODE_FULL:
+            self.sess.headers.update({"User-Agent": "com.tcl.fota/5.1.0.2.0029.0, Android"})
+        else:
+            self.sess.headers.update({"User-Agent": "tcl"})
+        return self.sess
 
     @staticmethod
     def get_salt():
