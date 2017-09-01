@@ -85,9 +85,7 @@ class FotaCheck:
         if req.status_code == 200:
             return req.text
         else:
-            print("CHECK: " + repr(req))
-            print(repr(req.headers))
-            print(repr(req.text))
+            req.raise_for_status()
             raise SystemExit
 
     @staticmethod
