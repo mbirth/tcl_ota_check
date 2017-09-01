@@ -3,10 +3,12 @@
 # pylint: disable=C0111,C0326
 
 import base64
+import binascii
 import hashlib
 import random
 import time
 import xml.dom.minidom
+import zlib
 from collections import OrderedDict
 from math import floor
 try:
@@ -16,8 +18,7 @@ except (ImportError, AttributeError):
 import requests
 
 class FotaCheck:
-    VDKEY = "1271941121281905392291845155542171963889169361242115412511417616616958244916823523421516924614377131161951402261451161002051042011757216713912611682532031591181861081836612643016596231212872211620511861302106446924625728571011411121471811641125920123641181975581511602312222261817375462445966911723844130106116313122624220514"
-
+    VDKEY = b"eJwdjwEOwDAIAr8kKFr//7HhmqXp8AIIDrYAgg8byiUXrwRJRXja+d6iNxu0AhUooDCN9rd6rDLxmGIakUVWo3IGCTRWqCAt6X4jGEIUAxgN0eYWnp+LkpHQAg/PsO90ELsy0Npm/n2HbtPndFgGEV31R9OmT4O4nrddjc3Qt6nWscx7e+WRHq5UnOudtjw5skuV09pFhvmqnOEIs4ljPeel1wfLYUF4\n"
     CKTP_CHECKAUTO = 1
     CKTP_CHECKMANUAL = 2
     MODE_OTA = 2
@@ -116,7 +117,8 @@ class FotaCheck:
             if len(query) > 0:
                 query += "&"
             query += k + "=" + str(v)
-        query += self.VDKEY
+        vdk = zlib.decompress(binascii.a2b_base64(self.VDKEY))
+        query += vdk.decode("utf-8")
         engine = hashlib.sha1()
         engine.update(bytes(query, "utf-8"))
         hexhash = engine.hexdigest()
