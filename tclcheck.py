@@ -37,4 +37,10 @@ for s in slaves:
     print("http://{}{}".format(s, fileurl))
 
 if fc.mode == fc.MODE_FULL:
-    print(fc.encrypt_header(fileurl, random.choice(encslaves)))
+    header = fc.do_encrypt_header(random.choice(encslaves), fileurl)
+    if len(header) == 4194320:
+        print("Header length check passed. Writing to header.bin.")
+        with open("header.bin", "wb") as f:
+            f.write(header)
+    else:
+        print("Header length invalid ({}).".format(len(header)))
