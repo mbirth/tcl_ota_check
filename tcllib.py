@@ -75,7 +75,7 @@ class FotaCheck:
         params["chnl"]  = self.chnl
         #params["osvs"]  = self.osvs
 
-        req = self.sess.get(url, params=params)
+        req = self.sess.get(url, params=params, timeout=10)
         if req.status_code == 200:
             return req.text
         else:
