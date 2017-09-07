@@ -87,6 +87,8 @@ class FotaCheck:
             return req.text
         elif req.status_code == 204:
             raise requests.exceptions.HTTPError("No update available.", response=req)
+        elif req.status_code in (500, 503):
+            raise requests.exceptions.HTTPError("Server busy, try again later.", response=req)
         else:
             req.raise_for_status()
             raise requests.exceptions.HTTPError("HTTP {}.".format(req.status_code), response=req)

@@ -5,7 +5,7 @@
 
 import tcllib
 import sys
-from requests.exceptions import RequestException
+from requests.exceptions import RequestException, Timeout
 
 fc = tcllib.FotaCheck()
 fc.serid = "3531510"
@@ -28,6 +28,9 @@ for prdline in prds:
         check_xml = fc.do_check()
         curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
         print("{}: {} {} ({})".format(prd, tv, fhash, model))
+    except Timeout as e:
+        print("{} failed. (Connection timed out.)".format(prd))
+        continue
     except (SystemExit, RequestException) as e:
         print("{} failed. ({})".format(prd, str(e)))
         continue
