@@ -39,8 +39,8 @@ for s in slaves:
 if fc.mode == fc.MODE_FULL:
     header = fc.do_encrypt_header(random.choice(encslaves), fileurl)
     if len(header) == 4194320:
-        print("Header length check passed. Writing to header.bin.")
-        with open("header.bin", "wb") as f:
+        print("Header length check passed. Writing to header_{}.bin.".format(tv))
+        with open("header_{}.bin".format(tv), "wb") as f:
             f.write(header)
     else:
         print("Header length invalid ({}).".format(len(header)))
