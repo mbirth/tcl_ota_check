@@ -4,8 +4,9 @@
 # pylint: disable=C0111,C0326
 
 import tcllib
-import sys
 from requests.exceptions import RequestException, Timeout
+
+ANSI_UP_DEL = u"\u001b[F\u001b[K"
 
 fc = tcllib.FotaCheck()
 fc.serid = "3531510"
@@ -22,17 +23,25 @@ print("List of latest {} firmware by PRD:".format("FULL" if fc.mode == fc.MODE_F
 with open("prds.txt", "r") as afile:
     prdx = afile.read()
     prds = list(filter(None, prdx.split("\n")))
-for prdline in prds:
-    prd, model = prdline.split(" ", 1)
+
+while len(prds) > 0:
+    prd, model = prds[0].split(" ", 1)
     try:
         fc.reset_session()
         fc.curef = prd
         check_xml = fc.do_check()
         curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
         print("{}: {} {} ({})".format(prd, tv, fhash, model))
+        prds.pop(0)
     except Timeout as e:
         print("{} failed. (Connection timed out.)".format(prd))
+        print(ANSI_UP_DEL, end="")
         continue
     except (SystemExit, RequestException) as e:
         print("{} failed. ({})".format(prd, str(e)))
+        if e.response.status_code in [204, 404]:
+            # No update available or invalid request - remove from queue
+            prds.pop(0)
+        else:
+            print(ANSI_UP_DEL, end="")
         continue
