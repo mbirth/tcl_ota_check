@@ -18,7 +18,7 @@ fc.mode = fc.MODE_FULL
 fc.cltp  = 10
 #fc.cltp  = 2010
 
-print("List of latest {} firmware by PRD:".format("FULL" if fc.mode == fc.MODE_FULL else "OTA"))
+print("List of latest {} firmware by PRD:".format("FULL" if fc.mode == fc.MODE_FULL else "OTA (from {})".format(fc.fv)))
 
 with open("prds.txt", "r") as afile:
     prdx = afile.read()
@@ -31,7 +31,10 @@ while len(prds) > 0:
         fc.curef = prd
         check_xml = fc.do_check()
         curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
-        print("{}: {} {} ({})".format(prd, tv, fhash, model))
+        txt_tv = tv
+        if fc.mode == fc.MODE_OTA:
+          txt_tv = "{} ⇨ {}".format(fv, tv)
+        print("{}: {} {} ({})".format(prd, txt_tv, fhash, model))
         prds.pop(0)
     except Timeout as e:
         print("{} failed. (Connection timed out.)".format(prd))
