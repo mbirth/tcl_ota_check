@@ -10,14 +10,11 @@ ANSI_UP_DEL = u"\u001b[F\u001b[K"
 
 fc = tcllib.FotaCheck()
 fc.serid = "3531510"
-fc.fv = "AAM481"
 #fc.osvs  = "7.1.1"
 fc.mode = fc.MODE_OTA
-
-# CLTP = 10 (only show actual updates or HTTP 206) / 2010 (always show latest version for MODE_FULL)
 fc.cltp  = 10
 
-print("List of latest OTA (from {}) firmware by PRD:".format(fc.fv))
+print("List of latest OTA firmware by PRD:".format(fc.fv))
 
 with open("prds.txt", "r") as afile:
     prdx = afile.read()
@@ -28,6 +25,7 @@ while len(prds) > 0:
     try:
         fc.reset_session()
         fc.curef = prd
+        fc.fv = lastver
         check_xml = fc.do_check()
         curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
         txt_tv = tv
@@ -40,7 +38,7 @@ while len(prds) > 0:
         print(ANSI_UP_DEL, end="")
         continue
     except (SystemExit, RequestException) as e:
-        print("{} failed. ({})".format(prd, str(e)))
+        print("{} ({}) failed. ({})".format(prd, lastver, str(e)))
         if e.response.status_code in [204, 404]:
             # No update available or invalid request - remove from queue
             prds.pop(0)

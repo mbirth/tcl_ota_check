@@ -10,14 +10,14 @@ ANSI_UP_DEL = u"\u001b[F\u001b[K"
 
 fc = tcllib.FotaCheck()
 fc.serid = "3531510"
-fc.fv = "AAM481"
-#fc.osvs  = "7.1.1"
-fc.mode = fc.MODE_OTA
+fc.fv = "AAA000"
+fc.mode = fc.MODE_FULL
 
 # CLTP = 10 (only show actual updates or HTTP 206) / 2010 (always show latest version for MODE_FULL)
-fc.cltp  = 10
+#fc.cltp  = 10
+fc.cltp  = 2010
 
-print("List of latest OTA (from {}) firmware by PRD:".format(fc.fv))
+print("List of latest FULL firmware by PRD:")
 
 with open("prds.txt", "r") as afile:
     prdx = afile.read()
