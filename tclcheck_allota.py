@@ -6,6 +6,7 @@
 import tcllib
 from requests.exceptions import RequestException, Timeout
 
+tcllib.make_escapes_work()
 ANSI_UP_DEL = u"\u001b[F\u001b[K"
 
 fc = tcllib.FotaCheck()
