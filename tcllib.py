@@ -18,6 +18,7 @@ except (ImportError, AttributeError):
     from xml.etree import ElementTree
 import requests
 
+ANSI_UP_DEL = u"\u001b[F\u001b[K"
 
 def make_escapes_work():
     system = platform.system()
