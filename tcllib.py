@@ -81,8 +81,9 @@ class FotaCheck:
         ]
         return random.choice(master_servers)
 
-    def do_check(self):
-        url = "https://" + self.g2master + "/check.php"
+    def do_check(self, https=True):
+        protocol = "https://" if https else "http://"
+        url = protocol + self.g2master + "/check.php"
         params = OrderedDict()
         params["id"]    = self.serid
         params["curef"] = self.curef
