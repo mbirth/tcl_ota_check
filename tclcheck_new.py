@@ -7,6 +7,8 @@ import collections
 import tcllib
 from requests.exceptions import RequestException, Timeout
 
+tcllib.make_escapes_work()
+
 fc = tcllib.FotaCheck()
 fc.serid = "3531510"
 fc.fv = "AAA000"
@@ -27,17 +29,28 @@ with open("prds.txt", "r") as afile:
         for key, value in prdc.items():
             prddict[key].append(value)
 
-for center in prddict.keys():
+
+
+for center in sorted(prddict.keys()):
     tails = [int(i) for i in prddict[center]]
+    total_count = 1000 - len(tails)
+    done_count = 0
+    print("Checking {} variant codes for model {}.".format(total_count, center))
     for j in range(0, 1000):
-        if j not in tails:
-            curef = "PRD-{}-{}".format(center, str(j).rjust(3, "0"))
-            try:
-                fc.reset_session()
-                fc.curef = curef
-                check_xml = fc.do_check(https=False)
-                curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
-                txt_tv = tv
-                print("{}: {} {}".format(curef, txt_tv, fhash))
-            except (SystemExit, RequestException, Timeout) as e:
-                continue
+        if j in tails:
+            continue
+        curef = "PRD-{}-{:03}".format(center, j)
+        done_count += 1
+        print("Checking {} ({}/{})".format(curef, done_count, total_count))
+        print(tcllib.ANSI_UP_DEL, end="")
+        try:
+            fc.reset_session()
+            fc.curef = curef
+            check_xml = fc.do_check(https=False)
+            curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
+            txt_tv = tv
+            print("{}: {} {}".format(curef, txt_tv, fhash))
+        except (SystemExit, RequestException, Timeout) as e:
+            continue
+
+print("Scan complete.")
