@@ -20,21 +20,16 @@ and abort the update.
 How to find available OTA updates
 ---------------------------------
 
-After downloading or cloning the repository, edit the `tclcheck_all.py` and change the `fc.fv`
-variable to your current firmware version. Let's assume you have a UK BBB100-2, so your PRD would
-be `PRD-63117-003` and as of September 2017, your firmware version would be `AAM481`. So change the
-line with `fc.fv` to:
+After downloading or cloning the repository, make all tclcheck*.py scripts executable if needed.
+Let's assume you have a UK BBB100-2, so your PRD would be `PRD-63117-003` and as of September
+2017, your firmware version would be `AAM481`. Just run the following script:
 
-    fc.fv = "AAM481"
+    ./tclcheck_allota.py AAM481
 
-Also change the `fc.mode` line to:
-
-    fc.mode = fc.MODE_OTA
-
-Now run the script. You'll get an output like this:
+You'll get an output like this:
 
 ```
-List of latest OTA (from AAM481) firmware by PRD:
+List of latest OTA firmware from AAM481 by PRD:
 ...
 PRD-63117-003 failed. (No update available.)
 PRD-63117-011: AAM481 ⇨ AAN358 d819919187b46793abeaeff60dd6deee17baac4b (QWERTZ BBB100-2 (Germany))
@@ -60,3 +55,4 @@ As you can see, our `PRD-63117-003` variant doesn't have the update yet, but oth
 
 You can use this info, to [install the update for a different variant](http://wiki.mbirth.de/know-how/hardware/blackberry-keyone/bb-keyone-ota-updates-for-different-variants.html).
 Just make sure to use a variant that has the same model number (`63117` = BBB100-2).
+
