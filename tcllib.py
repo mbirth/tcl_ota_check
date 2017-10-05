@@ -68,6 +68,7 @@ class FotaCheck:
             "g2master-ap-north.tclclouds.com",
             "g2master-sa-east.tclclouds.com",
         ]
+        self.master_servers_weights = [3] * len(self.master_servers)
         self.reset_session()
 
     def reset_session(self):
@@ -87,6 +88,16 @@ class FotaCheck:
 
     def get_master_server(self):
         return random.choice(self.master_servers)
+
+    def master_server_downvote(self):
+        idx = self.master_servers.index(self.g2master)
+        if self.master_servers_weights[idx] > 1:
+            self.master_servers_weights[idx] -= 1
+
+    def master_server_upvote(self):
+        idx = self.master_servers.index(self.g2master)
+        if self.master_servers_weights[idx] < 10:
+            self.master_servers_weights[idx] += 1
 
     def do_check(self, https=True, timeout=10, max_tries=5):
         protocol = "https://" if https else "http://"
@@ -109,17 +120,22 @@ class FotaCheck:
                 req = self.sess.get(url, params=params, timeout=timeout)
                 last_response = req
                 if req.status_code == 200:
+                    self.master_server_upvote()
                     return req.text
                 elif req.status_code == 204:
+                    self.master_server_upvote()
                     raise requests.exceptions.HTTPError("No update available.", response=req)
                 elif req.status_code == 404:
+                    self.master_server_upvote()
                     raise requests.exceptions.HTTPError("No data for requested CUREF/FV combination.", response=req)
                 elif req.status_code not in [500, 503]:
+                    self.master_server_downvote()
                     req.raise_for_status()
                     raise requests.exceptions.HTTPError("HTTP {}.".format(req.status_code), response=req)
             except requests.exceptions.Timeout:
                 pass
             # Something went wrong, try a different server
+            self.master_server_downvote()
             self.g2master = self.get_master_server()
             protocol = "https://" if https else "http://"
             url = protocol + self.g2master + "/check.php"
