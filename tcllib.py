@@ -69,6 +69,8 @@ class FotaCheck:
             "g2master-sa-east.tclclouds.com",
         ]
         self.master_servers_weights = [3] * len(self.master_servers)
+        self.check_time_sum = 3
+        self.check_time_count = 1
         self.reset_session()
 
     def reset_session(self):
@@ -99,6 +101,19 @@ class FotaCheck:
         if self.master_servers_weights[idx] < 10:
             self.master_servers_weights[idx] += 1
 
+    def check_time_add(self, duration):
+        self.check_time_sum += duration
+        self.check_time_count += 1
+
+    def check_time_avg(self):
+        return (self.check_time_sum / self.check_time_count)
+
+    def master_server_vote_on_time(self, last_duration, avg_duration):
+        if last_duration < avg_duration - 0.5:
+            self.master_server_upvote()
+        elif last_duration > avg_duration + 0.5:
+            self.master_server_downvote()
+
     def do_check(self, https=True, timeout=10, max_tries=5):
         protocol = "https://" if https else "http://"
         url = protocol + self.g2master + "/check.php"
@@ -117,16 +132,20 @@ class FotaCheck:
         last_response = None
         for num_try in range(0, max_tries):
             try:
+                reqtime_start = time.perf_counter()
                 req = self.sess.get(url, params=params, timeout=timeout)
+                reqtime = time.perf_counter() - reqtime_start
+                reqtime_avg = self.check_time_avg()
+                self.check_time_add(reqtime)
                 last_response = req
                 if req.status_code == 200:
-                    self.master_server_upvote()
+                    self.master_server_vote_on_time(reqtime, reqtime_avg)
                     return req.text
                 elif req.status_code == 204:
-                    self.master_server_upvote()
+                    self.master_server_vote_on_time(reqtime, reqtime_avg)
                     raise requests.exceptions.HTTPError("No update available.", response=req)
                 elif req.status_code == 404:
-                    self.master_server_upvote()
+                    self.master_server_vote_on_time(reqtime, reqtime_avg)
                     raise requests.exceptions.HTTPError("No data for requested CUREF/FV combination.", response=req)
                 elif req.status_code not in [500, 503]:
                     self.master_server_downvote()
