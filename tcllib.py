@@ -55,6 +55,7 @@ class FotaCheck:
         self.cktp  = self.CKTP_CHECKMANUAL
         self.rtd   = self.RTD_UNROOTED
         self.chnl  = self.CHNL_WIFI
+        self.timeout = 10
         self.reset_session()
 
     def reset_session(self):
@@ -99,7 +100,7 @@ class FotaCheck:
         params["chnl"]  = self.chnl
         #params["osvs"]  = self.osvs
 
-        req = self.sess.get(url, params=params, timeout=10)
+        req = self.sess.get(url, params=params, timeout=self.timeout)
         if req.status_code == 200:
             return req.text
         elif req.status_code == 204:

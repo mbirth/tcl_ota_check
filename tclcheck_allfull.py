@@ -16,6 +16,7 @@ fc.mode = fc.MODE_FULL
 # CLTP = 10 (only show actual updates or HTTP 206) / 2010 (always show latest version for MODE_FULL)
 #fc.cltp  = 10
 fc.cltp  = 2010
+fc.timeout = 20
 
 print("List of latest FULL firmware by PRD:")
 

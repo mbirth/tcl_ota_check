@@ -14,6 +14,7 @@ fc.serid = "3531510"
 #fc.osvs  = "7.1.1"
 fc.mode = fc.MODE_OTA
 fc.cltp  = 10
+fc.timeout = 20
 
 force_ver = False
 force_ver_text = ""
