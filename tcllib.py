@@ -59,7 +59,15 @@ class FotaCheck:
         self.cktp  = self.CKTP_CHECKMANUAL
         self.rtd   = self.RTD_UNROOTED
         self.chnl  = self.CHNL_WIFI
-        self.timeout = 10
+        self.g2master = None
+        self.master_servers = [
+            "g2master-us-east.tclclouds.com",
+            "g2master-us-west.tclclouds.com",
+            "g2master-eu-west.tclclouds.com",
+            "g2master-ap-south.tclclouds.com",
+            "g2master-ap-north.tclclouds.com",
+            "g2master-sa-east.tclclouds.com",
+        ]
         self.reset_session()
 
     def reset_session(self):
@@ -77,19 +85,10 @@ class FotaCheck:
         tail = "{:06d}".format(random.randint(0, 999999))
         return "{}{}".format(str(millis), tail)
 
-    @staticmethod
-    def get_master_server():
-        master_servers = [
-            "g2master-us-east.tclclouds.com",
-            "g2master-us-west.tclclouds.com",
-            "g2master-eu-west.tclclouds.com",
-            "g2master-ap-south.tclclouds.com",
-            "g2master-ap-north.tclclouds.com",
-            "g2master-sa-east.tclclouds.com",
-        ]
-        return random.choice(master_servers)
+    def get_master_server(self):
+        return random.choice(self.master_servers)
 
-    def do_check(self, https=True):
+    def do_check(self, https=True, timeout=10, max_tries=5):
         protocol = "https://" if https else "http://"
         url = protocol + self.g2master + "/check.php"
         params = OrderedDict()
@@ -104,18 +103,27 @@ class FotaCheck:
         params["chnl"]  = self.chnl
         #params["osvs"]  = self.osvs
 
-        req = self.sess.get(url, params=params, timeout=self.timeout)
-        if req.status_code == 200:
-            return req.text
-        elif req.status_code == 204:
-            raise requests.exceptions.HTTPError("No update available.", response=req)
-        elif req.status_code == 404:
-            raise requests.exceptions.HTTPError("No data for requested CUREF/FV combination.", response=req)
-        elif req.status_code in (500, 503):
-            raise requests.exceptions.HTTPError("Server busy, try again later.", response=req)
-        else:
-            req.raise_for_status()
-            raise requests.exceptions.HTTPError("HTTP {}.".format(req.status_code), response=req)
+        last_response = None
+        for num_try in range(0, max_tries):
+            try:
+                req = self.sess.get(url, params=params, timeout=timeout)
+                last_response = req
+                if req.status_code == 200:
+                    return req.text
+                elif req.status_code == 204:
+                    raise requests.exceptions.HTTPError("No update available.", response=req)
+                elif req.status_code == 404:
+                    raise requests.exceptions.HTTPError("No data for requested CUREF/FV combination.", response=req)
+                elif req.status_code not in [500, 503]:
+                    req.raise_for_status()
+                    raise requests.exceptions.HTTPError("HTTP {}.".format(req.status_code), response=req)
+            except requests.exceptions.Timeout:
+                pass
+            # Something went wrong, try a different server
+            self.g2master = self.get_master_server()
+            protocol = "https://" if https else "http://"
+            url = protocol + self.g2master + "/check.php"
+        raise requests.exceptions.RetryError("Max tries ({}) reached.".format(max_tries), response=last_response)
 
     @staticmethod
     def pretty_xml(xmlstr):
