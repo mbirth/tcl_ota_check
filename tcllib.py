@@ -19,6 +19,10 @@ except (ImportError, AttributeError):
 import requests
 
 ANSI_UP_DEL = u"\u001b[F\u001b[K"
+ANSI_RED = u"\u001b[1;31m"
+ANSI_GREEN = u"\001b[1;32m"
+ANSI_YELLOW = u"\u001b[1;33m"
+ANSI_CYAN = u"\u001b[1;36m"
 ANSI_WHITE = u"\u001b[1;37m"
 ANSI_RESET = u"\u001b[0m"
 
