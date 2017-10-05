@@ -31,8 +31,8 @@ while len(prds) > 0:
         check_xml = fc.do_check()
         curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
         txt_tv = tv
-        if fc.mode == fc.MODE_OTA:
-          txt_tv = "{} ⇨ {}".format(fv, tv)
+        if tv != lastver:
+            txt_tv = tcllib.ANSI_WHITE + txt_tv + tcllib.ANSI_RESET
         print("{}: {} {} ({})".format(prd, txt_tv, fhash, model))
         prds.pop(0)
     except Timeout as e:

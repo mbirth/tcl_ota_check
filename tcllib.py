@@ -19,6 +19,8 @@ except (ImportError, AttributeError):
 import requests
 
 ANSI_UP_DEL = u"\u001b[F\u001b[K"
+ANSI_WHITE = u"\u001b[1;37m"
+ANSI_RESET = u"\u001b[0m"
 
 def make_escapes_work():
     system = platform.system()
