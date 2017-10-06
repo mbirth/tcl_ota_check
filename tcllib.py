@@ -5,7 +5,6 @@
 import base64
 import binascii
 import hashlib
-import numpy
 import platform
 import random
 import time
@@ -13,11 +12,9 @@ import xml.dom.minidom
 import zlib
 from collections import OrderedDict
 from math import floor
-try:
-    from defusedxml import ElementTree
-except (ImportError, AttributeError):
-    from xml.etree import ElementTree
+import numpy
 import requests
+from defusedxml import ElementTree
 
 ANSI_UP_DEL = u"\u001b[F\u001b[K"
 ANSI_RED = u"\u001b[1;31m"

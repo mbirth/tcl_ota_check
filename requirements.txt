@@ -1,0 +1,3 @@
+defusedxml
+numpy
+requests
