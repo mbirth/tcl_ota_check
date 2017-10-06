@@ -31,7 +31,7 @@ with open("prds.txt", "rt") as f:
             curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
             txt_tv = tv
             if tv != lastver:
-                txt_tv = tcllib.ANSI_CYAN + txt_tv + tcllib.ANSI_RESET
+                txt_tv = tcllib.ANSI_CYAN + txt_tv + tcllib.ANSI_RESET + " (OTA: {})".format(lastver)
             print("{}: {} {} ({})".format(prd, txt_tv, fhash, model))
         except RequestException as e:
             print("{}: {}".format(prd, str(e)))
