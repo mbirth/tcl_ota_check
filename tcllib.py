@@ -5,6 +5,7 @@
 import base64
 import binascii
 import hashlib
+import numpy
 import platform
 import random
 import time
@@ -89,7 +90,13 @@ class FotaCheck:
         return "{}{}".format(str(millis), tail)
 
     def get_master_server(self):
-        return random.choice(self.master_servers)
+        weight_sum = 0
+        for i in self.master_servers_weights:
+            weight_sum += i
+        numpy_weights = []
+        for i in self.master_servers_weights:
+            numpy_weights.append(i/weight_sum)
+        return numpy.random.choice(self.master_servers, p=numpy_weights)
 
     def master_server_downvote(self):
         idx = self.master_servers.index(self.g2master)
