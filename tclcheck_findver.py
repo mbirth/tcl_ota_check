@@ -3,7 +3,6 @@
 
 # pylint: disable=C0111,C0326,C0103
 
-import collections
 import sys
 import tcllib
 from requests.exceptions import RequestException, Timeout
