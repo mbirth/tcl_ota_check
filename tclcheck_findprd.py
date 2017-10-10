@@ -19,6 +19,10 @@ fc.mode = fc.MODE_FULL
 #fc.cltp  = 10
 fc.cltp  = 2010
 
+dp = tcllib.DefaultParser(__file__)
+dp.add_argument("tocheck", nargs="?", default=None)
+args = dp.parse_args(sys.argv[1:])
+
 print("Valid PRDs not already in database:")
 
 with open("prds.txt", "r") as afile:
@@ -30,12 +34,11 @@ with open("prds.txt", "r") as afile:
         for key, value in prdc.items():
             prddict[key].append(value)
 
-if len(sys.argv) > 1:
+if args.tocheck is not None:
     prdkeys = list(prddict.keys())
     for k in prdkeys:
-        if k != sys.argv[1]:
+        if k != args.tocheck:
             del prddict[k]
-
 
 for center in sorted(prddict.keys()):
     tails = [int(i) for i in prddict[center]]
