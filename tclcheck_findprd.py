@@ -21,7 +21,15 @@ fc.cltp  = 2010
 
 dp = tcllib.DefaultParser(__file__)
 dp.add_argument("tocheck", nargs="?", default=None)
+dp.add_argument("-f", "--floor", dest="floor", nargs="?", type=int, default=0)
+dp.add_argument("-c", "--ceiling", dest="ceiling", nargs="?", type=int, default=999)
 args = dp.parse_args(sys.argv[1:])
+
+floor = args.floor
+ceiling = args.ceiling + 1
+if ceiling < floor:
+    print("Invalid range!")
+    raise SystemExit
 
 print("Valid PRDs not already in database:")
 
@@ -39,13 +47,22 @@ if args.tocheck is not None:
     for k in prdkeys:
         if k != args.tocheck:
             del prddict[k]
+    if not prddict:
+        prddict[args.tocheck] = []
 
 for center in sorted(prddict.keys()):
-    tails = [int(i) for i in prddict[center]]
-    total_count = 1000 - len(tails)
+    alltails = [int(i) for i in prddict[center]]
+    tails = [h for h in alltails if floor < h < ceiling]
+    safes = [g for g in range(floor, ceiling) if g not in alltails]
+    while True:
+        if floor in alltails:
+            floor += 1
+        else:
+            break
+    total_count = len(safes)
     done_count = 0
     print("Checking {} variant codes for model {}.".format(total_count, center))
-    for j in range(0, 1000):
+    for j in range(floor, ceiling):
         if j in tails:
             continue
         curef = "PRD-{}-{:03}".format(center, j)
