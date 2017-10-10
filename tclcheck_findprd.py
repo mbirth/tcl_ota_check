@@ -51,20 +51,14 @@ if args.tocheck is not None:
         prddict[args.tocheck] = []
 
 for center in sorted(prddict.keys()):
-    alltails = [int(i) for i in prddict[center]]
-    tails = [h for h in alltails if floor < h < ceiling]
-    safes = [g for g in range(floor, ceiling) if g not in alltails]
-    while True:
-        if floor in alltails:
-            floor += 1
-        else:
-            break
+    tails = [int(i) for i in prddict[center]]
+    safes = [g for g in range(floor, ceiling) if g not in tails]
+    if floor in tails:
+        floor = safes[0]
     total_count = len(safes)
     done_count = 0
     print("Checking {} variant codes for model {}.".format(total_count, center))
-    for j in range(floor, ceiling):
-        if j in tails:
-            continue
+    for j in safes:
         curef = "PRD-{}-{:03}".format(center, j)
         done_count += 1
         print("Checking {} ({}/{})".format(curef, done_count, total_count))
