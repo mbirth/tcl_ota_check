@@ -27,7 +27,7 @@ with open("prds.txt", "rt") as f:
         try:
             fc.reset_session()
             fc.curef = prd
-            check_xml = fc.do_check()
+            check_xml = fc.do_check(max_tries=20)
             curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
             txt_tv = tv
             if tv != lastver:
