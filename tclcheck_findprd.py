@@ -4,6 +4,7 @@
 # pylint: disable=C0111,C0326,C0103
 
 import collections
+import sys
 import tcllib
 from requests.exceptions import RequestException, Timeout
 
@@ -29,6 +30,11 @@ with open("prds.txt", "r") as afile:
         for key, value in prdc.items():
             prddict[key].append(value)
 
+if len(sys.argv) > 1:
+    prdkeys = list(prddict.keys())
+    for k in prdkeys:
+        if k != sys.argv[1]:
+            del prddict[k]
 
 
 for center in sorted(prddict.keys()):
