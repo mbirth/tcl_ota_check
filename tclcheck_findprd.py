@@ -19,6 +19,18 @@ fc.mode = fc.MODE_FULL
 #fc.cltp  = 10
 fc.cltp  = 2010
 
+dp = tcllib.DefaultParser(__file__)
+dp.add_argument("tocheck", nargs="?", default=None)
+dp.add_argument("-f", "--floor", dest="floor", nargs="?", type=int, default=0)
+dp.add_argument("-c", "--ceiling", dest="ceiling", nargs="?", type=int, default=999)
+args = dp.parse_args(sys.argv[1:])
+
+floor = args.floor
+ceiling = args.ceiling + 1
+if ceiling < floor:
+    print("Invalid range!")
+    raise SystemExit
+
 print("Valid PRDs not already in database:")
 
 with open("prds.txt", "r") as afile:
@@ -30,21 +42,23 @@ with open("prds.txt", "r") as afile:
         for key, value in prdc.items():
             prddict[key].append(value)
 
-if len(sys.argv) > 1:
+if args.tocheck is not None:
     prdkeys = list(prddict.keys())
     for k in prdkeys:
-        if k != sys.argv[1]:
+        if k != args.tocheck:
             del prddict[k]
-
+    if not prddict:
+        prddict[args.tocheck] = []
 
 for center in sorted(prddict.keys()):
     tails = [int(i) for i in prddict[center]]
-    total_count = 1000 - len(tails)
+    safes = [g for g in range(floor, ceiling) if g not in tails]
+    if floor in tails:
+        floor = safes[0]
+    total_count = len(safes)
     done_count = 0
     print("Checking {} variant codes for model {}.".format(total_count, center))
-    for j in range(0, 1000):
-        if j in tails:
-            continue
+    for j in safes:
         curef = "PRD-{}-{:03}".format(center, j)
         done_count += 1
         print("Checking {} ({}/{})".format(curef, done_count, total_count))

@@ -2,6 +2,7 @@
 
 # pylint: disable=C0111,C0326
 
+import argparse
 import base64
 import binascii
 import hashlib
@@ -33,6 +34,11 @@ def make_escapes_work():
             pass
         else:
             colorama.init()
+
+
+class DefaultParser(argparse.ArgumentParser):
+    def __init__(self, appname):
+        super().__init__(prog=appname.replace(".py", ""), epilog="https://github.com/mbirth/tcl_ota_check")
 
 
 class FotaCheck:

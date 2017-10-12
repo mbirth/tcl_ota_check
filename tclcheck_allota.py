@@ -15,11 +15,14 @@ fc.serid = "3531510"
 fc.mode = fc.MODE_OTA
 fc.cltp  = 10
 
-force_ver = False
-force_ver_text = ""
-if len(sys.argv) > 1:
-    force_ver = sys.argv[1]
-    force_ver_text = " from {}".format(force_ver)
+dp = tcllib.DefaultParser(__file__)
+dp.add_argument("forcever", nargs="?", default=None)
+args = dp.parse_args(sys.argv[1:])
+
+if args.forcever is not None:
+    force_ver_text = " from {}".format(args.forcever)
+else:
+    force_ver_text = ""
 
 print("List of latest OTA firmware{} by PRD:".format(force_ver_text))
 
@@ -27,8 +30,8 @@ with open("prds.txt", "r") as f:
     for prdline in f:
         prdline = prdline.strip()
         prd, lastver, model = prdline.split(" ", 2)
-        if force_ver != False:
-            lastver = force_ver
+        if args.forcever is not None:
+            lastver = args.forcever
         try:
             fc.reset_session()
             fc.curef = prd

@@ -13,18 +13,15 @@ fc = tcllib.FotaCheck()
 fc.serid = "3531510"
 fc.mode = fc.MODE_OTA
 
-if len(sys.argv) < 2:
-    print("Syntax: {} PRD [STARTVER] [ENDVER]".format(sys.argv[0]))
-    sys.exit()
+dp = tcllib.DefaultParser(__file__)
+dp.add_argument("prd")
+dp.add_argument("startver", nargs="?", default="AAA000")
+dp.add_argument("endver", nargs="?", default="AAZ999")
+args = dp.parse_args(sys.argv[1:])
 
-start_ver = "AAA000"
-end_ver = "AAZ999"
-if len(sys.argv) >= 2:
-    fc.curef = sys.argv[1]
-if len(sys.argv) >= 3:
-    start_ver = sys.argv[2]
-if len(sys.argv) >= 4:
-    end_ver = sys.argv[3]
+fc.curef = args.prd
+start_ver = args.startver
+end_ver = args.endver
 
 print("Valid firmwares for model {} (between {} and {}):".format(fc.curef, start_ver, end_ver))
 

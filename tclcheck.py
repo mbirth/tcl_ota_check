@@ -12,12 +12,17 @@ fc.cltp  = 10
 fc.serid = "3531510"
 #fc.osvs  = "7.1.1"
 
+dp = tcllib.DefaultParser(__file__)
+dp.add_argument("prd", nargs="?", default="AAM481")
+dp.add_argument("fvver", nargs="?", default="PRD-63117-011")
+args = dp.parse_args(sys.argv[1:])
+
 if len(sys.argv) == 3:  # python tclcheck.py $PRD $FV = OTA delta for $PRD from $FV
-    fc.curef = sys.argv[1]
-    fc.fv = sys.argv[2]
+    fc.curef = args.prd
+    fc.fv = args.fvver
     fc.mode  = fc.MODE_OTA
 elif len(sys.argv) == 2:  # python tclcheck.py $PRD = FULL for $PRD
-    fc.curef = sys.argv[1]
+    fc.curef = args.prd
     fc.fv = "AAA000"
     fc.mode = fc.MODE_FULL
     fc.cltp  = 2010
