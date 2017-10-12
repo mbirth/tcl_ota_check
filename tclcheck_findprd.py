@@ -52,7 +52,7 @@ for center in sorted(prddict.keys()):
         try:
             fc.reset_session()
             fc.curef = curef
-            check_xml = fc.do_check(https=False, max_tries=3)
+            check_xml = fc.do_check(https=False, max_tries=20)
             curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
             txt_tv = tv
             print("{}: {} {}".format(curef, txt_tv, fhash))
