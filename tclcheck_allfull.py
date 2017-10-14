@@ -11,11 +11,11 @@ tcllib.make_escapes_work()
 fc = tcllib.FotaCheck()
 fc.serid = "3531510"
 fc.fv = "AAA000"
-fc.mode = fc.MODE_FULL
+fc.mode = fc.MODE.FULL
 
-# CLTP = 10 (only show actual updates or HTTP 206) / 2010 (always show latest version for MODE_FULL)
-#fc.cltp  = 10
-fc.cltp  = 2010
+# CLTP = 10 (only show actual updates or HTTP 206) / 2010 (always show latest version for MODE.FULL)
+#fc.cltp  = fc.CLTP.MOBILE
+fc.cltp  = fc.CLTP.DESKTOP
 
 print("List of latest FULL firmware by PRD:")
 

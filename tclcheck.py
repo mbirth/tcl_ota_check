@@ -8,7 +8,7 @@ import sys
 import tcllib
 
 fc = tcllib.FotaCheck()
-fc.cltp  = 10
+fc.cltp  = fc.CLTP.MOBILE
 fc.serid = "3531510"
 #fc.osvs  = "7.1.1"
 
@@ -20,16 +20,16 @@ args = dp.parse_args(sys.argv[1:])
 if len(sys.argv) == 3:  # python tclcheck.py $PRD $FV = OTA delta for $PRD from $FV
     fc.curef = args.prd
     fc.fv = args.fvver
-    fc.mode  = fc.MODE_OTA
+    fc.mode  = fc.MODE.OTA
 elif len(sys.argv) == 2:  # python tclcheck.py $PRD = FULL for $PRD
     fc.curef = args.prd
     fc.fv = "AAA000"
-    fc.mode = fc.MODE_FULL
-    fc.cltp  = 2010
+    fc.mode = fc.MODE.FULL
+    fc.cltp  = fc.CLTP.DESKTOP
 else:  # python tclcheck.py = OTA for default PRD, FV
     fc.curef = "PRD-63117-011"
     fc.fv    = "AAM481"
-    fc.mode  = fc.MODE_OTA
+    fc.mode  = fc.MODE.OTA
 
 check_xml = fc.do_check()
 print(fc.pretty_xml(check_xml))

@@ -12,8 +12,8 @@ tcllib.make_escapes_work()
 fc = tcllib.FotaCheck()
 fc.serid = "3531510"
 #fc.osvs  = "7.1.1"
-fc.mode = fc.MODE_OTA
-fc.cltp  = 10
+fc.mode = fc.MODE.OTA
+fc.cltp  = fc.CLTP.MOBILE
 
 dp = tcllib.DefaultParser(__file__)
 dp.add_argument("forcever", nargs="?", default=None)

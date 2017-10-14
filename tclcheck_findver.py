@@ -11,7 +11,7 @@ tcllib.make_escapes_work()
 
 fc = tcllib.FotaCheck()
 fc.serid = "3531510"
-fc.mode = fc.MODE_OTA
+fc.mode = fc.MODE.OTA
 
 dp = tcllib.DefaultParser(__file__)
 dp.add_argument("prd")

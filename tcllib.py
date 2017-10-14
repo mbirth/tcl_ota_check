@@ -5,6 +5,7 @@
 import argparse
 import base64
 import binascii
+import enum
 import hashlib
 import platform
 import random
@@ -36,6 +37,10 @@ def make_escapes_work():
             colorama.init()
 
 
+def default_enum(enumname, vardict):
+    return enum.IntEnum(enumname, vardict, module=__name__, qualname="tcllib.FotaCheck.{}".format(enumname))
+
+
 class DefaultParser(argparse.ArgumentParser):
     def __init__(self, appname):
         super().__init__(prog=appname.replace(".py", ""), epilog="https://github.com/mbirth/tcl_ota_check")
@@ -43,26 +48,23 @@ class DefaultParser(argparse.ArgumentParser):
 
 class FotaCheck:
     VDKEY = b"eJwdjwEOwDAIAr8kKFr//7HhmqXp8AIIDrYAgg8byiUXrwRJRXja+d6iNxu0AhUooDCN9rd6rDLxmGIakUVWo3IGCTRWqCAt6X4jGEIUAxgN0eYWnp+LkpHQAg/PsO90ELsy0Npm/n2HbtPndFgGEV31R9OmT4O4nrddjc3Qt6nWscx7e+WRHq5UnOudtjw5skuV09pFhvmqnOEIs4ljPeel1wfLYUF4\n"
-    CKTP_CHECKAUTO = 1
-    CKTP_CHECKMANUAL = 2
-    MODE_OTA = 2
-    MODE_FULL = 4
-    RTD_ROOTED = 2
-    RTD_UNROOTED = 1
-    CHNL_WIFI = 2
-    CHNL_3G = 1
+    CKTP = default_enum("CKTP", ["AUTO", "MANUAL"])
+    MODE = default_enum("MODE", {"OTA": 2, "FULL": 4})
+    RTD = default_enum("RTD", ["UNROOTED", "ROOTED"])
+    CHNL = default_enum("CHNL", ["3G", "WIFI"])
+    CLTP = default_enum("CLTP", {"MOBILE": 10, "DESKTOP": 2010})
 
     def __init__(self):
         self.serid = "543212345000000"
         self.curef = "PRD-63117-011"
         self.fv    = "AAM481"
         self.osvs  = "7.1.1"
-        self.mode  = self.MODE_FULL
+        self.mode  = self.MODE.FULL
         self.ftype = "Firmware"
-        self.cltp  = 10
-        self.cktp  = self.CKTP_CHECKMANUAL
-        self.rtd   = self.RTD_UNROOTED
-        self.chnl  = self.CHNL_WIFI
+        self.cltp  = self.CLTP.MOBILE
+        self.cktp  = self.CKTP.MANUAL
+        self.rtd   = self.RTD.UNROOTED
+        self.chnl  = self.CHNL.WIFI
         self.g2master = None
         self.master_servers = [
             "g2master-us-east.tclclouds.com",
@@ -80,7 +82,7 @@ class FotaCheck:
     def reset_session(self):
         self.g2master = self.get_master_server()
         self.sess = requests.Session()
-        if self.mode == self.MODE_FULL:
+        if self.mode == self.MODE.FULL:
             self.sess.headers.update({"User-Agent": "com.tcl.fota/5.1.0.2.0029.0, Android"})
         else:
             self.sess.headers.update({"User-Agent": "tcl"})
@@ -249,7 +251,7 @@ class FotaCheck:
         params["cltp"]  = self.cltp
         params["cktp"]  = self.cktp
         params["rtd"]   = self.rtd
-        if self.mode == self.MODE_FULL:
+        if self.mode == self.MODE.FULL:
             params["foot"]  = 1
         params["chnl"]  = self.chnl
 
