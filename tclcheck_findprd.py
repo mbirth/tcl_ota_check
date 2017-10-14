@@ -53,8 +53,6 @@ if args.tocheck is not None:
 for center in sorted(prddict.keys()):
     tails = [int(i) for i in prddict[center]]
     safes = [g for g in range(floor, ceiling) if g not in tails]
-    if floor in tails:
-        floor = safes[0]
     total_count = len(safes)
     done_count = 0
     print("Checking {} variant codes for model {}.".format(total_count, center))
