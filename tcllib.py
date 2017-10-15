@@ -133,12 +133,12 @@ class FotaCheck:
         params["id"]    = self.serid
         params["curef"] = self.curef
         params["fv"]    = self.fv
-        params["mode"]  = self.mode
+        params["mode"]  = self.mode.value
         params["type"]  = self.ftype
-        params["cltp"]  = self.cltp
-        params["cktp"]  = self.cktp
-        params["rtd"]   = self.rtd
-        params["chnl"]  = self.chnl
+        params["cltp"]  = self.cltp.value
+        params["cktp"]  = self.cktp.value
+        params["rtd"]   = self.rtd.value
+        params["chnl"]  = self.chnl.value
         #params["osvs"]  = self.osvs
 
         last_response = None
@@ -246,14 +246,14 @@ class FotaCheck:
         params["tv"]    = tv
         params["type"]  = self.ftype
         params["fw_id"] = fw_id
-        params["mode"]  = self.mode
-        params["vk"]    = self.get_vk2(params, self.cltp)
-        params["cltp"]  = self.cltp
-        params["cktp"]  = self.cktp
-        params["rtd"]   = self.rtd
+        params["mode"]  = self.mode.value
+        params["vk"]    = self.get_vk2(params, self.cltp.value)
+        params["cltp"]  = self.cltp.value
+        params["cktp"]  = self.cktp.value
+        params["rtd"]   = self.rtd.value
         if self.mode == self.MODE.FULL:
             params["foot"]  = 1
-        params["chnl"]  = self.chnl
+        params["chnl"]  = self.chnl.value
 
         #print(repr(dict(params)))
         req = self.sess.post(url, data=params)
