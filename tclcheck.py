@@ -42,7 +42,7 @@ fileid, fileurl, slaves, encslaves = fc.parse_request(req_xml)
 for s in slaves:
     print("http://{}{}".format(s, fileurl))
 
-if fc.mode == fc.MODE_FULL:
+if fc.mode == fc.MODE.FULL:
     header = fc.do_encrypt_header(random.choice(encslaves), fileurl)
     if len(header) == 4194320:
         print("Header length check passed. Writing to header_{}.bin.".format(tv))
