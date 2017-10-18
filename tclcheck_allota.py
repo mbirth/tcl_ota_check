@@ -38,7 +38,8 @@ with open("prds.txt", "r") as f:
             fc.fv = lastver
             check_xml = fc.do_check(max_tries=20)
             curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
-            print("{}: {} ⇨ {} {} ({})".format(prd, fv, tv, fhash, model))
+            versioninfo = tcllib.ANSI_CYAN_DARK + fv + tcllib.ANSI_RESET + " ⇨ " + tcllib.ANSI_CYAN + tv + tcllib.ANSI_RESET
+            print("{}: {} {} ({})".format(prd, versioninfo, fhash, model))
         except RequestException as e:
             print("{} ({}): {}".format(prd, lastver, str(e)))
             continue
