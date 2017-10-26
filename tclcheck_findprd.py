@@ -43,6 +43,7 @@ with open("prds.txt", "r") as afile:
             prddict[key].append(value)
 
 if args.tocheck is not None:
+    args.tocheck = args.tocheck.replace("PRD-", "")
     prdkeys = list(prddict.keys())
     for k in prdkeys:
         if k != args.tocheck:
