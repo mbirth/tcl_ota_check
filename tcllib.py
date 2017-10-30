@@ -60,6 +60,7 @@ class FotaCheck:
     RTD = default_enum("RTD", ["UNROOTED", "ROOTED"])
     CHNL = default_enum("CHNL", ["3G", "WIFI"])
     CLTP = default_enum("CLTP", {"MOBILE": 10, "DESKTOP": 2010})
+    CKOT = default_enum("CKOT", ["ALL", "AOTA_ONLY", "FOTA_ONLY"])
 
     def __init__(self):
         self.serid = "543212345000000"
@@ -70,6 +71,7 @@ class FotaCheck:
         self.ftype = "Firmware"
         self.cltp  = self.CLTP.MOBILE
         self.cktp  = self.CKTP.MANUAL
+        self.ckot  = self.CKOT.ALL
         self.rtd   = self.RTD.UNROOTED
         self.chnl  = self.CHNL.WIFI
         self.g2master = None
@@ -147,6 +149,7 @@ class FotaCheck:
         params["rtd"]   = self.rtd.value
         params["chnl"]  = self.chnl.value
         #params["osvs"]  = self.osvs
+        #params["ckot"]  = self.ckot.value
 
         last_response = None
         for num_try in range(0, max_tries):
