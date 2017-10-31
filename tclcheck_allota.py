@@ -17,12 +17,15 @@ fc.cltp  = fc.CLTP.MOBILE
 
 dp = tcllib.DefaultParser(__file__)
 dp.add_argument("forcever", nargs="?", default=None)
+dp.add_argument("-p", "--prd", dest="tocheck", nargs="?", default=None)
 args = dp.parse_args(sys.argv[1:])
 
 if args.forcever is not None:
     force_ver_text = " from {}".format(args.forcever)
 else:
     force_ver_text = ""
+
+prdcheck = "" if args.tocheck is None else args.tocheck 
 
 print("List of latest OTA firmware{} by PRD:".format(force_ver_text))
 
@@ -32,14 +35,15 @@ with open("prds.txt", "r") as f:
         prd, lastver, model = prdline.split(" ", 2)
         if args.forcever is not None:
             lastver = args.forcever
-        try:
-            fc.reset_session()
-            fc.curef = prd
-            fc.fv = lastver
-            check_xml = fc.do_check(max_tries=20)
-            curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
-            versioninfo = tcllib.ANSI_CYAN_DARK + fv + tcllib.ANSI_RESET + " ⇨ " + tcllib.ANSI_CYAN + tv + tcllib.ANSI_RESET
-            print("{}: {} {} ({})".format(prd, versioninfo, fhash, model))
-        except RequestException as e:
-            print("{} ({}): {}".format(prd, lastver, str(e)))
-            continue
+        if prdcheck in prd:
+            try:
+                fc.reset_session()
+                fc.curef = prd
+                fc.fv = lastver
+                check_xml = fc.do_check(max_tries=20)
+                curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
+                versioninfo = tcllib.ANSI_CYAN_DARK + fv + tcllib.ANSI_RESET + " ⇨ " + tcllib.ANSI_CYAN + tv + tcllib.ANSI_RESET
+                print("{}: {} {} ({})".format(prd, versioninfo, fhash, model))
+            except RequestException as e:
+                print("{} ({}): {}".format(prd, lastver, str(e)))
+                continue
