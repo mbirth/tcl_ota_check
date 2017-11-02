@@ -6,7 +6,9 @@ import argparse
 import base64
 import binascii
 import enum
+import errno
 import hashlib
+import os
 import platform
 import random
 import time
@@ -135,6 +137,17 @@ class FotaCheck:
         elif last_duration > avg_duration + 0.5:
             self.master_server_downvote()
 
+    def write_dump(self, data):
+        outfile = "logs/{}.xml".format(self.get_salt())
+        if not os.path.exists(os.path.dirname(outfile)):
+            try:
+                os.makedirs(os.path.dirname(outfile))
+            except OSError as e:
+                if e.errno != errno.EEXIST:
+                    raise
+        with open(outfile, "w") as f:
+            f.write(data)
+
     def do_check(self, https=True, timeout=10, max_tries=5):
         protocol = "https://" if https else "http://"
         url = protocol + self.g2master + "/check.php"
@@ -162,6 +175,7 @@ class FotaCheck:
                 last_response = req
                 if req.status_code == 200:
                     self.master_server_vote_on_time(reqtime, reqtime_avg)
+                    self.write_dump(req.text)
                     return req.text
                 elif req.status_code == 204:
                     self.master_server_vote_on_time(reqtime, reqtime_avg)
