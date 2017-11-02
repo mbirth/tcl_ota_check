@@ -5,4 +5,4 @@
 
 import os
 
-LOGS_GLOB = os.path.join("logs", "*.xml")
+LOGS_GLOB = os.path.normpath("logs/*.xml")

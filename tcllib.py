@@ -138,7 +138,7 @@ class FotaCheck:
             self.master_server_downvote()
 
     def write_dump(self, data):
-        outfile = os.path.join("logs", "{}.xml".format(self.get_salt()))
+        outfile = os.path.normpath("logs/{}.xml".format(self.get_salt()))
         if not os.path.exists(os.path.dirname(outfile)):
             try:
                 os.makedirs(os.path.dirname(outfile))
