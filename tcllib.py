@@ -282,6 +282,7 @@ class FotaCheck:
         #print(repr(dict(params)))
         req = self.sess.post(url, data=params)
         if req.status_code == 200:
+            self.write_dump(req.text)
             return req.text
         else:
             print("REQUEST: " + repr(req))
