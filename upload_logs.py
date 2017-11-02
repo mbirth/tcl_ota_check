@@ -3,4 +3,6 @@
 
 # pylint: disable=C0111,C0326,C0103
 
-LOGS_GLOB = "logs/*.xml"
+import os
+
+LOGS_GLOB = os.path.join("logs", "*.xml")
