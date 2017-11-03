@@ -175,6 +175,7 @@ class FotaCheck:
                 last_response = req
                 if req.status_code == 200:
                     self.master_server_vote_on_time(reqtime, reqtime_avg)
+                    req.encoding = "utf-8"    # Force encoding as server doesn't give one
                     self.write_dump(req.text)
                     return req.text
                 elif req.status_code == 204:
@@ -282,6 +283,7 @@ class FotaCheck:
         #print(repr(dict(params)))
         req = self.sess.post(url, data=params)
         if req.status_code == 200:
+            req.encoding = "utf-8"    # Force encoding as server doesn't give one
             self.write_dump(req.text)
             return req.text
         else:
