@@ -3,6 +3,7 @@
 
 # pylint: disable=C0111,C0326,C0103
 
+import os
 import random
 import sys
 import tcllib
@@ -44,9 +45,13 @@ for s in slaves:
 
 if fc.mode == fc.MODE.FULL:
     header = fc.do_encrypt_header(random.choice(encslaves), fileurl)
+    headname = "header_{}.bin".format(tv)
+    headdir = "headers"
+    if not os.path.exists(headdir):
+        os.makedirs(headdir)
     if len(header) == 4194320:
-        print("Header length check passed. Writing to header_{}.bin.".format(tv))
-        with open("header_{}.bin".format(tv), "wb") as f:
+        print("Header length check passed. Writing to {}.".format(headname))
+        with open(os.path.join(headdir, headname), "wb") as f:
             f.write(header)
     else:
         print("Header length invalid ({}).".format(len(header)))
