@@ -145,7 +145,7 @@ class FotaCheck:
             except OSError as e:
                 if e.errno != errno.EEXIST:
                     raise
-        with open(outfile, "w", encoding="utf-8") as f:
+        with open(outfile, "w") as f:
             f.write(data)
 
     def do_check(self, https=True, timeout=10, max_tries=5):
