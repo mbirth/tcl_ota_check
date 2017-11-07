@@ -184,7 +184,7 @@ class FotaCheck:
                 elif req.status_code == 404:
                     self.master_server_vote_on_time(reqtime, reqtime_avg)
                     raise requests.exceptions.HTTPError("No data for requested CUREF/FV combination.", response=req)
-                elif req.status_code not in [500, 503]:
+                elif req.status_code not in [500, 502, 503]:
                     self.master_server_downvote()
                     req.raise_for_status()
                     raise requests.exceptions.HTTPError("HTTP {}.".format(req.status_code), response=req)
