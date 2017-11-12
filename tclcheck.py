@@ -55,3 +55,5 @@ if fc.mode == fc.MODE.FULL:
             f.write(header)
     else:
         print("Header length invalid ({}).".format(len(header)))
+
+tcllib.FotaCheck.write_info_if_dumps_found()

@@ -61,3 +61,4 @@ for fv in allvers:
         continue
 
 print("Scan complete.")
+tcllib.FotaCheck.write_info_if_dumps_found()

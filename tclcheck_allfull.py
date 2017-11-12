@@ -43,3 +43,5 @@ with open("prds.txt", "rt") as f:
             except RequestException as e:
                 print("{}: {}".format(prd, str(e)))
                 continue
+
+tcllib.FotaCheck.write_info_if_dumps_found()

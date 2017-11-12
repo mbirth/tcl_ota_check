@@ -73,3 +73,4 @@ for center in sorted(prddict.keys()):
             continue
 
 print("Scan complete.")
+tcllib.FotaCheck.write_info_if_dumps_found()

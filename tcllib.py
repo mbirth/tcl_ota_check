@@ -7,6 +7,7 @@ import base64
 import binascii
 import enum
 import errno
+import glob
 import hashlib
 import os
 import platform
@@ -147,6 +148,16 @@ class FotaCheck:
                     raise
         with open(outfile, "w", encoding="utf-8") as f:
             f.write(data)
+
+    @staticmethod
+    def write_info_if_dumps_found():
+        # To disable this info, uncomment the following line.
+        #return
+        files = glob.glob(os.path.normpath("logs/*.xml"))
+        if len(files) > 0:
+            print()
+            print("{}There are {} logs collected in the logs/ directory.{} Please consider uploading".format(ANSI_YELLOW, len(files), ANSI_RESET))
+            print("them to https://tclota.birth-online.de/ by running {}./upload_logs.py{}.".format(ANSI_CYAN, ANSI_RESET))
 
     def do_check(self, https=True, timeout=10, max_tries=5):
         protocol = "https://" if https else "http://"
