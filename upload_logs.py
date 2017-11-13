@@ -15,8 +15,10 @@ LOGS_GLOB = os.path.normpath("logs/*.xml")
 
 headers = { "Content-Type": "text/xml" }
 
-for fn in glob.glob(LOGS_GLOB):
-    print("Uploading {}…".format(fn), end="")
+file_list = glob.glob(LOGS_GLOB)
+print("Found {} logs to upload.".format(len(file_list)))
+for fn in file_list:
+    print("Uploading {}…".format(fn), end="", flush=True)
     with open(fn, "rb") as f:
         r = requests.post(UPLOAD_URL, data=f, headers=headers)
     if r.status_code == 200:
