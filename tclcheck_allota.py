@@ -3,6 +3,8 @@
 
 # pylint: disable=C0111,C0326,C0103
 
+import json
+import requests
 import sys
 import tcllib
 from requests.exceptions import RequestException
@@ -27,25 +29,28 @@ else:
 
 prdcheck = "" if args.tocheck is None else args.tocheck 
 
+print("Loading list of devices...", end="", flush=True)
+prds = tcllib.FotaCheck.get_devicelist()
+print(" OK")
+
 print("List of latest OTA firmware{} by PRD:".format(force_ver_text))
 
-with open("prds.txt", "r") as f:
-    for prdline in f:
-        prdline = prdline.strip()
-        prd, lastver, model = prdline.split(" ", 2)
-        if args.forcever is not None:
-            lastver = args.forcever
-        if prdcheck in prd:
-            try:
-                fc.reset_session()
-                fc.curef = prd
-                fc.fv = lastver
-                check_xml = fc.do_check(max_tries=20)
-                curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
-                versioninfo = tcllib.ANSI_CYAN_DARK + fv + tcllib.ANSI_RESET + " ⇨ " + tcllib.ANSI_CYAN + tv + tcllib.ANSI_RESET
-                print("{}: {} {} ({})".format(prd, versioninfo, fhash, model))
-            except RequestException as e:
-                print("{} ({}): {}".format(prd, lastver, str(e)))
-                continue
+for prd in prds:
+    model   = prds[prd]["variant"]
+    lastver = prds[prd]["last_ota"]
+    if args.forcever is not None:
+        lastver = args.forcever
+    if prdcheck in prd:
+        try:
+            fc.reset_session()
+            fc.curef = prd
+            fc.fv = lastver
+            check_xml = fc.do_check(max_tries=20)
+            curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
+            versioninfo = tcllib.ANSI_CYAN_DARK + fv + tcllib.ANSI_RESET + " ⇨ " + tcllib.ANSI_CYAN + tv + tcllib.ANSI_RESET + " (FULL: {})".format(prds[prd]["last_full"])
+            print("{}: {} {} ({})".format(prd, versioninfo, fhash, model))
+        except RequestException as e:
+            print("{} ({}): {}".format(prd, lastver, str(e)))
+            continue
 
 tcllib.FotaCheck.write_info_if_dumps_found()

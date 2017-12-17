@@ -9,6 +9,7 @@ import enum
 import errno
 import glob
 import hashlib
+import json
 import os
 import platform
 import random
@@ -20,6 +21,10 @@ from math import floor
 import numpy
 import requests
 from defusedxml import ElementTree
+
+DEVICELIST_URL = "https://tclota.birth-online.de/json_lastupdates.php"
+DEVICELIST_FILE = "prds.json"
+DEVICELIST_CACHE_SECONDS = 86400
 
 ANSI_UP_DEL = u"\u001b[F\u001b[K"
 ANSI_BLACK = u"\u001b[0;30m"
@@ -240,6 +245,26 @@ class FotaCheck:
         engine.update(bytes(query, "utf-8"))
         hexhash = engine.hexdigest()
         return hexhash
+
+    @staticmethod
+    def get_devicelist():
+        need_download = True
+        try:
+            filestat = os.stat(DEVICELIST_FILE)
+            filemtime = filestat.st_mtime
+            if filemtime > time.time() - DEVICELIST_CACHE_SECONDS:
+                need_download = False
+        except FileNotFoundError:
+            pass
+
+        if need_download:
+            prds_json = requests.get(DEVICELIST_URL).text
+            with open(DEVICELIST_FILE, "wt") as df:
+                df.write(prds_json)
+
+        with open(DEVICELIST_FILE, "rt") as df:
+            prds = json.load(df)
+        return prds
 
     @staticmethod
     def get_creds():

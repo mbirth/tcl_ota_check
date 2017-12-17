@@ -24,24 +24,27 @@ fc.cltp  = fc.CLTP.DESKTOP
 
 prdcheck = "" if args.tocheck is None else args.tocheck
 
+print("Loading list of devices...", end="", flush=True)
+prds = tcllib.FotaCheck.get_devicelist()
+print(" OK")
+
 print("List of latest FULL firmware by PRD:")
 
-with open("prds.txt", "rt") as f:
-    for prdline in f:
-        prdline = prdline.strip()
-        prd, lastver, model = prdline.split(" ", 2)
-        if prdcheck in prd:
-            try:
-                fc.reset_session()
-                fc.curef = prd
-                check_xml = fc.do_check(max_tries=20)
-                curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
-                txt_tv = tv
-                if tv != lastver:
-                    txt_tv = tcllib.ANSI_CYAN + txt_tv + tcllib.ANSI_RESET + " (OTA: {})".format(lastver)
-                print("{}: {} {} ({})".format(prd, txt_tv, fhash, model))
-            except RequestException as e:
-                print("{}: {}".format(prd, str(e)))
-                continue
+for prd in prds:
+    model = prds[prd]["variant"]
+    lastver = prds[prd]["last_full"]
+    if prdcheck in prd:
+        try:
+            fc.reset_session()
+            fc.curef = prd
+            check_xml = fc.do_check(max_tries=20)
+            curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
+            txt_tv = tv
+            if tv != lastver:
+                txt_tv = tcllib.ANSI_CYAN + txt_tv + tcllib.ANSI_RESET + " (OTA: {})".format(prds[prd]["last_ota"])
+            print("{}: {} {} ({})".format(prd, txt_tv, fhash, model))
+        except RequestException as e:
+            print("{}: {}".format(prd, str(e)))
+            continue
 
 tcllib.FotaCheck.write_info_if_dumps_found()

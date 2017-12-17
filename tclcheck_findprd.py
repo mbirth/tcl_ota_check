@@ -31,16 +31,18 @@ if ceiling < floor:
     print("Invalid range!")
     raise SystemExit
 
+print("Loading list of devices...", end="", flush=True)
+prd_db = tcllib.FotaCheck.get_devicelist()
+print(" OK")
+
 print("Valid PRDs not already in database:")
 
-with open("prds.txt", "r") as afile:
-    prddict = collections.defaultdict(list)
-    prda = afile.readlines()
-    prds = [x.split(" ")[0].replace("PRD-", "").split("-") for x in prda]
-    prdx = list({x[0]: x[1]} for x in prds)
-    for prdc in prdx:
-        for key, value in prdc.items():
-            prddict[key].append(value)
+prds = [x.replace("PRD-", "").split("-") for x in prd_db]
+prdx = list({x[0]: x[1]} for x in prds)
+prddict = collections.defaultdict(list)
+for prdc in prdx:
+    for key, value in prdc.items():
+        prddict[key].append(value)
 
 if args.tocheck is not None:
     args.tocheck = args.tocheck.replace("PRD-", "")
