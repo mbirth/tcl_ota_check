@@ -30,9 +30,9 @@ print(" OK")
 
 print("List of latest FULL firmware by PRD:")
 
-for prd in prds:
-    model = prds[prd]["variant"]
-    lastver = prds[prd]["last_full"]
+for prd, variant in prds.items():
+    model = variant["variant"]
+    lastver = variant["last_full"]
     if prdcheck in prd:
         try:
             fc.reset_session()
@@ -41,7 +41,7 @@ for prd in prds:
             curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
             txt_tv = tv
             if tv != lastver:
-                txt_tv = tcllib.ANSI_CYAN + txt_tv + tcllib.ANSI_RESET + " (OTA: {})".format(prds[prd]["last_ota"])
+                txt_tv = tcllib.ANSI_CYAN + txt_tv + tcllib.ANSI_RESET + " (OTA: {})".format(variant["last_ota"])
             print("{}: {} {} ({})".format(prd, txt_tv, fhash, model))
         except RequestException as e:
             print("{}: {}".format(prd, str(e)))

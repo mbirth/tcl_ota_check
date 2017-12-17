@@ -35,9 +35,9 @@ print(" OK")
 
 print("List of latest OTA firmware{} by PRD:".format(force_ver_text))
 
-for prd in prds:
-    model   = prds[prd]["variant"]
-    lastver = prds[prd]["last_ota"]
+for prd, variant in prds.items():
+    model   = variant["variant"]
+    lastver = variant["last_ota"]
     if args.forcever is not None:
         lastver = args.forcever
     if prdcheck in prd:
@@ -47,7 +47,7 @@ for prd in prds:
             fc.fv = lastver
             check_xml = fc.do_check(max_tries=20)
             curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
-            versioninfo = tcllib.ANSI_CYAN_DARK + fv + tcllib.ANSI_RESET + " ⇨ " + tcllib.ANSI_CYAN + tv + tcllib.ANSI_RESET + " (FULL: {})".format(prds[prd]["last_full"])
+            versioninfo = tcllib.ANSI_CYAN_DARK + fv + tcllib.ANSI_RESET + " ⇨ " + tcllib.ANSI_CYAN + tv + tcllib.ANSI_RESET + " (FULL: {})".format(variant["last_full"])
             print("{}: {} {} ({})".format(prd, versioninfo, fhash, model))
         except RequestException as e:
             print("{} ({}): {}".format(prd, lastver, str(e)))
