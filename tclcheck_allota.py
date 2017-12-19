@@ -38,6 +38,7 @@ print("List of latest OTA firmware{} by PRD:".format(force_ver_text))
 for prd, variant in prds.items():
     model   = variant["variant"]
     lastver = variant["last_ota"]
+    if lastver is None: lastver = variant["last_full"]
     if args.forcever is not None:
         lastver = args.forcever
     if prdcheck in prd:
