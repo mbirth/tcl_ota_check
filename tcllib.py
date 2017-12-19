@@ -247,24 +247,57 @@ class FotaCheck:
         return hexhash
 
     @staticmethod
-    def get_devicelist():
+    def get_devicelist(force=False, output_diff=True):
         need_download = True
+
+        old_prds = None
         try:
             filestat = os.stat(DEVICELIST_FILE)
             filemtime = filestat.st_mtime
             if filemtime > time.time() - DEVICELIST_CACHE_SECONDS:
                 need_download = False
+            with open(DEVICELIST_FILE, "rt") as df:
+                old_prds = json.load(df)
         except FileNotFoundError:
             pass
 
-        if need_download:
+        if need_download or force:
             prds_json = requests.get(DEVICELIST_URL).text
             with open(DEVICELIST_FILE, "wt") as df:
                 df.write(prds_json)
 
         with open(DEVICELIST_FILE, "rt") as df:
             prds = json.load(df)
+
+        if old_prds and output_diff:
+            FotaCheck.print_prd_diff(old_prds, prds)
+
         return prds
+
+    @staticmethod
+    def print_prd_diff(old_prds, new_prds):
+        added_prds = [prd for prd in new_prds if prd not in old_prds]
+        removed_prds = [prd for prd in old_prds if prd not in new_prds]
+        for prd in removed_prds:
+            print("> Removed device {} (was at {} / OTA: {}).".format(ANSI_RED + prd + ANSI_RESET, old_prds[prd]["last_full"], old_prds[prd]["last_ota"]))
+        for prd in added_prds:
+            print("> New device {} ({} / OTA: {}).".format(ANSI_GREEN + prd + ANSI_RESET, new_prds[prd]["last_full"], new_prds[prd]["last_ota"]))
+        for prd, pdata in new_prds.items():
+            if prd in added_prds:
+                continue
+            odata = old_prds[prd]
+            if pdata["last_full"] != odata["last_full"] and pdata["last_ota"] != odata["last_ota"]:
+                print("> {}: {} ⇨ {} (OTA: {} ⇨ {})".format(
+                    prd,
+                    ANSI_CYAN_DARK + odata["last_full"] + ANSI_RESET,
+                    ANSI_CYAN + pdata["last_full"] + ANSI_RESET,
+                    ANSI_YELLOW_DARK + odata["last_ota"] + ANSI_RESET,
+                    ANSI_YELLOW + pdata["last_ota"] + ANSI_RESET
+                ))
+            elif pdata["last_full"] != odata["last_full"]:
+                print("> {}: {} ⇨ {} (FULL)".format(prd, ANSI_CYAN_DARK + odata["last_full"] + ANSI_RESET, ANSI_CYAN + pdata["last_full"] + ANSI_RESET))
+            elif pdata["last_ota"] != odata["last_ota"]:
+                print("> {}: {} ⇨ {} (OTA)".format(prd, ANSI_YELLOW_DARK + odata["last_ota"] + ANSI_RESET, ANSI_YELLOW + pdata["last_ota"] + ANSI_RESET))
 
     @staticmethod
     def get_creds():

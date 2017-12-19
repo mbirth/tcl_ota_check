@@ -29,9 +29,8 @@ else:
 
 prdcheck = "" if args.tocheck is None else args.tocheck 
 
-print("Loading list of devices...", end="", flush=True)
+print("Loading list of devices.")
 prds = tcllib.FotaCheck.get_devicelist()
-print(" OK")
 
 print("List of latest OTA firmware{} by PRD:".format(force_ver_text))
 
