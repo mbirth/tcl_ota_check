@@ -41,7 +41,11 @@ for prd, variant in prds.items():
             curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
             txt_tv = tv
             if tv != lastver:
-                txt_tv = tcllib.ANSI_CYAN + txt_tv + tcllib.ANSI_RESET + " (OTA: {})".format(variant["last_ota"])
+                txt_tv = "{} (old: {} / OTA: {})".format(
+                    tcllib.ANSI_CYAN + txt_tv + tcllib.ANSI_RESET,
+                    tcllib.ANSI_CYAN_DARK + variant["last_full"] + tcllib.ANSI_RESET,
+                    variant["last_ota"]
+                )
             print("{}: {} {} ({})".format(prd, txt_tv, fhash, model))
         except RequestException as e:
             print("{}: {}".format(prd, str(e)))

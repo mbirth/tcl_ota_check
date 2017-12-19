@@ -48,7 +48,7 @@ for prd, variant in prds.items():
             fc.fv = lastver
             check_xml = fc.do_check(max_tries=20)
             curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
-            versioninfo = tcllib.ANSI_CYAN_DARK + fv + tcllib.ANSI_RESET + " ⇨ " + tcllib.ANSI_CYAN + tv + tcllib.ANSI_RESET + " (FULL: {})".format(variant["last_full"])
+            versioninfo = tcllib.ANSI_YELLOW_DARK + fv + tcllib.ANSI_RESET + " ⇨ " + tcllib.ANSI_YELLOW + tv + tcllib.ANSI_RESET + " (FULL: {})".format(variant["last_full"])
             print("{}: {} {} ({})".format(prd, versioninfo, fhash, model))
         except RequestException as e:
             print("{} ({}): {}".format(prd, lastver, str(e)))
