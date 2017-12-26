@@ -18,9 +18,9 @@ dp.description = """
     version specified as fvver.
     """
 dp.add_argument("prd", nargs=1, help="CU Reference #, e.g. PRD-63117-011")
-dp.add_argument("fvver", nargs="?", help="Firmware version to check for updates, e.g. AAM481", default="AAA000")
-dp.add_argument("--mode", help="type of update to check for (auto, full, ota), defaults to auto", default="auto")
-dp.add_argument("--type", help="type of check to run (auto, desktop, mobile), defaults to auto", default="auto")
+dp.add_argument("fvver", nargs="?", help="Firmware version to check for OTA updates, e.g. AAM481 (omit to run FULL check)", default="AAA000")
+dp.add_argument("--mode", help="force type of update to check for", default="auto", type=str ,choices=["full", "ota"])
+dp.add_argument("--type", help="force type of check to run", default="auto", type=str, choices=["desktop", "mobile"])
 args = dp.parse_args(sys.argv[1:])
 
 def sel_mode(txtmode, autoval):
