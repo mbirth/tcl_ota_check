@@ -9,28 +9,42 @@ import sys
 import tcllib
 
 fc = tcllib.FotaCheck()
-fc.cltp  = fc.CLTP.MOBILE
 fc.serid = "3531510"
 #fc.osvs  = "7.1.1"
 
 dp = tcllib.DefaultParser(__file__)
-dp.add_argument("prd", nargs="?", default="AAM481")
-dp.add_argument("fvver", nargs="?", default="PRD-63117-011")
+dp.description = """
+    Checks for the latest FULL updates for the specified PRD number or for an OTA from the
+    version specified as fvver.
+    """
+dp.add_argument("prd", nargs=1, help="CU Reference #, e.g. PRD-63117-011")
+dp.add_argument("fvver", nargs="?", help="Firmware version to check for updates, e.g. AAM481", default="AAA000")
+dp.add_argument("--mode", help="type of update to check for (auto, full, ota), defaults to auto", default="auto")
+dp.add_argument("--type", help="type of check to run (auto, desktop, mobile), defaults to auto", default="auto")
 args = dp.parse_args(sys.argv[1:])
 
-if len(sys.argv) == 3:  # python tclcheck.py $PRD $FV = OTA delta for $PRD from $FV
-    fc.curef = args.prd
-    fc.fv = args.fvver
-    fc.mode  = fc.MODE.OTA
-elif len(sys.argv) == 2:  # python tclcheck.py $PRD = FULL for $PRD
-    fc.curef = args.prd
-    fc.fv = "AAA000"
-    fc.mode = fc.MODE.FULL
-    fc.cltp  = fc.CLTP.DESKTOP
-else:  # python tclcheck.py = OTA for default PRD, FV
-    fc.curef = "PRD-63117-011"
-    fc.fv    = "AAM481"
-    fc.mode  = fc.MODE.OTA
+def sel_mode(txtmode, autoval):
+    if txtmode == "auto":
+        return autoval
+    elif txtmode == "ota":
+        return fc.MODE.OTA
+    return fc.MODE.FULL
+
+def sel_cltp(txtmode, autoval):
+    if txtmode == "auto":
+        return autoval
+    elif txtmode == "desktop":
+        return fc.CLTP.DESKTOP
+    return fc.CLTP.MOBILE
+
+fc.curef = args.prd[0]
+fc.fv = args.fvver
+if args.fvver == "AAA000":
+    fc.mode = sel_mode(args.mode, fc.MODE.FULL)
+    fc.cltp = sel_cltp(args.type, fc.CLTP.DESKTOP)
+else:
+    fc.mode = sel_mode(args.mode, fc.MODE.OTA)
+    fc.cltp = sel_cltp(args.type, fc.CLTP.MOBILE)
 
 check_xml = fc.do_check()
 print(fc.pretty_xml(check_xml))
