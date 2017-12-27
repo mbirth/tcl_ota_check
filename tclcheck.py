@@ -19,18 +19,26 @@ dp.description = """
     """
 dp.add_argument("prd", nargs=1, help="CU Reference #, e.g. PRD-63117-011")
 dp.add_argument("fvver", nargs="?", help="Firmware version to check for OTA updates, e.g. AAM481 (omit to run FULL check)", default="AAA000")
-dp.add_argument("--mode", help="force type of update to check for", default="auto", type=str ,choices=["full", "ota"])
-dp.add_argument("--type", help="force type of check to run", default="auto", type=str, choices=["desktop", "mobile"])
+dp.add_argument("-m", "--mode", help="force type of update to check for", default="auto", type=str ,choices=["full", "ota"])
+dp.add_argument("-t", "--type", help="force type of check to run", default="auto", type=str, choices=["desktop", "mobile"])
+dp.add_argument("--rawmode", help="override --mode with raw value (2=OTA, 4=FULL)")
+dp.add_argument("--rawcltp", help="override --type with raw value (10=MOBILE, 2010=DESKTOP)")
 args = dp.parse_args(sys.argv[1:])
 
-def sel_mode(txtmode, autoval):
+def sel_mode(txtmode, autoval, rawval):
+    if rawval:
+        enum = tcllib.default_enum("MODE", {"RAW": rawval})
+        return enum.RAW
     if txtmode == "auto":
         return autoval
     elif txtmode == "ota":
         return fc.MODE.OTA
     return fc.MODE.FULL
 
-def sel_cltp(txtmode, autoval):
+def sel_cltp(txtmode, autoval, rawval):
+    if rawval:
+        enum = tcllib.default_enum("CLTP", {"RAW": rawval})
+        return enum.RAW
     if txtmode == "auto":
         return autoval
     elif txtmode == "desktop":
@@ -40,11 +48,11 @@ def sel_cltp(txtmode, autoval):
 fc.curef = args.prd[0]
 fc.fv = args.fvver
 if args.fvver == "AAA000":
-    fc.mode = sel_mode(args.mode, fc.MODE.FULL)
-    fc.cltp = sel_cltp(args.type, fc.CLTP.DESKTOP)
+    fc.mode = sel_mode(args.mode, fc.MODE.FULL, args.rawmode)
+    fc.cltp = sel_cltp(args.type, fc.CLTP.DESKTOP, args.rawcltp)
 else:
-    fc.mode = sel_mode(args.mode, fc.MODE.OTA)
-    fc.cltp = sel_cltp(args.type, fc.CLTP.MOBILE)
+    fc.mode = sel_mode(args.mode, fc.MODE.OTA, args.rawmode)
+    fc.cltp = sel_cltp(args.type, fc.CLTP.MOBILE, args.rawcltp)
 
 check_xml = fc.do_check()
 print(fc.pretty_xml(check_xml))
