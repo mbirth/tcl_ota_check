@@ -19,6 +19,7 @@ dp.description = """
     """
 dp.add_argument("prd", nargs=1, help="CU Reference #, e.g. PRD-63117-011")
 dp.add_argument("fvver", nargs="?", help="Firmware version to check for OTA updates, e.g. AAM481 (omit to run FULL check)", default="AAA000")
+dp.add_argument("-i", "--imei", help="use specified IMEI instead of default", type=str)
 dp.add_argument("-m", "--mode", help="force type of update to check for", default="auto", type=str ,choices=["full", "ota"])
 dp.add_argument("-t", "--type", help="force type of check to run", default="auto", type=str, choices=["desktop", "mobile"])
 dp.add_argument("--rawmode", help="override --mode with raw value (2=OTA, 4=FULL)")
@@ -45,6 +46,10 @@ def sel_cltp(txtmode, autoval, rawval):
         return fc.CLTP.DESKTOP
     return fc.CLTP.MOBILE
 
+if args.imei:
+    print("Use specified IMEI: {}".format(args.imei))
+    fc.serid = args.imei
+
 fc.curef = args.prd[0]
 fc.fv = args.fvver
 if args.fvver == "AAA000":
@@ -53,6 +58,9 @@ if args.fvver == "AAA000":
 else:
     fc.mode = sel_mode(args.mode, fc.MODE.OTA, args.rawmode)
     fc.cltp = sel_cltp(args.type, fc.CLTP.MOBILE, args.rawcltp)
+
+print("Mode: {}".format(fc.mode.value))
+print("CLTP: {}".format(fc.cltp.value))
 
 check_xml = fc.do_check()
 print(fc.pretty_xml(check_xml))
