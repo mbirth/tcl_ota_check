@@ -367,11 +367,14 @@ class FotaCheck:
         file = root.find("FILE_LIST").find("FILE")
         fileid  = file.find("FILE_ID").text
         fileurl = file.find("DOWNLOAD_URL").text
+        s3_fileurl = file.find("S3_DOWNLOAD_URL").text
         slave_list = root.find("SLAVE_LIST").findall("SLAVE")
         enc_list = root.find("SLAVE_LIST").findall("ENCRYPT_SLAVE")
+        s3_slave_list = root.find("SLAVE_LIST").findall("S3_SLAVE")
         slaves = [s.text for s in slave_list]
         encslaves = [s.text for s in enc_list]
-        return fileid, fileurl, slaves, encslaves
+        s3_slaves = [s.text for s in s3_slave_list]
+        return fileid, fileurl, slaves, encslaves, s3_fileurl, s3_slaves
 
     def do_encrypt_header(self, encslave, address):
         params = self.get_creds()

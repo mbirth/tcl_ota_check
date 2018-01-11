@@ -61,10 +61,13 @@ tv = args.targetversion[0]
 fw_id = args.fwid[0]
 req_xml = fc.do_request(fc.curef, fv, tv, fw_id)
 print(fc.pretty_xml(req_xml))
-fileid, fileurl, slaves, encslaves = fc.parse_request(req_xml)
+fileid, fileurl, slaves, encslaves, s3_fileurl, s3_slaves = fc.parse_request(req_xml)
 
 for s in slaves:
     print("http://{}{}".format(s, fileurl))
+
+for s in s3_slaves:
+    print("http://{}{}".format(s, s3_fileurl))
 
 if fc.mode == fc.MODE.FULL:
     header = fc.do_encrypt_header(random.choice(encslaves), fileurl)
