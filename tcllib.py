@@ -399,10 +399,10 @@ class FotaCheck:
             print(repr(req.text))
             raise SystemExit
 
-    def do_checksum(self, encslave, uri1, uri2):
+    def do_checksum(self, encslave, address, uri):
         url = "http://" + encslave + "/checksum.php"
         params = self.get_creds2()
-        params[b"address"]  = bytes('{"' + uri1 + '":"' + uri2 + '"}', "utf-8")
+        params[b"address"]  = bytes('{"' + address + '":"' + uri + '"}', "utf-8")
 
         #print(repr(dict(params)))
         req = self.sess.post(url, data=params)
