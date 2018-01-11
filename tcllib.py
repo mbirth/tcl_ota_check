@@ -308,6 +308,15 @@ class FotaCheck:
         params = {base64.b64decode(key): base64.b64decode(val) for key, val in creds.items()}
         return params
 
+    @staticmethod
+    def get_creds2():
+        creds = {
+            b"YWNjb3VudA==": b"VGVsZUV4dFRlc3Q=",
+            b"cGFzc3dvcmQ=": b"dDA1MjM=",
+        }
+        params = {base64.b64decode(key): base64.b64decode(val) for key, val in creds.items()}
+        return params
+
     '''
         private HashMap<String, String> buildDownloadUrisParams(UpdatePackageInfo updatePackageInfo) {
             FotaLog.m28v(TAG, "doAfterCheck");
@@ -379,13 +388,30 @@ class FotaCheck:
     def do_encrypt_header(self, encslave, address):
         params = self.get_creds()
         params[b"address"] = bytes(address, "utf-8")
-        url = "https://" + encslave + "/encrypt_header.php"
+        url = "http://" + encslave + "/encrypt_header.php"
         req = self.sess.post(url, data=params, verify=False)
         # Expect "HTTP 206 Partial Content" response
         if req.status_code == 206:
             return req.content
         else:
             print("ENCRYPT: " + repr(req))
+            print(repr(req.headers))
+            print(repr(req.text))
+            raise SystemExit
+
+    def do_checksum(self, encslave, uri1, uri2):
+        url = "http://" + encslave + "/checksum.php"
+        params = self.get_creds2()
+        params[b"address"]  = bytes('{"' + uri1 + '":"' + uri2 + '"}', "utf-8")
+
+        #print(repr(dict(params)))
+        req = self.sess.post(url, data=params)
+        if req.status_code == 200:
+            req.encoding = "utf-8"    # Force encoding as server doesn't give one
+            self.write_dump(req.text)
+            return req.text
+        else:
+            print("CHECKSUM: " + repr(req))
             print(repr(req.headers))
             print(repr(req.text))
             raise SystemExit
