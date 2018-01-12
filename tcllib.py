@@ -386,7 +386,7 @@ class FotaCheck:
         return fileid, fileurl, slaves, encslaves, s3_fileurl, s3_slaves
 
     def do_encrypt_header(self, encslave, address):
-        params = self.get_creds()
+        params = self.get_creds2()
         params[b"address"] = bytes(address, "utf-8")
         url = "http://" + encslave + "/encrypt_header.php"
         req = self.sess.post(url, data=params, verify=False)
