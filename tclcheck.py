@@ -72,6 +72,7 @@ fileid, fileurl, slaves, encslaves, s3_fileurl, s3_slaves = fc.parse_request(req
 
 chksum_xml = fc.do_checksum(random.choice(encslaves), fileurl, fileurl)
 print(fc.pretty_xml(chksum_xml))
+file_addr, sha1_body, sha1_enc_footer, sha1_footer = fc.parse_checksum(chksum_xml)
 
 for s in slaves:
     print("http://{}{}".format(s, fileurl))
@@ -86,6 +87,7 @@ if fc.mode == fc.MODE.FULL:
     if not os.path.exists(headdir):
         os.makedirs(headdir)
     if len(header) == 4194320:
+        # TODO: Check sha1sum
         print("Header length check passed. Writing to {}.".format(headname))
         with open(os.path.join(headdir, headname), "wb") as f:
             f.write(header)

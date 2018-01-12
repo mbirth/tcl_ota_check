@@ -419,3 +419,13 @@ class FotaCheck:
             print(repr(req.headers))
             print(repr(req.text))
             raise SystemExit
+
+    @staticmethod
+    def parse_checksum(xmlstr):
+        root = ElementTree.fromstring(xmlstr)
+        file = root.find("FILE_CHECKSUM_LIST").find("FILE")
+        file_addr = file.find("ADDRESS").text
+        sha1_enc_footer = file.find("ENCRYPT_FOOTER").text
+        sha1_footer = file.find("FOOTER").text
+        sha1_body = file.find("BODY").text
+        return file_addr, sha1_body, sha1_enc_footer, sha1_footer
