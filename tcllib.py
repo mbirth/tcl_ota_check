@@ -402,13 +402,17 @@ class FotaCheck:
     def do_checksum(self, encslave, address, uri):
         url = "http://" + encslave + "/checksum.php"
         params = self.get_creds2()
-        params[b"address"]  = bytes('{"' + address + '":"' + uri + '"}', "utf-8")
+
+        payload = {address: uri}
+        payload_json = json.dumps(payload)
+        params[b"address"]  = bytes(payload_json, "utf-8")
 
         #print(repr(dict(params)))
         req = self.sess.post(url, data=params)
         if req.status_code == 200:
             req.encoding = "utf-8"    # Force encoding as server doesn't give one
             self.write_dump(req.text)
+            # <ENCRYPT_FOOTER>2abfa6f6507044fec995efede5d818e62a0b19b5</ENCRYPT_FOOTER> means ERROR (invalid ADDRESS!)
             return req.text
         else:
             print("CHECKSUM: " + repr(req))
