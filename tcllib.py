@@ -289,15 +289,15 @@ class FotaCheck:
             if pdata["last_full"] != odata["last_full"] and pdata["last_ota"] != odata["last_ota"]:
                 print("> {}: {} ⇨ {} (OTA: {} ⇨ {})".format(
                     prd,
-                    ANSI_CYAN_DARK + odata["last_full"] + ANSI_RESET,
-                    ANSI_CYAN + pdata["last_full"] + ANSI_RESET,
-                    ANSI_YELLOW_DARK + odata["last_ota"] + ANSI_RESET,
-                    ANSI_YELLOW + pdata["last_ota"] + ANSI_RESET
+                    ANSI_CYAN_DARK + str(odata["last_full"]) + ANSI_RESET,
+                    ANSI_CYAN + str(pdata["last_full"]) + ANSI_RESET,
+                    ANSI_YELLOW_DARK + str(odata["last_ota"]) + ANSI_RESET,
+                    ANSI_YELLOW + str(pdata["last_ota"]) + ANSI_RESET
                 ))
             elif pdata["last_full"] != odata["last_full"]:
-                print("> {}: {} ⇨ {} (FULL)".format(prd, ANSI_CYAN_DARK + odata["last_full"] + ANSI_RESET, ANSI_CYAN + pdata["last_full"] + ANSI_RESET))
+                print("> {}: {} ⇨ {} (FULL)".format(prd, ANSI_CYAN_DARK + str(odata["last_full"]) + ANSI_RESET, ANSI_CYAN + str(pdata["last_full"]) + ANSI_RESET))
             elif pdata["last_ota"] != odata["last_ota"]:
-                print("> {}: {} ⇨ {} (OTA)".format(prd, ANSI_YELLOW_DARK + odata["last_ota"] + ANSI_RESET, ANSI_YELLOW + pdata["last_ota"] + ANSI_RESET))
+                print("> {}: {} ⇨ {} (OTA)".format(prd, ANSI_YELLOW_DARK + str(odata["last_ota"]) + ANSI_RESET, ANSI_YELLOW + str(pdata["last_ota"]) + ANSI_RESET))
 
     @staticmethod
     def get_creds():
