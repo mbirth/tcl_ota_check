@@ -94,6 +94,7 @@ class FotaCheck:
         self.master_servers_weights = [3] * len(self.master_servers)
         self.check_time_sum = 3
         self.check_time_count = 1
+        self.last_dump_filename = None
         self.reset_session()
 
     def reset_session(self):
@@ -153,6 +154,12 @@ class FotaCheck:
                     raise
         with open(outfile, "w", encoding="utf-8") as f:
             f.write(data)
+        self.last_dump_filename = outfile
+
+    def delete_last_dump(self):
+        if self.last_dump_filename:
+            os.unlink(self.last_dump_filename)
+            self.last_dump_filename = None
 
     @staticmethod
     def write_info_if_dumps_found():

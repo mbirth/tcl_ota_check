@@ -45,6 +45,8 @@ for prd, variant in prds.items():
                     tcllib.ANSI_CYAN_DARK + variant["last_full"] + tcllib.ANSI_RESET,
                     variant["last_ota"]
                 )
+            else:
+                fc.delete_last_dump()
             print("{}: {} {} ({})".format(prd, txt_tv, fhash, model))
         except RequestException as e:
             print("{}: {}".format(prd, str(e)))
