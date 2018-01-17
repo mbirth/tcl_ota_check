@@ -31,3 +31,12 @@ for fn in file_list:
             os.remove(fn)
             add_text = " - Please try again later."
         print(" ERROR: HTTP {}{}".format(r.status_code, add_text))
+
+# Mark prds.json as outdated to fetch updated version
+print("Mark PRD cache for update…", end="")
+try:
+    os.utime("prds.json", times=(1, 1))
+    print(" OK")
+except OSError as e:
+    print(" FAILED")
+
