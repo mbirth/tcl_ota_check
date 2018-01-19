@@ -383,7 +383,10 @@ class FotaCheck:
         file = root.find("FILE_LIST").find("FILE")
         fileid  = file.find("FILE_ID").text
         fileurl = file.find("DOWNLOAD_URL").text
-        s3_fileurl = file.find("S3_DOWNLOAD_URL").text
+        s3_fileurl_node = file.find("S3_DOWNLOAD_URL")
+        s3_fileurl = ""
+        if s3_fileurl_node:
+            s3_fileurl = s3_fileurl_node.text
         slave_list = root.find("SLAVE_LIST").findall("SLAVE")
         enc_list = root.find("SLAVE_LIST").findall("ENCRYPT_SLAVE")
         s3_slave_list = root.find("SLAVE_LIST").findall("S3_SLAVE")

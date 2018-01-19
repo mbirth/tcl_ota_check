@@ -70,9 +70,10 @@ req_xml = fc.do_request(curef, fv, tv, fw_id)
 print(fc.pretty_xml(req_xml))
 fileid, fileurl, slaves, encslaves, s3_fileurl, s3_slaves = fc.parse_request(req_xml)
 
-chksum_xml = fc.do_checksum(random.choice(encslaves), fileurl, fileurl)
-print(fc.pretty_xml(chksum_xml))
-file_addr, sha1_body, sha1_enc_footer, sha1_footer = fc.parse_checksum(chksum_xml)
+if len(encslaves) > 0:
+    chksum_xml = fc.do_checksum(random.choice(encslaves), fileurl, fileurl)
+    print(fc.pretty_xml(chksum_xml))
+    file_addr, sha1_body, sha1_enc_footer, sha1_footer = fc.parse_checksum(chksum_xml)
 
 for s in slaves:
     print("http://{}{}".format(s, fileurl))
