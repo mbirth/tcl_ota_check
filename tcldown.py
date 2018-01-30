@@ -12,18 +12,18 @@ fc = tcllib.FotaCheck()
 fc.serid = "3531510"
 #fc.osvs  = "7.1.1"
 
-dp = tcllib.DefaultParser(__file__)
-dp.description = """
+dpdesc = """
     Downloads the given firmware file.
     """
+dp = tcllib.DefaultParser(__file__, dpdesc)
 dp.add_argument("prd", nargs=1, help="CU Reference #, e.g. PRD-63117-011")
 dp.add_argument("targetversion", nargs=1, help="Firmware version to download, e.g. AAN990")
 dp.add_argument("fwid", nargs=1, help="Numeric firmware file id, e.g. 268932")
 dp.add_argument("-o", "--ota", metavar="FROMVERSION", help="download OTA from specified version (switches mode to OTA)", type=str)
 dp.add_argument("-i", "--imei", help="use specified IMEI instead of default", type=str)
 dp.add_argument("-t", "--type", help="download device (default to desktop)", default="desktop", type=str, choices=["desktop", "mobile"])
-dp.add_argument("--rawmode", help="override --mode with raw value (2=OTA, 4=FULL)")
-dp.add_argument("--rawcltp", help="override --type with raw value (10=MOBILE, 2010=DESKTOP)")
+dp.add_argument("--rawmode", help="override --mode with raw value (2=OTA, 4=FULL)", metavar="MODE")
+dp.add_argument("--rawcltp", help="override --type with raw value (10=MOBILE, 2010=DESKTOP)", metavar="CLTP")
 args = dp.parse_args(sys.argv[1:])
 
 def sel_mode(defaultmode, rawval):

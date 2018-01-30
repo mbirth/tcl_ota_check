@@ -17,9 +17,13 @@ fc.serid = "3531510"
 fc.mode = fc.MODE.OTA
 fc.cltp  = fc.CLTP.MOBILE
 
-dp = tcllib.DefaultParser(__file__)
-dp.add_argument("forcever", nargs="?", default=None)
-dp.add_argument("-p", "--prd", dest="tocheck", nargs="?", default=None)
+dpdesc = """
+    Checks for the latest OTA updates for all PRD numbers or only for the PRD specified
+    as prd. Initial software version can be specified with forcever.
+    """
+dp = tcllib.DefaultParser(__file__, dpdesc)
+dp.add_argument("forcever", help="Initial software version to check for OTA updates, e.g. AAM481", nargs="?", default=None)
+dp.add_argument("-p", "--prd", help="CU Reference # to filter scan results", dest="tocheck", nargs="?", default=None, metavar="PRD")
 args = dp.parse_args(sys.argv[1:])
 
 if args.forcever is not None:

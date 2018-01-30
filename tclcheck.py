@@ -12,18 +12,18 @@ fc = tcllib.FotaCheck()
 fc.serid = "3531510"
 #fc.osvs  = "7.1.1"
 
-dp = tcllib.DefaultParser(__file__)
-dp.description = """
+dpdesc = """
     Checks for the latest FULL updates for the specified PRD number or for an OTA from the
     version specified as fvver.
     """
+dp = tcllib.DefaultParser(__file__, dpdesc)
 dp.add_argument("prd", nargs=1, help="CU Reference #, e.g. PRD-63117-011")
 dp.add_argument("fvver", nargs="?", help="Firmware version to check for OTA updates, e.g. AAM481 (omit to run FULL check)", default="AAA000")
 dp.add_argument("-i", "--imei", help="use specified IMEI instead of default", type=str)
 dp.add_argument("-m", "--mode", help="force type of update to check for", default="auto", type=str ,choices=["full", "ota"])
 dp.add_argument("-t", "--type", help="force type of check to run", default="auto", type=str, choices=["desktop", "mobile"])
-dp.add_argument("--rawmode", help="override --mode with raw value (2=OTA, 4=FULL)")
-dp.add_argument("--rawcltp", help="override --type with raw value (10=MOBILE, 2010=DESKTOP)")
+dp.add_argument("--rawmode", help="override --mode with raw value (2=OTA, 4=FULL)", metavar="MODE")
+dp.add_argument("--rawcltp", help="override --type with raw value (10=MOBILE, 2010=DESKTOP)", metavar="CLTP")
 args = dp.parse_args(sys.argv[1:])
 
 def sel_mode(txtmode, autoval, rawval):

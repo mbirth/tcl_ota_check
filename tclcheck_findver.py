@@ -13,10 +13,14 @@ fc = tcllib.FotaCheck()
 fc.serid = "3531510"
 fc.mode = fc.MODE.OTA
 
-dp = tcllib.DefaultParser(__file__)
-dp.add_argument("prd")
-dp.add_argument("startver", nargs="?", default="AAA000")
-dp.add_argument("endver", nargs="?", default="AAZ999")
+dpdesc = """
+    Finds all valid OTA updates for a given PRD. Scan range can be set by
+    startver and endver switches.
+    """
+dp = tcllib.DefaultParser(__file__, dpdesc)
+dp.add_argument("prd", help="CU Reference #, e.g. PRD-63117-011")
+dp.add_argument("startver", help="Beginning of scan range", nargs="?", default="AAA000")
+dp.add_argument("endver", help="End of scan range", nargs="?", default="AAZ999")
 args = dp.parse_args(sys.argv[1:])
 
 fc.curef = args.prd

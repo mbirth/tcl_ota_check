@@ -14,8 +14,12 @@ fc.serid = "3531510"
 fc.fv = "AAA000"
 fc.mode = fc.MODE.FULL
 
-dp = tcllib.DefaultParser(__file__)
-dp.add_argument("-p", "--prd", dest="tocheck", nargs="?", default=None)
+dpdesc = """
+    Checks for the latest FULL updates for all PRD numbers or only for
+    the PRD specified as prd.
+    """
+dp = tcllib.DefaultParser(__file__, dpdesc)
+dp.add_argument("-p", "--prd", help="CU Reference # to filter scan results", dest="tocheck", nargs="?", default=None, metavar="PRD")
 args = dp.parse_args(sys.argv[1:])
 
 # CLTP = 10 (only show actual updates or HTTP 206) / 2010 (always show latest version for MODE.FULL)

@@ -19,10 +19,14 @@ fc.mode = fc.MODE.FULL
 #fc.cltp  = fc.CLTP.MOBILE
 fc.cltp  = fc.CLTP.DESKTOP
 
-dp = tcllib.DefaultParser(__file__)
-dp.add_argument("tocheck", nargs="?", default=None)
-dp.add_argument("-f", "--floor", dest="floor", nargs="?", type=int, default=0)
-dp.add_argument("-c", "--ceiling", dest="ceiling", nargs="?", type=int, default=999)
+dpdesc = """
+    Finds new PRD numbers for all known variants, or specified variants with tocheck. Scan range
+    can be set by floor and ceiling switches.
+    """
+dp = tcllib.DefaultParser(__file__, dpdesc)
+dp.add_argument("tocheck", help="CU Reference # to filter scan results", nargs="?", default=None)
+dp.add_argument("-f", "--floor", help="Beginning of scan range", dest="floor", nargs="?", type=int, default=0)
+dp.add_argument("-c", "--ceiling", help="End of scan range", dest="ceiling", nargs="?", type=int, default=999)
 args = dp.parse_args(sys.argv[1:])
 
 floor = args.floor

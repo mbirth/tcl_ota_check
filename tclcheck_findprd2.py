@@ -22,7 +22,11 @@ fc.mode = fc.MODE.FULL
 #fc.cltp  = fc.CLTP.MOBILE
 fc.cltp  = fc.CLTP.DESKTOP
 
-dp = tcllib.DefaultParser(__file__)
+dpdesc = """
+    Finds new PRD numbers for a range of variants. Scan range can be set by
+    floor and ceiling switches.
+    """
+dp = tcllib.DefaultParser(__file__, dpdesc)
 dp.add_argument("floor", nargs="?", help="Model number to start with", type=int, default=63116)
 dp.add_argument("ceiling", nargs="?", help="Model number to end with", type=int, default=99999)
 args = dp.parse_args(sys.argv[1:])
