@@ -6,6 +6,7 @@
 import collections
 import sys
 import tcllib
+import tcllib.argparser
 from requests.exceptions import RequestException, Timeout
 
 tcllib.make_escapes_work()
@@ -23,7 +24,7 @@ dpdesc = """
     Finds new PRD numbers for all known variants, or specified variants with tocheck. Scan range
     can be set by floor and ceiling switches.
     """
-dp = tcllib.DefaultParser(__file__, dpdesc)
+dp = tcllib.argparser.DefaultParser(__file__, dpdesc)
 dp.add_argument("tocheck", help="CU Reference # to filter scan results", nargs="?", default=None)
 dp.add_argument("-f", "--floor", help="Beginning of scan range", dest="floor", nargs="?", type=int, default=0)
 dp.add_argument("-c", "--ceiling", help="End of scan range", dest="ceiling", nargs="?", type=int, default=999)

@@ -2,7 +2,6 @@
 
 # pylint: disable=C0111,C0326
 
-import argparse
 import base64
 import binascii
 import enum
@@ -14,7 +13,6 @@ import os
 import platform
 import random
 import time
-import webbrowser
 import xml.dom.minidom
 import zlib
 from collections import OrderedDict
@@ -55,21 +53,6 @@ def make_escapes_work():
 
 def default_enum(enumname, vardict):
     return enum.IntEnum(enumname, vardict, module=__name__, qualname="tcllib.FotaCheck.{}".format(enumname))
-
-
-class DefaultParser(argparse.ArgumentParser):
-    def __init__(self, appname, desc=None):
-        super().__init__(prog=appname, description=desc, epilog="https://github.com/mbirth/tcl_ota_check")
-        self.add_argument("--webdb", help="open web database in browser and exit", action="store_true")
-
-    def parse_args(self, args=None, namespace=None):
-        if set(args) & {"--webdb"}:  # if they intersect
-            webbrowser.open("https://tclota.birth-online.de/", new=2)
-            raise SystemExit
-        else:
-            argx = super().parse_args(args, namespace)
-            return argx
-
 
 class FotaCheck:
     VDKEY = b"eJwdjwEOwDAIAr8kKFr//7HhmqXp8AIIDrYAgg8byiUXrwRJRXja+d6iNxu0AhUooDCN9rd6rDLxmGIakUVWo3IGCTRWqCAt6X4jGEIUAxgN0eYWnp+LkpHQAg/PsO90ELsy0Npm/n2HbtPndFgGEV31R9OmT4O4nrddjc3Qt6nWscx7e+WRHq5UnOudtjw5skuV09pFhvmqnOEIs4ljPeel1wfLYUF4\n"
@@ -433,6 +416,9 @@ class FotaCheck:
             req.encoding = "utf-8"    # Force encoding as server doesn't give one
             self.write_dump(req.text)
             # <ENCRYPT_FOOTER>2abfa6f6507044fec995efede5d818e62a0b19b5</ENCRYPT_FOOTER> means ERROR (invalid ADDRESS!)
+            if "<ENCRYPT_FOOTER>2abfa6f6507044fec995efede5d818e62a0b19b5</ENCRYPT_FOOTER>" in req.text:
+                print("INVALID URI: {}".format(uri))
+                raise SystemExit
             return req.text
         else:
             print("CHECKSUM: " + repr(req))

@@ -7,6 +7,7 @@ import json
 import requests
 import sys
 import tcllib
+import tcllib.argparser
 from requests.exceptions import RequestException
 
 tcllib.make_escapes_work()
@@ -21,7 +22,7 @@ dpdesc = """
     Checks for the latest OTA updates for all PRD numbers or only for the PRD specified
     as prd. Initial software version can be specified with forcever.
     """
-dp = tcllib.DefaultParser(__file__, dpdesc)
+dp = tcllib.argparser.DefaultParser(__file__, dpdesc)
 dp.add_argument("forcever", help="Initial software version to check for OTA updates, e.g. AAM481", nargs="?", default=None)
 dp.add_argument("-p", "--prd", help="CU Reference # to filter scan results", dest="tocheck", nargs="?", default=None, metavar="PRD")
 args = dp.parse_args(sys.argv[1:])

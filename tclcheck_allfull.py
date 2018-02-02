@@ -5,6 +5,7 @@
 
 import sys
 import tcllib
+import tcllib.argparser
 from requests.exceptions import RequestException, Timeout
 
 tcllib.make_escapes_work()
@@ -18,7 +19,7 @@ dpdesc = """
     Checks for the latest FULL updates for all PRD numbers or only for
     the PRD specified as prd.
     """
-dp = tcllib.DefaultParser(__file__, dpdesc)
+dp = tcllib.argparser.DefaultParser(__file__, dpdesc)
 dp.add_argument("-p", "--prd", help="CU Reference # to filter scan results", dest="tocheck", nargs="?", default=None, metavar="PRD")
 args = dp.parse_args(sys.argv[1:])
 

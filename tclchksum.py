@@ -7,6 +7,7 @@ import os
 import random
 import sys
 import tcllib
+import tcllib.argparser
 
 fc = tcllib.FotaCheck()
 
@@ -25,7 +26,7 @@ encslaves = [
 dpdesc = """
     Returns the checksum for a given firmware URI.
     """
-dp = tcllib.DefaultParser(__file__, dpdesc)
+dp = tcllib.argparser.DefaultParser(__file__, dpdesc)
 dp.add_argument("uri", help="URI to firmware, starts with '/body/...'")
 args = dp.parse_args(sys.argv[1:])
 

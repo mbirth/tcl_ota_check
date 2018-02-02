@@ -6,6 +6,7 @@
 import collections
 import sys
 import tcllib
+import tcllib.argparser
 from requests.exceptions import RequestException, Timeout
 
 # Variants to scan for
@@ -26,7 +27,7 @@ dpdesc = """
     Finds new PRD numbers for a range of variants. Scan range can be set by
     floor and ceiling switches.
     """
-dp = tcllib.DefaultParser(__file__, dpdesc)
+dp = tcllib.argparser.DefaultParser(__file__, dpdesc)
 dp.add_argument("floor", nargs="?", help="Model number to start with", type=int, default=63116)
 dp.add_argument("ceiling", nargs="?", help="Model number to end with", type=int, default=99999)
 args = dp.parse_args(sys.argv[1:])

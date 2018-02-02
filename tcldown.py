@@ -7,6 +7,7 @@ import os
 import random
 import sys
 import tcllib
+import tcllib.argparser
 
 fc = tcllib.FotaCheck()
 fc.serid = "3531510"
@@ -15,7 +16,7 @@ fc.serid = "3531510"
 dpdesc = """
     Downloads the given firmware file.
     """
-dp = tcllib.DefaultParser(__file__, dpdesc)
+dp = tcllib.argparser.DefaultParser(__file__, dpdesc)
 dp.add_argument("prd", nargs=1, help="CU Reference #, e.g. PRD-63117-011")
 dp.add_argument("targetversion", nargs=1, help="Firmware version to download, e.g. AAN990")
 dp.add_argument("fwid", nargs=1, help="Numeric firmware file id, e.g. 268932")

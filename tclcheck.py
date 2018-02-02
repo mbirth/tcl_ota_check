@@ -7,6 +7,7 @@ import os
 import random
 import sys
 import tcllib
+import tcllib.argparser
 
 fc = tcllib.FotaCheck()
 fc.serid = "3531510"
@@ -16,7 +17,7 @@ dpdesc = """
     Checks for the latest FULL updates for the specified PRD number or for an OTA from the
     version specified as fvver.
     """
-dp = tcllib.DefaultParser(__file__, dpdesc)
+dp = tcllib.argparser.DefaultParser(__file__, dpdesc)
 dp.add_argument("prd", nargs=1, help="CU Reference #, e.g. PRD-63117-011")
 dp.add_argument("fvver", nargs="?", help="Firmware version to check for OTA updates, e.g. AAM481 (omit to run FULL check)", default="AAA000")
 dp.add_argument("-i", "--imei", help="use specified IMEI instead of default", type=str)
