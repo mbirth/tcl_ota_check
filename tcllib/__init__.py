@@ -37,6 +37,7 @@ class FotaCheck(
     CKOT = default_enum("CKOT", ["ALL", "AOTA_ONLY", "FOTA_ONLY"])
 
     def __init__(self):
+        super().__init__()
         self.serid = "543212345000000"
         self.curef = "PRD-63117-011"
         self.fv    = "AAM481"
@@ -48,19 +49,6 @@ class FotaCheck(
         self.ckot  = self.CKOT.ALL
         self.rtd   = self.RTD.UNROOTED
         self.chnl  = self.CHNL.WIFI
-        self.g2master = None
-        self.master_servers = [
-            "g2master-us-east.tclclouds.com",
-            "g2master-us-west.tclclouds.com",
-            "g2master-eu-west.tclclouds.com",
-            "g2master-ap-south.tclclouds.com",
-            "g2master-ap-north.tclclouds.com",
-            "g2master-sa-east.tclclouds.com",
-        ]
-        self.master_servers_weights = [3] * len(self.master_servers)
-        self.check_time_sum = 3
-        self.check_time_count = 1
-        self.last_dump_filename = None
         self.reset_session()
 
     def reset_session(self):

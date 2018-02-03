@@ -6,6 +6,9 @@ import os
 from . import ansi
 
 class DumpMgr:
+    def __init__(self):
+        self.last_dump_filename = None
+
     def write_dump(self, data):
         outfile = os.path.normpath("logs/{}.xml".format(self.get_salt()))
         if not os.path.exists(os.path.dirname(outfile)):

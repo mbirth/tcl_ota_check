@@ -3,6 +3,20 @@
 import numpy
 
 class ServerVote:
+    def __init__(self):
+        self.g2master = None
+        self.master_servers = [
+            "g2master-us-east.tclclouds.com",
+            "g2master-us-west.tclclouds.com",
+            "g2master-eu-west.tclclouds.com",
+            "g2master-ap-south.tclclouds.com",
+            "g2master-ap-north.tclclouds.com",
+            "g2master-sa-east.tclclouds.com",
+        ]
+        self.master_servers_weights = [3] * len(self.master_servers)
+        self.check_time_sum = 3
+        self.check_time_count = 1
+
     def get_master_server(self):
         weight_sum = 0
         for i in self.master_servers_weights:
