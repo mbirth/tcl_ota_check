@@ -3,7 +3,6 @@
 # pylint: disable=C0111,C0326
 
 import enum
-import platform
 import requests
 from . import credentials
 from . import devlist
@@ -14,17 +13,6 @@ from . import tclrequest
 from . import tclchecksum
 from . import tclencheader
 from . import xmltools
-
-def make_escapes_work():
-    system = platform.system()
-    if system == "Windows":
-        try:
-            import colorama
-        except ImportError:
-            pass
-        else:
-            colorama.init()
-
 
 def default_enum(enumname, vardict):
     return enum.IntEnum(enumname, vardict, module=__name__, qualname="tcllib.FotaCheck.{}".format(enumname))

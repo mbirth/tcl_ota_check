@@ -11,8 +11,6 @@ import tcllib.argparser
 from tcllib import ansi
 from requests.exceptions import RequestException
 
-tcllib.make_escapes_work()
-
 fc = tcllib.FotaCheck()
 fc.serid = "3531510"
 #fc.osvs  = "7.1.1"

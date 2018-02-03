@@ -9,8 +9,6 @@ import sys
 import tcllib
 from requests.exceptions import RequestException
 
-tcllib.make_escapes_work()
-
 # 1. Fetch list of missing OTAs (e.g. from ancient versions to current)
 # 2. Query updates from FOTA servers (and store XML)
 # (3. Upload will be done manually with upload_logs.py)

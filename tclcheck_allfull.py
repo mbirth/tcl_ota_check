@@ -9,8 +9,6 @@ import tcllib.argparser
 from tcllib import ansi
 from requests.exceptions import RequestException, Timeout
 
-tcllib.make_escapes_work()
-
 fc = tcllib.FotaCheck()
 fc.serid = "3531510"
 fc.fv = "AAA000"

@@ -1,5 +1,16 @@
 # -*- coding: utf-8 -*-
 
+import platform
+
+# Needed to make ANSI escape sequences work in Windows
+system = platform.system()
+if system == "Windows":
+    try:
+        import colorama
+        colorama.init()
+    except ImportError:
+        pass
+
 UP_DEL = u"\u001b[F\u001b[K"
 BLACK = u"\u001b[0;30m"
 RED_DARK = u"\u001b[0;31m"

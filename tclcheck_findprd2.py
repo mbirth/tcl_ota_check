@@ -13,8 +13,6 @@ from requests.exceptions import RequestException, Timeout
 # Variants to scan for
 SCAN_VARIANTS = ["001", "003", "009", "010", "700"]
 
-tcllib.make_escapes_work()
-
 fc = tcllib.FotaCheck()
 fc.serid = "3531510"
 fc.fv = "AAA000"
