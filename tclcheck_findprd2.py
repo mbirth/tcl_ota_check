@@ -7,6 +7,7 @@ import collections
 import sys
 import tcllib
 import tcllib.argparser
+from tcllib import ansi
 from requests.exceptions import RequestException, Timeout
 
 # Variants to scan for
@@ -56,7 +57,7 @@ for center in to_scan:
         curef = "PRD-{:05}-{:3}".format(center, j)
         done_count += 1
         print("Checking {} ({}/{})".format(curef, done_count, total_count))
-        print(tcllib.ANSI_UP_DEL, end="")
+        print(ansi.UP_DEL, end="")
         try:
             fc.reset_session()
             fc.curef = curef

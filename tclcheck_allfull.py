@@ -6,6 +6,7 @@
 import sys
 import tcllib
 import tcllib.argparser
+from tcllib import ansi
 from requests.exceptions import RequestException, Timeout
 
 tcllib.make_escapes_work()
@@ -46,8 +47,8 @@ for prd, variant in prds.items():
             txt_tv = tv
             if tv != lastver:
                 txt_tv = "{} (old: {} / OTA: {})".format(
-                    tcllib.ANSI_CYAN + txt_tv + tcllib.ANSI_RESET,
-                    tcllib.ANSI_CYAN_DARK + variant["last_full"] + tcllib.ANSI_RESET,
+                    ansi.CYAN + txt_tv + ansi.RESET,
+                    ansi.CYAN_DARK + variant["last_full"] + ansi.RESET,
                     variant["last_ota"]
                 )
             else:

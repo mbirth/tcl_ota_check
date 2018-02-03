@@ -7,6 +7,7 @@ import collections
 import sys
 import tcllib
 import tcllib.argparser
+from tcllib import ansi
 from requests.exceptions import RequestException, Timeout
 
 tcllib.make_escapes_work()
@@ -68,7 +69,7 @@ for center in sorted(prddict.keys()):
         curef = "PRD-{}-{:03}".format(center, j)
         done_count += 1
         print("Checking {} ({}/{})".format(curef, done_count, total_count))
-        print(tcllib.ANSI_UP_DEL, end="")
+        print(ansi.UP_DEL, end="")
         try:
             fc.reset_session()
             fc.curef = curef

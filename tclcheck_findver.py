@@ -6,6 +6,7 @@
 import sys
 import tcllib
 import tcllib.argparser
+from tcllib import ansi
 from requests.exceptions import RequestException, Timeout
 
 tcllib.make_escapes_work()
@@ -54,7 +55,7 @@ total_count = len(allvers)
 for fv in allvers:
     done_count += 1
     print("Checking {} ({}/{})".format(fv, done_count, total_count))
-    print(tcllib.ANSI_UP_DEL, end="")
+    print(ansi.UP_DEL, end="")
     try:
         fc.reset_session()
         fc.fv = fv
