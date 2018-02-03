@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-class TclEncHeader:
+class TclEncHeaderMixin:
     def do_encrypt_header(self, encslave, address):
         params = self.get_creds2()
         params[b"address"] = bytes(address, "utf-8")

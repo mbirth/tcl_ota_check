@@ -31,7 +31,7 @@ from defusedxml import ElementTree
     }
 '''
 
-class TclRequest:
+class TclRequestMixin:
     @staticmethod
     def get_salt():
         millis = floor(time.time() * 1000)

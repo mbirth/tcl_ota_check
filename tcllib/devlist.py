@@ -10,7 +10,7 @@ DEVICELIST_URL = "https://tclota.birth-online.de/json_lastupdates.php"
 DEVICELIST_FILE = "prds.json"
 DEVICELIST_CACHE_SECONDS = 86400
 
-class DevList:
+class DevListMixin:
     @staticmethod
     def get_devicelist(force=False, output_diff=True):
         need_download = True

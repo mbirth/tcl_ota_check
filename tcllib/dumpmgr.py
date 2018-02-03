@@ -5,7 +5,7 @@ import glob
 import os
 from . import ansi
 
-class DumpMgr:
+class DumpMgrMixin:
     def __init__(self):
         self.last_dump_filename = None
 

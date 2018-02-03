@@ -2,7 +2,7 @@
 
 import numpy
 
-class ServerVote:
+class ServerVoteMixin:
     def __init__(self):
         self.g2master = None
         self.master_servers = [

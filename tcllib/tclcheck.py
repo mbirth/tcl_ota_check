@@ -5,7 +5,7 @@ from collections import OrderedDict
 import requests
 from defusedxml import ElementTree
 
-class TclCheck:
+class TclCheckMixin:
     def do_check(self, https=True, timeout=10, max_tries=5):
         protocol = "https://" if https else "http://"
         url = protocol + self.g2master + "/check.php"

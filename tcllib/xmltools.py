@@ -2,7 +2,7 @@
 
 import xml.dom.minidom
 
-class XmlTools:
+class XmlToolsMixin:
     @staticmethod
     def pretty_xml(xmlstr):
         mdx = xml.dom.minidom.parseString(xmlstr)

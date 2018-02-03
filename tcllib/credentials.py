@@ -2,7 +2,7 @@
 
 import base64
 
-class Credentials:
+class CredentialsMixin:
     @staticmethod
     def get_creds():
         creds = {

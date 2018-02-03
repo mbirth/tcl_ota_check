@@ -3,7 +3,7 @@
 import json
 from defusedxml import ElementTree
 
-class TclChecksum:
+class TclChecksumMixin:
     def do_checksum(self, encslave, address, uri):
         url = "http://" + encslave + "/checksum.php"
         params = self.get_creds2()

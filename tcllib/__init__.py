@@ -18,15 +18,15 @@ def default_enum(enumname, vardict):
     return enum.IntEnum(enumname, vardict, module=__name__, qualname="tcllib.FotaCheck.{}".format(enumname))
 
 class FotaCheck(
-    tclcheck.TclCheck,
-    tclrequest.TclRequest,
-    tclchecksum.TclChecksum,
-    tclencheader.TclEncHeader,
-    servervote.ServerVote,
-    credentials.Credentials,
-    devlist.DevList,
-    dumpmgr.DumpMgr,
-    xmltools.XmlTools
+    tclcheck.TclCheckMixin,
+    tclrequest.TclRequestMixin,
+    tclchecksum.TclChecksumMixin,
+    tclencheader.TclEncHeaderMixin,
+    servervote.ServerVoteMixin,
+    credentials.CredentialsMixin,
+    devlist.DevListMixin,
+    dumpmgr.DumpMgrMixin,
+    xmltools.XmlToolsMixin
     ):
     VDKEY = b"eJwdjwEOwDAIAr8kKFr//7HhmqXp8AIIDrYAgg8byiUXrwRJRXja+d6iNxu0AhUooDCN9rd6rDLxmGIakUVWo3IGCTRWqCAt6X4jGEIUAxgN0eYWnp+LkpHQAg/PsO90ELsy0Npm/n2HbtPndFgGEV31R9OmT4O4nrddjc3Qt6nWscx7e+WRHq5UnOudtjw5skuV09pFhvmqnOEIs4ljPeel1wfLYUF4\n"
     CKTP = default_enum("CKTP", ["AUTO", "MANUAL"])
