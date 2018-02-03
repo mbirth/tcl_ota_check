@@ -35,7 +35,7 @@ class DevListMixin:
             prds = json.load(df)
 
         if old_prds and output_diff:
-            DevList.print_prd_diff(old_prds, prds)
+            DevListMixin.print_prd_diff(old_prds, prds)
 
         return prds
 
