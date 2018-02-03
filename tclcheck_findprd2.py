@@ -3,6 +3,8 @@
 
 # pylint: disable=C0111,C0326,C0103
 
+"""Find new PRDs for a range of variants."""
+
 import sys
 
 from requests.exceptions import RequestException, Timeout

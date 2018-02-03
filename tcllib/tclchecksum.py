@@ -3,13 +3,17 @@
 
 # pylint: disable=C0111,C0326,C0103
 
+"""Tools to interface with TCL's checksum API."""
+
 import json
 
 from defusedxml import ElementTree
 
 
 class TclChecksumMixin:
+    """A mixin component for TCL's checksum API."""
     def do_checksum(self, encslave, address, uri):
+        """Perform checksum request with given parameters."""
         url = "http://" + encslave + "/checksum.php"
         params = self.get_creds2()
 
@@ -35,6 +39,7 @@ class TclChecksumMixin:
 
     @staticmethod
     def parse_checksum(xmlstr):
+        """Parse output of ``do_checksum``."""
         root = ElementTree.fromstring(xmlstr)
         file = root.find("FILE_CHECKSUM_LIST").find("FILE")
         file_addr = file.find("ADDRESS").text

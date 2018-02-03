@@ -3,6 +3,8 @@
 
 # pylint: disable=C0111,C0326,C0103
 
+"""Upload contents of logs folder to remote database."""
+
 # curl -v -H "Content-Type: text/plain" --data @test.xml http://example.org/tcl_update_db/
 
 import glob

@@ -3,6 +3,8 @@
 
 # pylint: disable=C0111,C0326,C0103
 
+"""Tools to interface with TCL's download request API."""
+
 import binascii
 import hashlib
 import random
@@ -38,13 +40,16 @@ from defusedxml import ElementTree
 
 
 class TclRequestMixin:
+    """A mixin component for TCL's download request API."""
     @staticmethod
     def get_salt():
+        """Generate cryptographic salt."""
         millis = floor(time.time() * 1000)
         tail = "{:06d}".format(random.randint(0, 999999))
         return "{}{}".format(str(millis), tail)
 
     def get_vk2(self, params_dict, cltp):
+        """Generate salted hash of API parameters."""
         params_dict["cltp"] = cltp
         query = ""
         for key, val in params_dict.items():
@@ -59,6 +64,7 @@ class TclRequestMixin:
         return hexhash
 
     def do_request(self, curef, fvver, tvver, fw_id):
+        """Perform download request with given parameters."""
         url = "https://" + self.g2master + "/download_request.php"
         params = OrderedDict()
         params["id"] = self.serid
@@ -91,6 +97,7 @@ class TclRequestMixin:
 
     @staticmethod
     def parse_request(xmlstr):
+        """Parse output of ``do_request``."""
         root = ElementTree.fromstring(xmlstr)
         file = root.find("FILE_LIST").find("FILE")
         fileid = file.find("FILE_ID").text

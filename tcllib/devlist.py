@@ -3,6 +3,8 @@
 
 # pylint: disable=C0111,C0326,C0103
 
+"""Tools to manage saved device databases."""
+
 import json
 import os
 import time
@@ -18,8 +20,10 @@ DEVICELIST_CACHE_SECONDS = 86400
 
 
 class DevListMixin:
+    """A mixin component for device list management."""
     @staticmethod
     def get_devicelist(force=False, output_diff=True):
+        """Return device list from saved database."""
         need_download = True
 
         old_prds = None
@@ -48,6 +52,7 @@ class DevListMixin:
 
     @staticmethod
     def print_prd_diff(old_prds, new_prds):
+        """Print changes between old and new databases."""
         added_prds = [prd for prd in new_prds if prd not in old_prds]
         removed_prds = [prd for prd in old_prds if prd not in new_prds]
         for prd in removed_prds:

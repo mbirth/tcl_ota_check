@@ -3,6 +3,8 @@
 
 # pylint: disable=C0111,C0326,C0103
 
+"""Find new PRDs for a given variant(s)."""
+
 import collections
 import sys
 

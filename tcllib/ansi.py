@@ -3,6 +3,8 @@
 
 # pylint: disable=C0111,C0326,C0103
 
+"""Listing of ANSI colors plus additional Windows support."""
+
 import platform
 
 # Needed to make ANSI escape sequences work in Windows

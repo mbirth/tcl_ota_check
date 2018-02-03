@@ -3,6 +3,8 @@
 
 # pylint: disable=C0111,C0326,C0103
 
+"""Query existence of missing OTAs."""
+
 import json
 
 import requests

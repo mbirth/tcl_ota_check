@@ -3,6 +3,8 @@
 
 # pylint: disable=C0111,C0326,C0103
 
+"""Checks for the latest FULL or OTA updates for specified PRD number."""
+
 import os
 import random
 import sys
@@ -31,6 +33,7 @@ args = dp.parse_args(sys.argv[1:])
 
 
 def sel_mode(txtmode, autoval, rawval):
+    """Handle custom mode."""
     if rawval:
         enum = tcllib.default_enum("MODE", {"RAW": rawval})
         return enum.RAW
@@ -42,6 +45,7 @@ def sel_mode(txtmode, autoval, rawval):
 
 
 def sel_cltp(txtmode, autoval, rawval):
+    """Handle custom CLTP."""
     if rawval:
         enum = tcllib.default_enum("CLTP", {"RAW": rawval})
         return enum.RAW

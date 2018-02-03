@@ -3,6 +3,8 @@
 
 # pylint: disable=C0111,C0326,C0103
 
+"""Tools to manage dumps of API requests."""
+
 import errno
 import glob
 import os
@@ -11,10 +13,13 @@ from . import ansi
 
 
 class DumpMgrMixin:
+    """A mixin component for XML dump management."""
     def __init__(self):
+        """Populate dump file name."""
         self.last_dump_filename = None
 
     def write_dump(self, data):
+        """Write dump to file."""
         outfile = os.path.normpath("logs/{}.xml".format(self.get_salt()))
         if not os.path.exists(os.path.dirname(outfile)):
             try:
@@ -27,12 +32,14 @@ class DumpMgrMixin:
         self.last_dump_filename = outfile
 
     def delete_last_dump(self):
+        """Delete last dump."""
         if self.last_dump_filename:
             os.unlink(self.last_dump_filename)
             self.last_dump_filename = None
 
     @staticmethod
     def write_info_if_dumps_found():
+        """Notify user to upload dumps if present."""
         # To disable this info, uncomment the following line.
         # return
         files = glob.glob(os.path.normpath("logs/*.xml"))

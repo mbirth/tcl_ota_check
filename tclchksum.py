@@ -3,6 +3,8 @@
 
 # pylint: disable=C0111,C0326,C0103
 
+"""Return checksum for given firmware."""
+
 import random
 import sys
 

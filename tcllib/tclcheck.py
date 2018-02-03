@@ -3,6 +3,8 @@
 
 # pylint: disable=C0111,C0326,C0103
 
+"""Tools to interface with TCL's update request API."""
+
 import time
 from collections import OrderedDict
 
@@ -11,13 +13,15 @@ from defusedxml import ElementTree
 
 
 class TclCheckMixin:
+    """A mixin component for TCL's update request API."""
     def do_check(self, https=True, timeout=10, max_tries=5):
+        """Perform update request with given parameters."""
         protocol = "https://" if https else "http://"
         url = protocol + self.g2master + "/check.php"
         params = OrderedDict()
         params["id"] = self.serid
         params["curef"] = self.curef
-        params["fv"] = self.fvver
+        params["fv"] = self.fv
         params["mode"] = self.mode.value
         params["type"] = self.ftype
         params["cltp"] = self.cltp.value
@@ -62,6 +66,7 @@ class TclCheckMixin:
 
     @staticmethod
     def parse_check(xmlstr):
+        """Parse output of ``do_check``."""
         root = ElementTree.fromstring(xmlstr)
         curef = root.find("CUREF").text
         fvver = root.find("VERSION").find("FV").text

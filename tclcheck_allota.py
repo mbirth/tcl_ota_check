@@ -3,6 +3,8 @@
 
 # pylint: disable=C0111,C0326,C0103
 
+"""Check all/given PRDs for OTA updates."""
+
 import sys
 
 from requests.exceptions import RequestException

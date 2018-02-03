@@ -3,6 +3,8 @@
 
 # pylint: disable=C0111,C0326,C0103
 
+"""Download a given firmware file."""
+
 import os
 import random
 import sys
@@ -31,6 +33,7 @@ args = dp.parse_args(sys.argv[1:])
 
 
 def sel_mode(defaultmode, rawval):
+    """Handle custom mode."""
     if rawval:
         enum = tcllib.default_enum("MODE", {"RAW": rawval})
         return enum.RAW
@@ -38,6 +41,7 @@ def sel_mode(defaultmode, rawval):
 
 
 def sel_cltp(txtmode, rawval):
+    """Handle custom CLTP."""
     if rawval:
         enum = tcllib.default_enum("CLTP", {"RAW": rawval})
         return enum.RAW
