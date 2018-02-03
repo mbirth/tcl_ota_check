@@ -3,8 +3,8 @@
 import platform
 
 # Needed to make ANSI escape sequences work in Windows
-system = platform.system()
-if system == "Windows":
+SYSTEM = platform.system()
+if SYSTEM == "Windows":
     try:
         import colorama
         colorama.init()

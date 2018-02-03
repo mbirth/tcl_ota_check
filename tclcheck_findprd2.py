@@ -3,12 +3,14 @@
 
 # pylint: disable=C0111,C0326,C0103
 
-import collections
 import sys
+
+from requests.exceptions import RequestException, Timeout
+
 import tcllib
 import tcllib.argparser
 from tcllib import ansi
-from requests.exceptions import RequestException, Timeout
+
 
 # Variants to scan for
 SCAN_VARIANTS = ["001", "003", "009", "010", "700"]
@@ -19,8 +21,8 @@ fc.fv = "AAA000"
 fc.mode = fc.MODE.FULL
 
 # CLTP = 10 (only show actual updates or HTTP 206) / 2010 (always show latest version for MODE.FULL)
-#fc.cltp  = fc.CLTP.MOBILE
-fc.cltp  = fc.CLTP.DESKTOP
+#fc.cltp = fc.CLTP.MOBILE
+fc.cltp = fc.CLTP.DESKTOP
 
 dpdesc = """
     Finds new PRD numbers for a range of variants. Scan range can be set by

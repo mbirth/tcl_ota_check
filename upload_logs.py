@@ -7,13 +7,15 @@
 
 import glob
 import os
+
 import requests
+
 
 # This is the URL to an installation of https://github.com/mbirth/tcl_update_db
 UPLOAD_URL = "https://tclota.birth-online.de/"
 LOGS_GLOB = os.path.normpath("logs/*.xml")
 
-headers = { "Content-Type": "text/xml" }
+headers = {"Content-Type": "text/xml"}
 
 file_list = glob.glob(LOGS_GLOB)
 print("Found {} logs to upload.".format(len(file_list)))
@@ -39,4 +41,3 @@ try:
     print(" OK")
 except OSError as e:
     print(" FAILED")
-

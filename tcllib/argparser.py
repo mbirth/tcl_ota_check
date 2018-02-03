@@ -5,6 +5,7 @@
 import argparse
 import webbrowser
 
+
 class DefaultParser(argparse.ArgumentParser):
     def __init__(self, appname, desc=None):
         super().__init__(prog=appname, description=desc, epilog="https://github.com/mbirth/tcl_ota_check")

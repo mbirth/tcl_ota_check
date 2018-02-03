@@ -3,7 +3,9 @@
 import errno
 import glob
 import os
+
 from . import ansi
+
 
 class DumpMgrMixin:
     def __init__(self):
@@ -14,11 +16,11 @@ class DumpMgrMixin:
         if not os.path.exists(os.path.dirname(outfile)):
             try:
                 os.makedirs(os.path.dirname(outfile))
-            except OSError as e:
-                if e.errno != errno.EEXIST:
+            except OSError as err:
+                if err.errno != errno.EEXIST:
                     raise
-        with open(outfile, "w", encoding="utf-8") as f:
-            f.write(data)
+        with open(outfile, "w", encoding="utf-8") as fhandle:
+            fhandle.write(data)
         self.last_dump_filename = outfile
 
     def delete_last_dump(self):
@@ -29,9 +31,9 @@ class DumpMgrMixin:
     @staticmethod
     def write_info_if_dumps_found():
         # To disable this info, uncomment the following line.
-        #return
+        # return
         files = glob.glob(os.path.normpath("logs/*.xml"))
-        if len(files) > 0:
+        if files:
             print()
             print("{}There are {} logs collected in the logs/ directory.{} Please consider uploading".format(ansi.YELLOW, len(files), ansi.RESET))
             print("them to https://tclota.birth-online.de/ by running {}./upload_logs.py{}.".format(ansi.CYAN, ansi.RESET))

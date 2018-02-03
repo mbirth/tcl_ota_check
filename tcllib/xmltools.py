@@ -2,6 +2,7 @@
 
 import xml.dom.minidom
 
+
 class XmlToolsMixin:
     @staticmethod
     def pretty_xml(xmlstr):

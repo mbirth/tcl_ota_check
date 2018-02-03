@@ -4,10 +4,12 @@ import binascii
 import hashlib
 import random
 import time
-from math import floor
 import zlib
 from collections import OrderedDict
+from math import floor
+
 from defusedxml import ElementTree
+
 
 '''
     private HashMap<String, String> buildDownloadUrisParams(UpdatePackageInfo updatePackageInfo) {
@@ -31,6 +33,7 @@ from defusedxml import ElementTree
     }
 '''
 
+
 class TclRequestMixin:
     @staticmethod
     def get_salt():
@@ -41,10 +44,10 @@ class TclRequestMixin:
     def get_vk2(self, params_dict, cltp):
         params_dict["cltp"] = cltp
         query = ""
-        for k, v in params_dict.items():
-            if len(query) > 0:
+        for key, val in params_dict.items():
+            if query:
                 query += "&"
-            query += k + "=" + str(v)
+            query += key + "=" + str(val)
         vdk = zlib.decompress(binascii.a2b_base64(self.VDKEY))
         query += vdk.decode("utf-8")
         engine = hashlib.sha1()
@@ -52,29 +55,29 @@ class TclRequestMixin:
         hexhash = engine.hexdigest()
         return hexhash
 
-    def do_request(self, curef, fv, tv, fw_id):
+    def do_request(self, curef, fvver, tvver, fw_id):
         url = "https://" + self.g2master + "/download_request.php"
         params = OrderedDict()
-        params["id"]    = self.serid
-        params["salt"]  = self.get_salt()
+        params["id"] = self.serid
+        params["salt"] = self.get_salt()
         params["curef"] = curef
-        params["fv"]    = fv
-        params["tv"]    = tv
-        params["type"]  = self.ftype
+        params["fv"] = fvver
+        params["tv"] = tvver
+        params["type"] = self.ftype
         params["fw_id"] = fw_id
-        params["mode"]  = self.mode.value
-        params["vk"]    = self.get_vk2(params, self.cltp.value)
-        params["cltp"]  = self.cltp.value
-        params["cktp"]  = self.cktp.value
-        params["rtd"]   = self.rtd.value
+        params["mode"] = self.mode.value
+        params["vk"] = self.get_vk2(params, self.cltp.value)
+        params["cltp"] = self.cltp.value
+        params["cktp"] = self.cktp.value
+        params["rtd"] = self.rtd.value
         if self.mode == self.MODE.FULL:
-            params["foot"]  = 1
-        params["chnl"]  = self.chnl.value
+            params["foot"] = 1
+        params["chnl"] = self.chnl.value
 
-        #print(repr(dict(params)))
+        # print(repr(dict(params)))
         req = self.sess.post(url, data=params)
         if req.status_code == 200:
-            req.encoding = "utf-8"    # Force encoding as server doesn't give one
+            req.encoding = "utf-8"  # Force encoding as server doesn't give one
             self.write_dump(req.text)
             return req.text
         else:
@@ -87,7 +90,7 @@ class TclRequestMixin:
     def parse_request(xmlstr):
         root = ElementTree.fromstring(xmlstr)
         file = root.find("FILE_LIST").find("FILE")
-        fileid  = file.find("FILE_ID").text
+        fileid = file.find("FILE_ID").text
         fileurl = file.find("DOWNLOAD_URL").text
         s3_fileurl_node = file.find("S3_DOWNLOAD_URL")
         s3_fileurl = ""

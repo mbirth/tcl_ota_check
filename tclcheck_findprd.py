@@ -5,10 +5,13 @@
 
 import collections
 import sys
+
+from requests.exceptions import RequestException, Timeout
+
 import tcllib
 import tcllib.argparser
 from tcllib import ansi
-from requests.exceptions import RequestException, Timeout
+
 
 fc = tcllib.FotaCheck()
 fc.serid = "3531510"
@@ -16,8 +19,8 @@ fc.fv = "AAA000"
 fc.mode = fc.MODE.FULL
 
 # CLTP = 10 (only show actual updates or HTTP 206) / 2010 (always show latest version for MODE.FULL)
-#fc.cltp  = fc.CLTP.MOBILE
-fc.cltp  = fc.CLTP.DESKTOP
+#fc.cltp = fc.CLTP.MOBILE
+fc.cltp = fc.CLTP.DESKTOP
 
 dpdesc = """
     Finds new PRD numbers for all known variants, or specified variants with tocheck. Scan range

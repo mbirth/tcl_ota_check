@@ -2,13 +2,17 @@
 
 import json
 import os
-import requests
 import time
+
+import requests
+
 from . import ansi
+
 
 DEVICELIST_URL = "https://tclota.birth-online.de/json_lastupdates.php"
 DEVICELIST_FILE = "prds.json"
 DEVICELIST_CACHE_SECONDS = 86400
+
 
 class DevListMixin:
     @staticmethod
@@ -21,18 +25,18 @@ class DevListMixin:
             filemtime = filestat.st_mtime
             if filemtime > time.time() - DEVICELIST_CACHE_SECONDS:
                 need_download = False
-            with open(DEVICELIST_FILE, "rt") as df:
-                old_prds = json.load(df)
+            with open(DEVICELIST_FILE, "rt") as dlfile:
+                old_prds = json.load(dlfile)
         except FileNotFoundError:
             pass
 
         if need_download or force:
             prds_json = requests.get(DEVICELIST_URL).text
-            with open(DEVICELIST_FILE, "wt") as df:
-                df.write(prds_json)
+            with open(DEVICELIST_FILE, "wt") as dlfile:
+                dlfile.write(prds_json)
 
-        with open(DEVICELIST_FILE, "rt") as df:
-            prds = json.load(df)
+        with open(DEVICELIST_FILE, "rt") as dlfile:
+            prds = json.load(dlfile)
 
         if old_prds and output_diff:
             DevListMixin.print_prd_diff(old_prds, prds)

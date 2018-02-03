@@ -3,19 +3,20 @@
 
 # pylint: disable=C0111,C0326,C0103
 
-import json
-import requests
 import sys
+
+from requests.exceptions import RequestException
+
 import tcllib
 import tcllib.argparser
 from tcllib import ansi
-from requests.exceptions import RequestException
+
 
 fc = tcllib.FotaCheck()
 fc.serid = "3531510"
-#fc.osvs  = "7.1.1"
+#fc.osvs = "7.1.1"
 fc.mode = fc.MODE.OTA
-fc.cltp  = fc.CLTP.MOBILE
+fc.cltp = fc.CLTP.MOBILE
 
 dpdesc = """
     Checks for the latest OTA updates for all PRD numbers or only for the PRD specified
@@ -31,7 +32,7 @@ if args.forcever is not None:
 else:
     force_ver_text = ""
 
-prdcheck = "" if args.tocheck is None else args.tocheck 
+prdcheck = "" if args.tocheck is None else args.tocheck
 
 print("Loading list of devices.")
 prds = tcllib.FotaCheck.get_devicelist()
@@ -39,9 +40,9 @@ prds = tcllib.FotaCheck.get_devicelist()
 print("List of latest OTA firmware{} by PRD:".format(force_ver_text))
 
 for prd, variant in prds.items():
-    model   = variant["variant"]
+    model = variant["variant"]
     lastver = variant["last_ota"]
-    if lastver is None: lastver = variant["last_full"]
+    lastver = variant["last_full"] if lastver is None else lastver
     if args.forcever is not None:
         lastver = args.forcever
     if prdcheck in prd:

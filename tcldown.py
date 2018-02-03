@@ -6,12 +6,14 @@
 import os
 import random
 import sys
+
 import tcllib
 import tcllib.argparser
 
+
 fc = tcllib.FotaCheck()
 fc.serid = "3531510"
-#fc.osvs  = "7.1.1"
+#fc.osvs = "7.1.1"
 
 dpdesc = """
     Downloads the given firmware file.
@@ -27,11 +29,13 @@ dp.add_argument("--rawmode", help="override --mode with raw value (2=OTA, 4=FULL
 dp.add_argument("--rawcltp", help="override --type with raw value (10=MOBILE, 2010=DESKTOP)", metavar="CLTP")
 args = dp.parse_args(sys.argv[1:])
 
+
 def sel_mode(defaultmode, rawval):
     if rawval:
         enum = tcllib.default_enum("MODE", {"RAW": rawval})
         return enum.RAW
     return defaultmode
+
 
 def sel_cltp(txtmode, rawval):
     if rawval:
@@ -41,16 +45,17 @@ def sel_cltp(txtmode, rawval):
         return fc.CLTP.MOBILE
     return fc.CLTP.DESKTOP
 
+
 if args.imei:
     print("Use specified IMEI: {}".format(args.imei))
     fc.serid = args.imei
 
 fc.curef = args.prd[0]
 if args.ota:
-    fc.fv   = args.ota[0]
+    fc.fv = args.ota[0]
     fc.mode = sel_mode(fc.MODE.OTA, args.rawmode)
 else:
-    fc.fv   = args.targetversion[0]
+    fc.fv = args.targetversion[0]
     fc.mode = sel_mode(fc.MODE.FULL, args.rawmode)
 fc.cltp = sel_cltp(args.type, args.rawcltp)
 

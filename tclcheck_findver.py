@@ -4,10 +4,13 @@
 # pylint: disable=C0111,C0326,C0103
 
 import sys
+
+from requests.exceptions import RequestException, Timeout
+
 import tcllib
 import tcllib.argparser
 from tcllib import ansi
-from requests.exceptions import RequestException, Timeout
+
 
 fc = tcllib.FotaCheck()
 fc.serid = "3531510"

@@ -3,19 +3,16 @@
 # pylint: disable=C0111,C0326
 
 import enum
-import requests
-from . import credentials
-from . import devlist
-from . import dumpmgr
-from . import servervote
-from . import tclcheck
-from . import tclrequest
-from . import tclchecksum
-from . import tclencheader
-from . import xmltools
 
-def default_enum(enumname, vardict):
-    return enum.IntEnum(enumname, vardict, module=__name__, qualname="tcllib.FotaCheck.{}".format(enumname))
+import requests
+
+from . import (credentials, devlist, dumpmgr, servervote, tclcheck,
+               tclchecksum, tclencheader, tclrequest, xmltools)
+
+
+def default_enum(enumname, vardict, qualroot="tcllib.FotaCheck"):
+    return enum.IntEnum(enumname, vardict, module=__name__, qualname="{}.{}".format(qualroot, enumname))
+
 
 class FotaCheck(
     tclcheck.TclCheckMixin,
@@ -27,7 +24,7 @@ class FotaCheck(
     devlist.DevListMixin,
     dumpmgr.DumpMgrMixin,
     xmltools.XmlToolsMixin
-    ):
+):
     VDKEY = b"eJwdjwEOwDAIAr8kKFr//7HhmqXp8AIIDrYAgg8byiUXrwRJRXja+d6iNxu0AhUooDCN9rd6rDLxmGIakUVWo3IGCTRWqCAt6X4jGEIUAxgN0eYWnp+LkpHQAg/PsO90ELsy0Npm/n2HbtPndFgGEV31R9OmT4O4nrddjc3Qt6nWscx7e+WRHq5UnOudtjw5skuV09pFhvmqnOEIs4ljPeel1wfLYUF4\n"
     CKTP = default_enum("CKTP", ["AUTO", "MANUAL"])
     MODE = default_enum("MODE", {"OTA": 2, "FULL": 4})
@@ -40,15 +37,15 @@ class FotaCheck(
         super().__init__()
         self.serid = "543212345000000"
         self.curef = "PRD-63117-011"
-        self.fv    = "AAM481"
-        self.osvs  = "7.1.1"
-        self.mode  = self.MODE.FULL
+        self.fv = "AAM481"
+        self.osvs = "7.1.1"
+        self.mode = self.MODE.FULL
         self.ftype = "Firmware"
-        self.cltp  = self.CLTP.MOBILE
-        self.cktp  = self.CKTP.MANUAL
-        self.ckot  = self.CKOT.ALL
-        self.rtd   = self.RTD.UNROOTED
-        self.chnl  = self.CHNL.WIFI
+        self.cltp = self.CLTP.MOBILE
+        self.cktp = self.CKTP.MANUAL
+        self.ckot = self.CKOT.ALL
+        self.rtd = self.RTD.UNROOTED
+        self.chnl = self.CHNL.WIFI
         self.reset_session()
 
     def reset_session(self):

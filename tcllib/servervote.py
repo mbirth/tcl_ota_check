@@ -2,6 +2,7 @@
 
 import numpy
 
+
 class ServerVoteMixin:
     def __init__(self):
         self.g2master = None
@@ -41,7 +42,7 @@ class ServerVoteMixin:
         self.check_time_count += 1
 
     def check_time_avg(self):
-        return (self.check_time_sum / self.check_time_count)
+        return self.check_time_sum / self.check_time_count
 
     def master_server_vote_on_time(self, last_duration, avg_duration):
         if last_duration < avg_duration - 0.5:

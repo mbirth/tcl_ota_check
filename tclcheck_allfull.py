@@ -4,10 +4,13 @@
 # pylint: disable=C0111,C0326,C0103
 
 import sys
+
+from requests.exceptions import RequestException
+
 import tcllib
 import tcllib.argparser
 from tcllib import ansi
-from requests.exceptions import RequestException, Timeout
+
 
 fc = tcllib.FotaCheck()
 fc.serid = "3531510"
@@ -23,8 +26,8 @@ dp.add_argument("-p", "--prd", help="CU Reference # to filter scan results", des
 args = dp.parse_args(sys.argv[1:])
 
 # CLTP = 10 (only show actual updates or HTTP 206) / 2010 (always show latest version for MODE.FULL)
-#fc.cltp  = fc.CLTP.MOBILE
-fc.cltp  = fc.CLTP.DESKTOP
+#fc.cltp = fc.CLTP.MOBILE
+fc.cltp = fc.CLTP.DESKTOP
 
 prdcheck = "" if args.tocheck is None else args.tocheck
 

@@ -6,12 +6,14 @@
 import os
 import random
 import sys
+
 import tcllib
 import tcllib.argparser
 
+
 fc = tcllib.FotaCheck()
 fc.serid = "3531510"
-#fc.osvs  = "7.1.1"
+#fc.osvs = "7.1.1"
 
 dpdesc = """
     Checks for the latest FULL updates for the specified PRD number or for an OTA from the
@@ -21,11 +23,12 @@ dp = tcllib.argparser.DefaultParser(__file__, dpdesc)
 dp.add_argument("prd", nargs=1, help="CU Reference #, e.g. PRD-63117-011")
 dp.add_argument("fvver", nargs="?", help="Firmware version to check for OTA updates, e.g. AAM481 (omit to run FULL check)", default="AAA000")
 dp.add_argument("-i", "--imei", help="use specified IMEI instead of default", type=str)
-dp.add_argument("-m", "--mode", help="force type of update to check for", default="auto", type=str ,choices=["full", "ota"])
+dp.add_argument("-m", "--mode", help="force type of update to check for", default="auto", type=str, choices=["full", "ota"])
 dp.add_argument("-t", "--type", help="force type of check to run", default="auto", type=str, choices=["desktop", "mobile"])
 dp.add_argument("--rawmode", help="override --mode with raw value (2=OTA, 4=FULL)", metavar="MODE")
 dp.add_argument("--rawcltp", help="override --type with raw value (10=MOBILE, 2010=DESKTOP)", metavar="CLTP")
 args = dp.parse_args(sys.argv[1:])
+
 
 def sel_mode(txtmode, autoval, rawval):
     if rawval:
@@ -37,6 +40,7 @@ def sel_mode(txtmode, autoval, rawval):
         return fc.MODE.OTA
     return fc.MODE.FULL
 
+
 def sel_cltp(txtmode, autoval, rawval):
     if rawval:
         enum = tcllib.default_enum("CLTP", {"RAW": rawval})
@@ -46,6 +50,7 @@ def sel_cltp(txtmode, autoval, rawval):
     elif txtmode == "desktop":
         return fc.CLTP.DESKTOP
     return fc.CLTP.MOBILE
+
 
 if args.imei:
     print("Use specified IMEI: {}".format(args.imei))
@@ -71,7 +76,7 @@ req_xml = fc.do_request(curef, fv, tv, fw_id)
 print(fc.pretty_xml(req_xml))
 fileid, fileurl, slaves, encslaves, s3_fileurl, s3_slaves = fc.parse_request(req_xml)
 
-if len(encslaves) > 0:
+if encslaves:
     chksum_xml = fc.do_checksum(random.choice(encslaves), fileurl, fileurl)
     print(fc.pretty_xml(chksum_xml))
     file_addr, sha1_body, sha1_enc_footer, sha1_footer = fc.parse_checksum(chksum_xml)

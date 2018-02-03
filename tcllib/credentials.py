@@ -2,6 +2,7 @@
 
 import base64
 
+
 class CredentialsMixin:
     @staticmethod
     def get_creds():

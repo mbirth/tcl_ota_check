@@ -2,28 +2,30 @@
 
 import time
 from collections import OrderedDict
+
 import requests
 from defusedxml import ElementTree
+
 
 class TclCheckMixin:
     def do_check(self, https=True, timeout=10, max_tries=5):
         protocol = "https://" if https else "http://"
         url = protocol + self.g2master + "/check.php"
         params = OrderedDict()
-        params["id"]    = self.serid
+        params["id"] = self.serid
         params["curef"] = self.curef
-        params["fv"]    = self.fv
-        params["mode"]  = self.mode.value
-        params["type"]  = self.ftype
-        params["cltp"]  = self.cltp.value
-        params["cktp"]  = self.cktp.value
-        params["rtd"]   = self.rtd.value
-        params["chnl"]  = self.chnl.value
-        #params["osvs"]  = self.osvs
-        #params["ckot"]  = self.ckot.value
+        params["fv"] = self.fvver
+        params["mode"] = self.mode.value
+        params["type"] = self.ftype
+        params["cltp"] = self.cltp.value
+        params["cktp"] = self.cktp.value
+        params["rtd"] = self.rtd.value
+        params["chnl"] = self.chnl.value
+        #params["osvs"] = self.osvs
+        #params["ckot"] = self.ckot.value
 
         last_response = None
-        for num_try in range(0, max_tries):
+        for _ in range(0, max_tries):
             try:
                 reqtime_start = time.perf_counter()
                 req = self.sess.get(url, params=params, timeout=timeout)
@@ -59,12 +61,12 @@ class TclCheckMixin:
     def parse_check(xmlstr):
         root = ElementTree.fromstring(xmlstr)
         curef = root.find("CUREF").text
-        fv = root.find("VERSION").find("FV").text
-        tv = root.find("VERSION").find("TV").text
+        fvver = root.find("VERSION").find("FV").text
+        tvver = root.find("VERSION").find("TV").text
         fw_id = root.find("FIRMWARE").find("FW_ID").text
         fileinfo = root.find("FIRMWARE").find("FILESET").find("FILE")
-        fileid   = fileinfo.find("FILE_ID").text
+        fileid = fileinfo.find("FILE_ID").text
         filename = fileinfo.find("FILENAME").text
         filesize = fileinfo.find("SIZE").text
         filehash = fileinfo.find("CHECKSUM").text
-        return curef, fv, tv, fw_id, fileid, filename, filesize, filehash
+        return curef, fvver, tvver, fw_id, fileid, filename, filesize, filehash

@@ -4,10 +4,12 @@
 # pylint: disable=C0111,C0326,C0103
 
 import json
+
 import requests
-import sys
-import tcllib
 from requests.exceptions import RequestException
+
+import tcllib
+
 
 # 1. Fetch list of missing OTAs (e.g. from ancient versions to current)
 # 2. Query updates from FOTA servers (and store XML)
@@ -15,9 +17,9 @@ from requests.exceptions import RequestException
 
 fc = tcllib.FotaCheck()
 fc.serid = "3531510"
-#fc.osvs  = "7.1.1"
+#fc.osvs = "7.1.1"
 fc.mode = fc.MODE.OTA
-fc.cltp  = fc.CLTP.MOBILE
+fc.cltp = fc.CLTP.MOBILE
 
 print("Loading list of missing OTAs.")
 versions_json = requests.get("https://tclota.birth-online.de/json_otaversions.php").text

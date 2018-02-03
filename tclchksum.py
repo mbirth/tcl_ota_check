@@ -3,11 +3,12 @@
 
 # pylint: disable=C0111,C0326,C0103
 
-import os
 import random
 import sys
+
 import tcllib
 import tcllib.argparser
+
 
 fc = tcllib.FotaCheck()
 
