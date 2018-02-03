@@ -1,0 +1,16 @@
+checks:
+  python:
+    code_rating: true
+    duplicate_code: true
+    classes_valid_slots: true
+
+build:
+  nodes:
+    tests: true
+    analysis:
+      tests:
+        override:
+          -
+            command: pylint-run
+            use_website_config: true
+          - py-scrutinizer-run
