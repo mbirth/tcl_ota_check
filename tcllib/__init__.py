@@ -9,7 +9,7 @@ import enum
 
 import requests
 
-from . import (credentials, devlist, dumpmgr, servervote, tclcheck,
+from . import (dumpmgr, servervote, tclcheck,
                tclchecksum, tclencheader, tclrequest, xmltools)
 
 
@@ -24,7 +24,6 @@ class FotaCheck(
         tclchecksum.TclChecksumMixin,
         tclencheader.TclEncHeaderMixin,
         servervote.ServerVoteMixin,
-        credentials.CredentialsMixin,
         dumpmgr.DumpMgrMixin
 ):
     """Main API handler class."""

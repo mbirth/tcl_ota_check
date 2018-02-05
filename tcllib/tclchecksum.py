@@ -8,14 +8,14 @@
 import json
 
 from defusedxml import ElementTree
-
+from . import credentials
 
 class TclChecksumMixin:
     """A mixin component for TCL's checksum API."""
     def do_checksum(self, encslave, address, uri):
         """Perform checksum request with given parameters."""
         url = "http://" + encslave + "/checksum.php"
-        params = self.get_creds2()
+        params = credentials.get_creds2()
 
         payload = {address: uri}
         payload_json = json.dumps(payload)

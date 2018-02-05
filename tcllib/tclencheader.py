@@ -5,12 +5,14 @@
 
 """Tools to interface with TCL's encrypted header API."""
 
+from . import credentials
+
 
 class TclEncHeaderMixin:
     """A mixin component for TCL's encrypted header API.."""
     def do_encrypt_header(self, encslave, address):
         """Perform encrypted header request with given parameters."""
-        params = self.get_creds2()
+        params = credentials.get_creds2()
         params[b"address"] = bytes(address, "utf-8")
         url = "http://" + encslave + "/encrypt_header.php"
         req = self.sess.post(url, data=params, verify=False)
