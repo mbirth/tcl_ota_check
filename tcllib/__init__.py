@@ -26,8 +26,7 @@ class FotaCheck(
         servervote.ServerVoteMixin,
         credentials.CredentialsMixin,
         devlist.DevListMixin,
-        dumpmgr.DumpMgrMixin,
-        xmltools.XmlToolsMixin
+        dumpmgr.DumpMgrMixin
 ):
     """Main API handler class."""
     VDKEY = b"eJwdjwEOwDAIAr8kKFr//7HhmqXp8AIIDrYAgg8byiUXrwRJRXja+d6iNxu0AhUooDCN9rd6rDLxmGIakUVWo3IGCTRWqCAt6X4jGEIUAxgN0eYWnp+LkpHQAg/PsO90ELsy0Npm/n2HbtPndFgGEV31R9OmT4O4nrddjc3Qt6nWscx7e+WRHq5UnOudtjw5skuV09pFhvmqnOEIs4ljPeel1wfLYUF4\n"

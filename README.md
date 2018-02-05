@@ -56,3 +56,56 @@ As you can see, our `PRD-63117-003` variant doesn't have the update yet, but oth
 You can use this info, to [install the update for a different variant](http://wiki.mbirth.de/know-how/hardware/blackberry-keyone/bb-keyone-ota-updates-for-different-variants.html).
 Just make sure to use a variant that has the same model number (`63117` = BBB100-2).
 
+
+What do those other scripts do?
+-------------------------------
+
+(All commands support the `--help` parameter to print out the expected syntax.)
+
+
+### tclcheck_allfull.py
+
+Checks for the latest FULL (i.e. complete firmwares to install manually) versions available for all
+different models and variants.
+
+
+### tclcheck_allota.py
+
+Checks for the latest OTA (i.e. partial updates for over-the-air installation) versions available
+for all different models and variants.
+
+
+### tclcheck_findprd.py
+
+Scans for not yet known variants of a model.
+
+
+### tclcheck_findprd2.py
+
+Scans for not yet known models.
+
+
+### tclcheck_findver.py
+
+Scans for not yet known firmware versions.
+
+
+### tclcheck_gapfill.py
+
+Queries the [database server](https://tclota.birth-online.de/) for known versions and tries to find
+OTA files not yet in the database.
+
+
+### tclcheck.py
+
+Universal tool to query TCL's servers in different ways to manually check for a specific update.
+
+
+### tclchksum.py
+
+Queries the checksum for a specific FULL file.
+
+
+### upload_logs.py
+
+Uploads all collected server answers to the [database server](https://tclota.birth-online.de/).

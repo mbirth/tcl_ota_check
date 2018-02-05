@@ -11,6 +11,7 @@ import sys
 
 import tcllib
 import tcllib.argparser
+from tcllib.xmltools import pretty_xml
 
 
 fc = tcllib.FotaCheck()
@@ -70,7 +71,7 @@ fv = fc.fv
 tv = args.targetversion[0]
 fw_id = args.fwid[0]
 req_xml = fc.do_request(fc.curef, fv, tv, fw_id)
-print(fc.pretty_xml(req_xml))
+print(pretty_xml(req_xml))
 fileid, fileurl, slaves, encslaves, s3_fileurl, s3_slaves = fc.parse_request(req_xml)
 
 for s in slaves:

@@ -11,6 +11,7 @@ import sys
 
 import tcllib
 import tcllib.argparser
+from tcllib.xmltools import pretty_xml
 
 
 fc = tcllib.FotaCheck()
@@ -73,16 +74,16 @@ print("Mode: {}".format(fc.mode.value))
 print("CLTP: {}".format(fc.cltp.value))
 
 check_xml = fc.do_check()
-print(fc.pretty_xml(check_xml))
+print(pretty_xml(check_xml))
 curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
 
 req_xml = fc.do_request(curef, fv, tv, fw_id)
-print(fc.pretty_xml(req_xml))
+print(pretty_xml(req_xml))
 fileid, fileurl, slaves, encslaves, s3_fileurl, s3_slaves = fc.parse_request(req_xml)
 
 if encslaves:
     chksum_xml = fc.do_checksum(random.choice(encslaves), fileurl, fileurl)
-    print(fc.pretty_xml(chksum_xml))
+    print(pretty_xml(chksum_xml))
     file_addr, sha1_body, sha1_enc_footer, sha1_footer = fc.parse_checksum(chksum_xml)
 
 for s in slaves:

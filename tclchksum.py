@@ -10,7 +10,7 @@ import sys
 
 import tcllib
 import tcllib.argparser
-
+from tcllib.xmltools import pretty_xml
 
 fc = tcllib.FotaCheck()
 
@@ -39,5 +39,5 @@ fileurl = args.uri
 #fileurl = "/body/ce570ddc079e2744558f191895e524d02a60476f/2c23717bb747f3c321195419f451de52efa8ea51/263790/268932"
 
 chksum_xml = fc.do_checksum(random.choice(encslaves), fileurl, fileurl)
-print(fc.pretty_xml(chksum_xml))
+print(pretty_xml(chksum_xml))
 file_addr, sha1_body, sha1_enc_footer, sha1_footer = fc.parse_checksum(chksum_xml)

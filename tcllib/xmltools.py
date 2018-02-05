@@ -8,10 +8,7 @@
 import xml.dom.minidom
 
 
-class XmlToolsMixin:
-    """A mixin component for XML tools."""
-    @staticmethod
-    def pretty_xml(xmlstr):
-        """Prettify input XML with ``xml.dom.minidom``."""
-        mdx = xml.dom.minidom.parseString(xmlstr)
-        return mdx.toprettyxml(indent="  ")
+def pretty_xml(xmlstr):
+    """Prettify input XML with ``xml.dom.minidom``."""
+    mdx = xml.dom.minidom.parseString(xmlstr)
+    return mdx.toprettyxml(indent="  ")
