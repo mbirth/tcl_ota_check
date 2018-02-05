@@ -19,20 +19,22 @@ DEVICELIST_FILE = "prds.json"
 DEVICELIST_CACHE_SECONDS = 86400
 
 
-def get_devicelist(force=False, output_diff=True):
-    """Return device list from saved database."""
+def load_local_devicelist():
+    """Load local devicelist and return decoded JSON (or None) and need_download status."""
     need_download = True
-
-    old_prds = None
     try:
         filestat = os.stat(DEVICELIST_FILE)
         filemtime = filestat.st_mtime
         if filemtime > time.time() - DEVICELIST_CACHE_SECONDS:
             need_download = False
         with open(DEVICELIST_FILE, "rt") as dlfile:
-            old_prds = json.load(dlfile)
+            return json.load(dlfile), need_download
     except FileNotFoundError:
-        pass
+        return None, True
+
+def get_devicelist(force=False, output_diff=True):
+    """Return device list from saved database."""
+    old_prds, need_download = load_local_devicelist()
 
     if need_download or force:
         prds_json = requests.get(DEVICELIST_URL).text
@@ -47,6 +49,21 @@ def get_devicelist(force=False, output_diff=True):
 
     return prds
 
+def print_versions_diff(old_data, new_data):
+    prd = new_data["curef"]
+    if new_data["last_full"] != old_data["last_full"] and new_data["last_ota"] != old_data["last_ota"]:
+        print("> {}: {} ⇨ {} (OTA: {} ⇨ {})".format(
+            prd,
+            ansi.CYAN_DARK + str(old_data["last_full"]) + ansi.RESET,
+            ansi.CYAN + str(new_data["last_full"]) + ansi.RESET,
+            ansi.YELLOW_DARK + str(old_data["last_ota"]) + ansi.RESET,
+            ansi.YELLOW + str(new_data["last_ota"]) + ansi.RESET
+        ))
+    elif new_data["last_full"] != old_data["last_full"]:
+        print("> {}: {} ⇨ {} (FULL)".format(prd, ansi.CYAN_DARK + str(old_data["last_full"]) + ansi.RESET, ansi.CYAN + str(new_data["last_full"]) + ansi.RESET))
+    elif new_data["last_ota"] != old_data["last_ota"]:
+        print("> {}: {} ⇨ {} (OTA)".format(prd, ansi.YELLOW_DARK + str(old_data["last_ota"]) + ansi.RESET, ansi.YELLOW + str(new_data["last_ota"]) + ansi.RESET))
+
 def print_prd_diff(old_prds, new_prds):
     """Print changes between old and new databases."""
     added_prds = [prd for prd in new_prds if prd not in old_prds]
@@ -59,15 +76,4 @@ def print_prd_diff(old_prds, new_prds):
         if prd in added_prds:
             continue
         odata = old_prds[prd]
-        if pdata["last_full"] != odata["last_full"] and pdata["last_ota"] != odata["last_ota"]:
-            print("> {}: {} ⇨ {} (OTA: {} ⇨ {})".format(
-                prd,
-                ansi.CYAN_DARK + str(odata["last_full"]) + ansi.RESET,
-                ansi.CYAN + str(pdata["last_full"]) + ansi.RESET,
-                ansi.YELLOW_DARK + str(odata["last_ota"]) + ansi.RESET,
-                ansi.YELLOW + str(pdata["last_ota"]) + ansi.RESET
-            ))
-        elif pdata["last_full"] != odata["last_full"]:
-            print("> {}: {} ⇨ {} (FULL)".format(prd, ansi.CYAN_DARK + str(odata["last_full"]) + ansi.RESET, ansi.CYAN + str(pdata["last_full"]) + ansi.RESET))
-        elif pdata["last_ota"] != odata["last_ota"]:
-            print("> {}: {} ⇨ {} (OTA)".format(prd, ansi.YELLOW_DARK + str(odata["last_ota"]) + ansi.RESET, ansi.YELLOW + str(pdata["last_ota"]) + ansi.RESET))
+        print_versions_diff(odata, pdata)
