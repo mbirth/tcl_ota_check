@@ -1,3 +1,7 @@
+filter:
+  dependency_paths:
+    - site/
+
 checks:
   python:
     code_rating: true
