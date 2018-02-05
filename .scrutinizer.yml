@@ -1,6 +1,6 @@
 filter:
   dependency_paths:
-    - site/
+    - lib/
 
 checks:
   python:
