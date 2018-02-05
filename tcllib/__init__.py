@@ -10,7 +10,7 @@ import enum
 import requests
 
 from . import (dumpmgr, servervote, tclcheck,
-               tclchecksum, tclencheader, tclrequest, xmltools)
+               tclchecksum, tclencheader, tclrequest)
 
 
 def default_enum(enumname, vardict, qualroot="tcllib.FotaCheck"):

@@ -14,22 +14,36 @@ from defusedxml import ElementTree
 
 class TclCheckMixin:
     """A mixin component for TCL's update request API."""
-    def do_check(self, https=True, timeout=10, max_tries=5):
+    def do_check(self, device=None, https=True, timeout=10, max_tries=5):
         """Perform update request with given parameters."""
         protocol = "https://" if https else "http://"
         url = protocol + self.g2master + "/check.php"
         params = OrderedDict()
-        params["id"] = self.serid
-        params["curef"] = self.curef
-        params["fv"] = self.fv
-        params["mode"] = self.mode.value
-        params["type"] = self.ftype
-        params["cltp"] = self.cltp.value
-        params["cktp"] = self.cktp.value
-        params["rtd"] = self.rtd.value
-        params["chnl"] = self.chnl.value
-        #params["osvs"] = self.osvs
-        #params["ckot"] = self.ckot.value
+        if device:
+            # Need to support both ways for now
+            params["id"] = device.imei
+            params["curef"] = device.curef
+            params["fv"] = device.fwver
+            params["mode"] = device.mode
+            params["type"] = device.type
+            params["cltp"] = device.cltp
+            params["cktp"] = device.cktp
+            params["rtd"] = device.rtd
+            params["chnl"] = device.chnl
+            #params["osvs"] = device.osvs
+            #params["ckot"] = device.ckot
+        else:
+            params["id"] = self.serid
+            params["curef"] = self.curef
+            params["fv"] = self.fv
+            params["mode"] = self.mode.value
+            params["type"] = self.ftype
+            params["cltp"] = self.cltp.value
+            params["cktp"] = self.cktp.value
+            params["rtd"] = self.rtd.value
+            params["chnl"] = self.chnl.value
+            #params["osvs"] = self.osvs
+            #params["ckot"] = self.ckot.value
 
         last_response = None
         for _ in range(0, max_tries):

@@ -13,12 +13,13 @@ import tcllib
 import tcllib.argparser
 from tcllib import ansi
 from tcllib import devlist
+from tcllib.devices import DesktopDevice
 
+
+dev = DesktopDevice()
 
 fc = tcllib.FotaCheck()
-fc.serid = "3531510"
-fc.fv = "AAA000"
-fc.mode = fc.MODE.FULL
+fc.mode = fc.MODE.FULL   # still needed to set User-Agent
 
 dpdesc = """
     Checks for the latest FULL updates for all PRD numbers or only for
@@ -27,10 +28,6 @@ dpdesc = """
 dp = tcllib.argparser.DefaultParser(__file__, dpdesc)
 dp.add_argument("-p", "--prd", help="CU Reference # to filter scan results", dest="tocheck", nargs="?", default=None, metavar="PRD")
 args = dp.parse_args(sys.argv[1:])
-
-# CLTP = 10 (only show actual updates or HTTP 206) / 2010 (always show latest version for MODE.FULL)
-#fc.cltp = fc.CLTP.MOBILE
-fc.cltp = fc.CLTP.DESKTOP
 
 prdcheck = "" if args.tocheck is None else args.tocheck
 
@@ -45,8 +42,8 @@ for prd, variant in prds.items():
     if prdcheck in prd:
         try:
             fc.reset_session()
-            fc.curef = prd
-            check_xml = fc.do_check(max_tries=20)
+            dev.curef = prd
+            check_xml = fc.do_check(dev, max_tries=20)
             curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
             txt_tv = tv
             if tv != lastver:
