@@ -8,6 +8,9 @@
 import errno
 import glob
 import os
+import random
+import time
+from math import floor
 
 from . import ansi
 
@@ -18,9 +21,16 @@ class DumpMgrMixin:
         """Populate dump file name."""
         self.last_dump_filename = None
 
+    @staticmethod
+    def get_timestamp_random():
+        """Generate timestamp + random part to avoid collisions."""
+        millis = floor(time.time() * 1000)
+        tail = "{:06d}".format(random.randint(0, 999999))
+        return "{}_{}".format(str(millis), tail)
+
     def write_dump(self, data):
         """Write dump to file."""
-        outfile = os.path.normpath("logs/{}.xml".format(self.get_salt()))
+        outfile = os.path.normpath("logs/{}.xml".format(self.get_timestamp_random()))
         if not os.path.exists(os.path.dirname(outfile)):
             try:
                 os.makedirs(os.path.dirname(outfile))

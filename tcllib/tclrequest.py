@@ -38,44 +38,45 @@ from defusedxml import ElementTree
     }
 '''
 
+VDKEY_B64Z = b"eJwdjwEOwDAIAr8kKFr//7HhmqXp8AIIDrYAgg8byiUXrwRJRXja+d6iNxu0AhUooDCN9rd6rDLxmGIakUVWo3IGCTRWqCAt6X4jGEIUAxgN0eYWnp+LkpHQAg/PsO90ELsy0Npm/n2HbtPndFgGEV31R9OmT4O4nrddjc3Qt6nWscx7e+WRHq5UnOudtjw5skuV09pFhvmqnOEIs4ljPeel1wfLYUF4\n"
+
+def get_salt():
+    """Generate cryptographic salt."""
+    millis = floor(time.time() * 1000)
+    tail = "{:06d}".format(random.randint(0, 999999))
+    return "{}{}".format(str(millis), tail)
+
+def get_vk2(params_dict, cltp):
+    """Generate salted hash of API parameters."""
+    params_dict["cltp"] = cltp
+    query = ""
+    for key, val in params_dict.items():
+        if query:
+            query += "&"
+        query += key + "=" + str(val)
+    vdk = zlib.decompress(binascii.a2b_base64(VDKEY_B64Z))
+    query += vdk.decode("utf-8")
+    engine = hashlib.sha1()
+    engine.update(bytes(query, "utf-8"))
+    hexhash = engine.hexdigest()
+    return hexhash
 
 class TclRequestMixin:
     """A mixin component for TCL's download request API."""
-    @staticmethod
-    def get_salt():
-        """Generate cryptographic salt."""
-        millis = floor(time.time() * 1000)
-        tail = "{:06d}".format(random.randint(0, 999999))
-        return "{}{}".format(str(millis), tail)
-
-    def get_vk2(self, params_dict, cltp):
-        """Generate salted hash of API parameters."""
-        params_dict["cltp"] = cltp
-        query = ""
-        for key, val in params_dict.items():
-            if query:
-                query += "&"
-            query += key + "=" + str(val)
-        vdk = zlib.decompress(binascii.a2b_base64(self.VDKEY))
-        query += vdk.decode("utf-8")
-        engine = hashlib.sha1()
-        engine.update(bytes(query, "utf-8"))
-        hexhash = engine.hexdigest()
-        return hexhash
 
     def do_request(self, curef, fvver, tvver, fw_id):
         """Perform download request with given parameters."""
         url = "https://" + self.g2master + "/download_request.php"
         params = OrderedDict()
         params["id"] = self.serid
-        params["salt"] = self.get_salt()
+        params["salt"] = get_salt()
         params["curef"] = curef
         params["fv"] = fvver
         params["tv"] = tvver
         params["type"] = self.ftype
         params["fw_id"] = fw_id
         params["mode"] = self.mode.value
-        params["vk"] = self.get_vk2(params, self.cltp.value)
+        params["vk"] = get_vk2(params, self.cltp.value)
         params["cltp"] = self.cltp.value
         params["cktp"] = self.cktp.value
         params["rtd"] = self.rtd.value
