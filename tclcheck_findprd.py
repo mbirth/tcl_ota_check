@@ -13,6 +13,7 @@ from requests.exceptions import RequestException, Timeout
 import tcllib
 import tcllib.argparser
 from tcllib import ansi
+from tcllib import devlist
 
 
 fc = tcllib.FotaCheck()
@@ -41,7 +42,7 @@ if ceiling < floor:
     raise SystemExit
 
 print("Loading list of devices...", end="", flush=True)
-prd_db = tcllib.FotaCheck.get_devicelist()
+prd_db = devlist.get_devicelist()
 print(" OK")
 
 print("Valid PRDs not already in database:")

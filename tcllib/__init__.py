@@ -25,7 +25,6 @@ class FotaCheck(
         tclencheader.TclEncHeaderMixin,
         servervote.ServerVoteMixin,
         credentials.CredentialsMixin,
-        devlist.DevListMixin,
         dumpmgr.DumpMgrMixin
 ):
     """Main API handler class."""

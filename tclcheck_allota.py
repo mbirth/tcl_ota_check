@@ -12,6 +12,7 @@ from requests.exceptions import RequestException
 import tcllib
 import tcllib.argparser
 from tcllib import ansi
+from tcllib import devlist
 
 
 fc = tcllib.FotaCheck()
@@ -37,7 +38,7 @@ else:
 prdcheck = "" if args.tocheck is None else args.tocheck
 
 print("Loading list of devices.")
-prds = tcllib.FotaCheck.get_devicelist()
+prds = devlist.get_devicelist()
 
 print("List of latest OTA firmware{} by PRD:".format(force_ver_text))
 
