@@ -14,8 +14,8 @@ from defusedxml import ElementTree
 
 class TclCheckMixin:
     """A mixin component for TCL's update request API."""
-    def do_check(self, device=None, https=True, timeout=10, max_tries=5):
-        """Perform update request with given parameters."""
+    def prep_check(self, device=None, https=True):
+        """Prepare URL and parameters for update request."""
         protocol = "https://" if https else "http://"
         url = protocol + self.g2master + "/check.php"
         params = OrderedDict()
@@ -44,7 +44,11 @@ class TclCheckMixin:
             params["chnl"] = self.chnl.value
             #params["osvs"] = self.osvs
             #params["ckot"] = self.ckot.value
+        return url, params
 
+    def do_check(self, device=None, https=True, timeout=10, max_tries=5):
+        """Perform update request with given parameters."""
+        url, params = self.prep_check(device, https)
         last_response = None
         for _ in range(0, max_tries):
             try:
