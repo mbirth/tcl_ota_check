@@ -9,8 +9,8 @@ import enum
 
 import requests
 
-from . import (dumpmgr, servervote, tclcheck,
-               tclchecksum, tclencheader, tclrequest)
+from . import (dumpmgr, servervote, tclcheck, tclchecksum, tclencheader,
+               tclrequest)
 
 
 def default_enum(enumname, vardict, qualroot="tcllib.FotaCheck"):

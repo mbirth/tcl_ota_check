@@ -8,7 +8,9 @@
 import json
 
 from defusedxml import ElementTree
+
 from . import credentials
+
 
 class TclChecksumMixin:
     """A mixin component for TCL's checksum API."""

@@ -12,8 +12,7 @@ from requests.exceptions import RequestException, Timeout
 
 import tcllib
 import tcllib.argparser
-from tcllib import ansi
-from tcllib import devlist
+from tcllib import ansi, devlist
 
 
 fc = tcllib.FotaCheck()
