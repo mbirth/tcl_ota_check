@@ -2,6 +2,7 @@
 
 """Pseudo-devices for desktop/mobile requests"""
 
+
 class Device():
     """Generic pseudo-device class."""
     CLTP_STATES = {
@@ -60,18 +61,24 @@ class Device():
         # Throws exception when invalid mode given:
         self.ckot = self.CKOT_STATES[new_ckot]
 
+
 class MobileDevice(Device):
     """Generic mobile (i.e. OTA) device."""
+
     def __init__(self, curef="PRD-63117-011", fwver="AAO472"):
+        """Populate variables."""
         super().__init__(curef, fwver)
         self.imei = "3531510"
         self.set_cltp("MOBILE")
         self.set_mode("OTA")
         self.ua = "com.tcl.fota/5.1.0.2.0029.0, Android"
 
+
 class DesktopDevice(Device):
     """Generic desktop (i.e. full) device."""
+
     def __init__(self, curef="PRD-63117-011", fwver="AAA000"):
+        """Populate variables."""
         super().__init__(curef, fwver)
         self.imei = "543212345000000"
         self.set_cltp("DESKTOP")

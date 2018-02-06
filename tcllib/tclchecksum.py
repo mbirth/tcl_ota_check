@@ -14,6 +14,7 @@ from . import credentials
 
 class TclChecksumMixin:
     """A mixin component for TCL's checksum API."""
+
     def do_checksum(self, encslave, address, uri):
         """Perform checksum request with given parameters."""
         url = "http://" + encslave + "/checksum.php"

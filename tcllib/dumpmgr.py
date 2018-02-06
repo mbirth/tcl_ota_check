@@ -17,6 +17,7 @@ from . import ansi
 
 class DumpMgrMixin:
     """A mixin component for XML dump management."""
+
     def __init__(self):
         """Populate dump file name."""
         self.last_dump_filename = None

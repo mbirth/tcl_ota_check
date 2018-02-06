@@ -17,6 +17,7 @@ def get_creds():
     params = {base64.b64decode(key): base64.b64decode(val) for key, val in creds.items()}
     return params
 
+
 def get_creds2():
     """Return alternate authentication."""
     creds = {

@@ -11,6 +11,7 @@ import webbrowser
 
 class DefaultParser(argparse.ArgumentParser):
     """argparse parser with some defaults set."""
+
     def __init__(self, appname, desc=None):
         """Set default name, description, epilogue, arguments."""
         homeurl = "https://github.com/mbirth/tcl_ota_check"

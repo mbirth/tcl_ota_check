@@ -10,6 +10,7 @@ from . import credentials
 
 class TclEncHeaderMixin:
     """A mixin component for TCL's encrypted header API.."""
+
     def do_encrypt_header(self, encslave, address):
         """Perform encrypted header request with given parameters."""
         params = credentials.get_creds2()

@@ -32,6 +32,7 @@ def load_local_devicelist():
     except FileNotFoundError:
         return None, True
 
+
 def get_devicelist(force=False, output_diff=True):
     """Return device list from saved database."""
     old_prds, need_download = load_local_devicelist()
@@ -49,7 +50,9 @@ def get_devicelist(force=False, output_diff=True):
 
     return prds
 
+
 def print_versions_diff(old_data, new_data):
+    """Print version changes between old and new databases."""
     prd = new_data["curef"]
     if new_data["last_full"] != old_data["last_full"] and new_data["last_ota"] != old_data["last_ota"]:
         print("> {}: {} ⇨ {} (OTA: {} ⇨ {})".format(
@@ -64,8 +67,9 @@ def print_versions_diff(old_data, new_data):
     elif new_data["last_ota"] != old_data["last_ota"]:
         print("> {}: {} ⇨ {} (OTA)".format(prd, ansi.YELLOW_DARK + str(old_data["last_ota"]) + ansi.RESET, ansi.YELLOW + str(new_data["last_ota"]) + ansi.RESET))
 
+
 def print_prd_diff(old_prds, new_prds):
-    """Print changes between old and new databases."""
+    """Print PRD changes between old and new databases."""
     added_prds = [prd for prd in new_prds if prd not in old_prds]
     removed_prds = [prd for prd in old_prds if prd not in new_prds]
     for prd in removed_prds:

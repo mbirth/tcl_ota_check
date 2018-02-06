@@ -40,11 +40,13 @@ from defusedxml import ElementTree
 
 VDKEY_B64Z = b"eJwdjwEOwDAIAr8kKFr//7HhmqXp8AIIDrYAgg8byiUXrwRJRXja+d6iNxu0AhUooDCN9rd6rDLxmGIakUVWo3IGCTRWqCAt6X4jGEIUAxgN0eYWnp+LkpHQAg/PsO90ELsy0Npm/n2HbtPndFgGEV31R9OmT4O4nrddjc3Qt6nWscx7e+WRHq5UnOudtjw5skuV09pFhvmqnOEIs4ljPeel1wfLYUF4\n"
 
+
 def get_salt():
     """Generate cryptographic salt."""
     millis = floor(time.time() * 1000)
     tail = "{:06d}".format(random.randint(0, 999999))
     return "{}{}".format(str(millis), tail)
+
 
 def get_vk2(params_dict, cltp):
     """Generate salted hash of API parameters."""
@@ -61,11 +63,12 @@ def get_vk2(params_dict, cltp):
     hexhash = engine.hexdigest()
     return hexhash
 
+
 class TclRequestMixin:
     """A mixin component for TCL's download request API."""
 
-    def do_request(self, curef, fvver, tvver, fw_id):
-        """Perform download request with given parameters."""
+    def prep_request(self, curef, fvver, tvver, fw_id):
+        """Prepare URL and device parameters for download request."""
         url = "https://" + self.g2master + "/download_request.php"
         params = OrderedDict()
         params["id"] = self.serid
@@ -83,7 +86,11 @@ class TclRequestMixin:
         if self.mode == self.MODE.FULL:
             params["foot"] = 1
         params["chnl"] = self.chnl.value
+        return url, params
 
+    def do_request(self, curef, fvver, tvver, fw_id):
+        """Perform download request with given parameters."""
+        url, params = self.prep_request(curef, fvver, tvver, fw_id)
         # print(repr(dict(params)))
         req = self.sess.post(url, data=params)
         if req.status_code == 200:

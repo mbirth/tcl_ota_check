@@ -10,6 +10,7 @@ import numpy
 
 class ServerVoteMixin:
     """A mixin component for server sorting."""
+
     def __init__(self):
         """Populate server list and weighting variables."""
         self.g2master = None
