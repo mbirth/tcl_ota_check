@@ -11,6 +11,8 @@ from collections import OrderedDict, defaultdict
 import requests
 from defusedxml import ElementTree
 
+from .devices import Device
+
 
 class TclCheckMixin:
     """A mixin component for TCL's update request API."""
@@ -21,38 +23,24 @@ class TclCheckMixin:
         url = protocol + self.g2master + "/check.php"
         return url
 
-    def prep_check(self, device=None, https=True):
+    def prep_check(self, device: Device, https=True):
         """Prepare URL and parameters for update request."""
         url = self.prep_check_url(https)
         params = OrderedDict()
-        if device:
-            # Need to support both ways for now
-            params["id"] = device.imei
-            params["curef"] = device.curef
-            params["fv"] = device.fwver
-            params["mode"] = device.mode
-            params["type"] = device.type
-            params["cltp"] = device.cltp
-            params["cktp"] = device.cktp
-            params["rtd"] = device.rtd
-            params["chnl"] = device.chnl
-            #params["osvs"] = device.osvs
-            #params["ckot"] = device.ckot
-        else:
-            params["id"] = self.serid
-            params["curef"] = self.curef
-            params["fv"] = self.fv
-            params["mode"] = self.mode.value
-            params["type"] = self.ftype
-            params["cltp"] = self.cltp.value
-            params["cktp"] = self.cktp.value
-            params["rtd"] = self.rtd.value
-            params["chnl"] = self.chnl.value
-            #params["osvs"] = self.osvs
-            #params["ckot"] = self.ckot.value
+        params["id"] = device.imei
+        params["curef"] = device.curef
+        params["fv"] = device.fwver
+        params["mode"] = device.mode
+        params["type"] = device.type
+        params["cltp"] = device.cltp
+        params["cktp"] = device.cktp
+        params["rtd"] = device.rtd
+        params["chnl"] = device.chnl
+        #params["osvs"] = device.osvs
+        #params["ckot"] = device.ckot
         return url, params
 
-    def do_check(self, device=None, https=True, timeout=10, max_tries=5):
+    def do_check(self, device: Device, https=True, timeout=10, max_tries=5):
         """Perform update request with given parameters."""
         url, params = self.prep_check(device, https)
         last_response = None

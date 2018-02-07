@@ -12,11 +12,11 @@ from requests.exceptions import RequestException, Timeout
 import tcllib
 import tcllib.argparser
 from tcllib import ansi
+from tcllib.devices import DesktopDevice, MobileDevice
 
 
+dev = MobileDevice()
 fc = tcllib.FotaCheck()
-fc.serid = "3531510"
-fc.mode = fc.MODE.OTA
 
 dpdesc = """
     Finds all valid OTA updates for a given PRD. Scan range can be set by
@@ -60,9 +60,9 @@ for fv in allvers:
     print("Checking {} ({}/{})".format(fv, done_count, total_count))
     print(ansi.UP_DEL, end="")
     try:
-        fc.reset_session()
-        fc.fv = fv
-        check_xml = fc.do_check(https=False, max_tries=20)
+        dev.fwver = fv
+        fc.reset_session(dev)
+        check_xml = fc.do_check(dev, https=False, max_tries=20)
         curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
         txt_tv = tv
         print("{}: {} ⇨ {} {}".format(curef, fv, txt_tv, fhash))

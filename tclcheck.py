@@ -11,12 +11,11 @@ import sys
 
 import tcllib
 import tcllib.argparser
+from tcllib.devices import Device
 from tcllib.xmltools import pretty_xml
 
 
 fc = tcllib.FotaCheck()
-fc.serid = "3531510"
-#fc.osvs = "7.1.1"
 
 dpdesc = """
     Checks for the latest FULL updates for the specified PRD number or for an OTA from the
@@ -32,48 +31,45 @@ dp.add_argument("--rawmode", help="override --mode with raw value (2=OTA, 4=FULL
 dp.add_argument("--rawcltp", help="override --type with raw value (10=MOBILE, 2010=DESKTOP)", metavar="CLTP")
 args = dp.parse_args(sys.argv[1:])
 
+dev = Device(args.prd[0], args.fvver)
+dev.imei = "3531510"
 
 def sel_mode(txtmode, autoval, rawval):
     """Handle custom mode."""
     if rawval:
-        enum = tcllib.default_enum("MODE", {"RAW": rawval})
-        return enum.RAW
+        return rawval
     if txtmode == "auto":
         return autoval
     elif txtmode == "ota":
-        return fc.MODE.OTA
-    return fc.MODE.FULL
-
+        return dev.MODE_STATES["OTA"]
+    return dev.MODE_STATES["FULL"]
 
 def sel_cltp(txtmode, autoval, rawval):
     """Handle custom CLTP."""
     if rawval:
-        enum = tcllib.default_enum("CLTP", {"RAW": rawval})
-        return enum.RAW
+        return rawval
     if txtmode == "auto":
         return autoval
     elif txtmode == "desktop":
-        return fc.CLTP.DESKTOP
-    return fc.CLTP.MOBILE
-
+        return dev.CLTP_STATES["DESKTOP"]
+    return dev.CLTP_STATES["MOBILE"]
 
 if args.imei:
     print("Use specified IMEI: {}".format(args.imei))
-    fc.serid = args.imei
+    dev.imei = args.imei
 
-fc.curef = args.prd[0]
-fc.fv = args.fvver
 if args.fvver == "AAA000":
-    fc.mode = sel_mode(args.mode, fc.MODE.FULL, args.rawmode)
-    fc.cltp = sel_cltp(args.type, fc.CLTP.DESKTOP, args.rawcltp)
+    dev.mode = sel_mode(args.mode, dev.MODE_STATES["FULL"], args.rawmode)
+    dev.cltp = sel_cltp(args.type, dev.CLTP_STATES["DESKTOP"], args.rawcltp)
 else:
-    fc.mode = sel_mode(args.mode, fc.MODE.OTA, args.rawmode)
-    fc.cltp = sel_cltp(args.type, fc.CLTP.MOBILE, args.rawcltp)
+    dev.mode = sel_mode(args.mode, dev.MODE_STATES["OTA"], args.rawmode)
+    dev.cltp = sel_cltp(args.type, dev.CLTP_STATES["MOBILE"], args.rawcltp)
 
-print("Mode: {}".format(fc.mode.value))
-print("CLTP: {}".format(fc.cltp.value))
+print("Mode: {}".format(dev.mode))
+print("CLTP: {}".format(dev.cltp))
 
-check_xml = fc.do_check()
+fc.reset_session(dev)
+check_xml = fc.do_check(dev)
 print(pretty_xml(check_xml))
 curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
 
@@ -92,7 +88,7 @@ for s in slaves:
 for s in s3_slaves:
     print("http://{}{}".format(s, s3_fileurl))
 
-if fc.mode == fc.MODE.FULL:
+if dev.mode == dev.MODE_STATES["FULL"]:
     header = fc.do_encrypt_header(random.choice(encslaves), fileurl)
     headname = "header_{}.bin".format(tv)
     headdir = "headers"

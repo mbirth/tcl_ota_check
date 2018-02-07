@@ -11,17 +11,15 @@ import requests
 from requests.exceptions import RequestException
 
 import tcllib
+from tcllib.devices import DesktopDevice, MobileDevice
 
 
 # 1. Fetch list of missing OTAs (e.g. from ancient versions to current)
 # 2. Query updates from FOTA servers (and store XML)
 # (3. Upload will be done manually with upload_logs.py)
 
+dev = MobileDevice()
 fc = tcllib.FotaCheck()
-fc.serid = "3531510"
-#fc.osvs = "7.1.1"
-fc.mode = fc.MODE.OTA
-fc.cltp = fc.CLTP.MOBILE
 
 print("Loading list of missing OTAs.")
 versions_json = requests.get("https://tclota.birth-online.de/json_otaversions.php").text
@@ -38,10 +36,10 @@ for prd, data in versions.items():
     for ver in data["missing_froms"]:
         print(" {}".format(ver), end="", flush=True)
         try:
-            fc.reset_session()
-            fc.curef = prd
-            fc.fv = ver
-            check_xml = fc.do_check(max_tries=20)
+            dev.curef = prd
+            dev.fwver = ver
+            fc.reset_session(dev)
+            check_xml = fc.do_check(dev, max_tries=20)
             curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
             print("✔", end="", flush=True)
         except RequestException as e:

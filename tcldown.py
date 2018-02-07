@@ -11,12 +11,12 @@ import sys
 
 import tcllib
 import tcllib.argparser
+from tcllib.devices import DesktopDevice
 from tcllib.xmltools import pretty_xml
 
 
 fc = tcllib.FotaCheck()
-fc.serid = "3531510"
-#fc.osvs = "7.1.1"
+dev = DesktopDevice()
 
 dpdesc = """
     Downloads the given firmware file.
@@ -36,41 +36,39 @@ args = dp.parse_args(sys.argv[1:])
 def sel_mode(defaultmode, rawval):
     """Handle custom mode."""
     if rawval:
-        enum = tcllib.default_enum("MODE", {"RAW": rawval})
-        return enum.RAW
+        return rawval
     return defaultmode
 
 
 def sel_cltp(txtmode, rawval):
     """Handle custom CLTP."""
     if rawval:
-        enum = tcllib.default_enum("CLTP", {"RAW": rawval})
-        return enum.RAW
+        return rawval
     if txtmode == "mobile":
-        return fc.CLTP.MOBILE
-    return fc.CLTP.DESKTOP
+        return dev.CLTP_STATES["MOBILE"]
+    return dev.CLTP_STATES["DESKTOP"]
 
 
 if args.imei:
     print("Use specified IMEI: {}".format(args.imei))
-    fc.serid = args.imei
+    dev.imei = args.imei
 
-fc.curef = args.prd[0]
+dev.curef = args.prd[0]
 if args.ota:
-    fc.fv = args.ota[0]
-    fc.mode = sel_mode(fc.MODE.OTA, args.rawmode)
+    dev.fwver = args.ota[0]
+    dev.mode = sel_mode(dev.MODE_STATES["OTA"], args.rawmode)
 else:
-    fc.fv = args.targetversion[0]
-    fc.mode = sel_mode(fc.MODE.FULL, args.rawmode)
-fc.cltp = sel_cltp(args.type, args.rawcltp)
+    dev.fwver = args.targetversion[0]
+    dev.mode = sel_mode(dev.MODE_STATES["FULL"], args.rawmode)
+dev.cltp = sel_cltp(args.type, args.rawcltp)
 
-print("Mode: {}".format(fc.mode.value))
-print("CLTP: {}".format(fc.cltp.value))
+print("Mode: {}".format(dev.mode))
+print("CLTP: {}".format(dev.cltp))
 
-fv = fc.fv
+fv = dev.fwver
 tv = args.targetversion[0]
 fw_id = args.fwid[0]
-req_xml = fc.do_request(fc.curef, fv, tv, fw_id)
+req_xml = fc.do_request(dev.curef, fv, tv, fw_id)
 print(pretty_xml(req_xml))
 fileid, fileurl, slaves, encslaves, s3_fileurl, s3_slaves = fc.parse_request(req_xml)
 
@@ -80,7 +78,7 @@ for s in slaves:
 for s in s3_slaves:
     print("http://{}{}".format(s, s3_fileurl))
 
-if fc.mode == fc.MODE.FULL:
+if dev.mode == dev.MODE_STATES["FULL"]:
     header = fc.do_encrypt_header(random.choice(encslaves), fileurl)
     headname = "header_{}.bin".format(tv)
     headdir = "headers"

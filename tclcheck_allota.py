@@ -16,9 +16,7 @@ from tcllib.devices import MobileDevice
 
 
 dev = MobileDevice()
-
 fc = tcllib.FotaCheck()
-fc.mode = fc.MODE.OTA   # still needed to set User-Agent
 
 dpdesc = """
     Checks for the latest OTA updates for all PRD numbers or only for the PRD specified
@@ -49,9 +47,9 @@ for prd, variant in prds.items():
         lastver = args.forcever
     if prdcheck in prd:
         try:
-            fc.reset_session()
             dev.curef = prd
             dev.fwver = lastver
+            fc.reset_session(dev)
             check_xml = fc.do_check(dev, max_tries=20)
             curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
             versioninfo = ansi.YELLOW_DARK + fv + ansi.RESET + " ⇨ " + ansi.YELLOW + tv + ansi.RESET + " (FULL: {})".format(variant["last_full"])

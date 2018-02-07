@@ -16,9 +16,7 @@ from tcllib.devices import DesktopDevice
 
 
 dev = DesktopDevice()
-
 fc = tcllib.FotaCheck()
-fc.mode = fc.MODE.FULL   # still needed to set User-Agent
 
 dpdesc = """
     Checks for the latest FULL updates for all PRD numbers or only for
@@ -40,8 +38,8 @@ for prd, variant in prds.items():
     lastver = variant["last_full"]
     if prdcheck in prd:
         try:
-            fc.reset_session()
             dev.curef = prd
+            fc.reset_session(dev)
             check_xml = fc.do_check(dev, max_tries=20)
             curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
             txt_tv = tv

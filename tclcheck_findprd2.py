@@ -12,19 +12,14 @@ from requests.exceptions import RequestException, Timeout
 import tcllib
 import tcllib.argparser
 from tcllib import ansi, devlist
+from tcllib.devices import DesktopDevice, MobileDevice
 
 
 # Variants to scan for
 SCAN_VARIANTS = ["001", "003", "009", "010", "700"]
 
+dev = DesktopDevice()
 fc = tcllib.FotaCheck()
-fc.serid = "3531510"
-fc.fv = "AAA000"
-fc.mode = fc.MODE.FULL
-
-# CLTP = 10 (only show actual updates or HTTP 206) / 2010 (always show latest version for MODE.FULL)
-#fc.cltp = fc.CLTP.MOBILE
-fc.cltp = fc.CLTP.DESKTOP
 
 dpdesc = """
     Finds new PRD numbers for a range of variants. Scan range can be set by
@@ -61,9 +56,9 @@ for center in to_scan:
         print("Checking {} ({}/{})".format(curef, done_count, total_count))
         print(ansi.UP_DEL, end="")
         try:
-            fc.reset_session()
-            fc.curef = curef
-            check_xml = fc.do_check(https=False, max_tries=20)
+            dev.curef = curef
+            fc.reset_session(dev)
+            check_xml = fc.do_check(dev, https=False, max_tries=20)
             curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
             txt_tv = tv
             print("{}: {} {}".format(curef, txt_tv, fhash))
