@@ -12,13 +12,13 @@ from requests.exceptions import RequestException
 import tcllib
 import tcllib.argparser
 from tcllib import ansi, devlist
+from tcllib.devices import MobileDevice
 
+
+dev = MobileDevice()
 
 fc = tcllib.FotaCheck()
-fc.serid = "3531510"
-#fc.osvs = "7.1.1"
-fc.mode = fc.MODE.OTA
-fc.cltp = fc.CLTP.MOBILE
+fc.mode = fc.MODE.OTA   # still needed to set User-Agent
 
 dpdesc = """
     Checks for the latest OTA updates for all PRD numbers or only for the PRD specified
@@ -50,9 +50,9 @@ for prd, variant in prds.items():
     if prdcheck in prd:
         try:
             fc.reset_session()
-            fc.curef = prd
-            fc.fv = lastver
-            check_xml = fc.do_check(max_tries=20)
+            dev.curef = prd
+            dev.fwver = lastver
+            check_xml = fc.do_check(dev, max_tries=20)
             curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
             versioninfo = ansi.YELLOW_DARK + fv + ansi.RESET + " ⇨ " + ansi.YELLOW + tv + ansi.RESET + " (FULL: {})".format(variant["last_full"])
             print("{}: {} {} ({})".format(prd, versioninfo, fhash, model))
