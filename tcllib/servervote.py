@@ -57,8 +57,9 @@ class ServerVoteMixin:
         """Return average connection time."""
         return self.check_time_sum / self.check_time_count
 
-    def master_server_vote_on_time(self, last_duration, avg_duration):
+    def master_server_vote_on_time(self, last_duration):
         """Change weight of a server based on average connection time."""
+        avg_duration = self.check_time_avg()
         if last_duration < avg_duration - 0.5:
             self.master_server_upvote()
         elif last_duration > avg_duration + 0.5:
