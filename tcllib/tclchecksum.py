@@ -15,15 +15,19 @@ from . import credentials
 class TclChecksumMixin:
     """A mixin component for TCL's checksum API."""
 
-    def do_checksum(self, encslave, address, uri):
-        """Perform checksum request with given parameters."""
+    @staticmethod
+    def prep_checksum(encslave, address, uri):
+        """Prepare URL and parameters for checksum request."""
         url = "http://" + encslave + "/checksum.php"
         params = credentials.get_creds2()
-
         payload = {address: uri}
         payload_json = json.dumps(payload)
         params[b"address"] = bytes(payload_json, "utf-8")
+        return url, params
 
+    def do_checksum(self, encslave, address, uri):
+        """Perform checksum request with given parameters."""
+        url, params = self.prep_checksum(encslave, address, uri)
         # print(repr(dict(params)))
         req = self.sess.post(url, data=params)
         if req.status_code == 200:
