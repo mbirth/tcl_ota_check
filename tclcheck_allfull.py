@@ -7,8 +7,6 @@
 
 import sys
 
-from requests.exceptions import RequestException
-
 import tcllib
 import tcllib.argparser
 from tcllib import ansi, devlist
@@ -17,7 +15,6 @@ from tcllib.requests import RequestRunner, CheckRequest, ServerVoteSelector, wri
 
 
 dev = DesktopDevice()
-fc = tcllib.FotaCheck()
 
 dpdesc = """
     Checks for the latest FULL updates for all PRD numbers or only for
@@ -34,27 +31,30 @@ prds = devlist.get_devicelist()
 
 print("List of latest FULL firmware by PRD:")
 
+runner = RequestRunner(ServerVoteSelector())
+runner.max_tries = 20
+
 for prd, variant in prds.items():
     model = variant["variant"]
     lastver = variant["last_full"]
-    if prdcheck in prd:
-        try:
-            dev.curef = prd
-            fc.reset_session(dev)
-            check_xml = fc.do_check(dev, max_tries=20)
-            curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
-            txt_tv = tv
-            if tv != lastver:
-                txt_tv = "{} (old: {} / OTA: {})".format(
-                    ansi.CYAN + txt_tv + ansi.RESET,
-                    ansi.CYAN_DARK + variant["last_full"] + ansi.RESET,
-                    variant["last_ota"]
-                )
-            else:
-                fc.delete_last_dump()
-            print("{}: {} {} ({})".format(prd, txt_tv, fhash, model))
-        except RequestException as e:
-            print("{}: {}".format(prd, str(e)))
-            continue
+    if not prdcheck in prd:
+        continue
+    dev.curef = prd
+    chk = CheckRequest(dev)
+    runner.run(chk)
+    if chk.success:
+        result = chk.get_result()
+        txt_tv = result.tvver
+        if result.tvver != lastver:
+            txt_tv = "{} (old: {} / OTA: {})".format(
+                ansi.CYAN + txt_tv + ansi.RESET,
+                ansi.CYAN_DARK + variant["last_full"] + ansi.RESET,
+                variant["last_ota"]
+            )
+        else:
+            result.delete_dump()
+        print("{}: {} {} ({})".format(prd, txt_tv, result.filehash, model))
+    else:
+        print("{}: {}".format(prd, str(chk.error)))
 
 write_info_if_dumps_found()
