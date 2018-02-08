@@ -11,7 +11,7 @@ import tcllib
 import tcllib.argparser
 from tcllib import ansi, devlist
 from tcllib.devices import MobileDevice
-from tcllib.requests import RequestRunner, CheckRequest, ServerVoteSelector
+from tcllib.requests import RequestRunner, CheckRequest, ServerVoteSelector, write_info_if_dumps_found
 
 
 dev = MobileDevice()
@@ -59,4 +59,4 @@ for prd, variant in prds.items():
     else:
         print("{} ({}): {}".format(prd, lastver, chk.error))
 
-tcllib.FotaCheck.write_info_if_dumps_found()
+write_info_if_dumps_found()

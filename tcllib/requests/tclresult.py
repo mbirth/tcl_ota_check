@@ -2,13 +2,21 @@
 
 from defusedxml import ElementTree
 
+from . import dumpmgr
+
 
 class TclResult:
-    pass
+    def __init__(self, xml: str):
+        self.raw_xml = xml
+        self.dumper = dumpmgr.DumpMgr()
+        self.dumper.write_dump(xml)
+
+    def delete_dump(self):
+        self.dumper.delete_last_dump()
 
 class CheckResult(TclResult):
     def __init__(self, xml: str):
-        self.raw_xml = xml
+        super().__init__(xml)
         root = ElementTree.fromstring(xml)
         self.curef = root.find("CUREF").text
         self.fvver = root.find("VERSION").find("FV").text
