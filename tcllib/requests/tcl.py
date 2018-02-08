@@ -8,6 +8,7 @@ from defusedxml import ElementTree
 class TclRequest:
     def __init__(self):
         self.uri = ""
+        self.response = None
         self.result = None
         self.error = None
         self.success = False
@@ -24,7 +25,7 @@ class TclRequest:
 
     def get_result(self):
         """Returns Result object."""
-        return None
+        return self.result
 
 class CheckRequest(TclRequest):
     def __init__(self, device: devices.Device):
@@ -57,7 +58,8 @@ class CheckRequest(TclRequest):
             404: "No data for requested CUREF/FV combination.",
         }
         if http_status == 200:
-            self.result = contents
+            self.response = contents
+            self.result = tclresult.CheckResult(contents)
             self.success = True
             return True
         elif http_status in ok_states:
@@ -71,11 +73,6 @@ class CheckRequest(TclRequest):
             self.success = False
             return True
         return False
-
-    def get_result(self):
-        if not self.success:
-            return None
-        return tclresult.CheckResult(self.result)
 
 # Check requests have 4 possible outcomes:
 # 1. HTTP 200 with XML data - our desired info
