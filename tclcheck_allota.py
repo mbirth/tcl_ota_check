@@ -25,6 +25,7 @@ dpdesc = """
 dp = tcllib.argparser.DefaultParser(__file__, dpdesc)
 dp.add_argument("forcever", help="Initial software version to check for OTA updates, e.g. AAM481", nargs="?", default=None)
 dp.add_argument("-p", "--prd", help="CU Reference # to filter scan results", dest="tocheck", nargs="?", default=None, metavar="PRD")
+dp.add_argument("-l", "--local", help="Force using local database", dest="local", action="store_true", default=False)
 args = dp.parse_args(sys.argv[1:])
 
 if args.forcever is not None:
@@ -35,7 +36,7 @@ else:
 prdcheck = "" if args.tocheck is None else args.tocheck
 
 print("Loading list of devices.")
-prds = devlist.get_devicelist()
+prds = devlist.get_devicelist(local=args.local)
 
 print("List of latest OTA firmware{} by PRD:".format(force_ver_text))
 

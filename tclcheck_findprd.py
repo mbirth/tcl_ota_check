@@ -27,6 +27,7 @@ dp = tcllib.argparser.DefaultParser(__file__, dpdesc)
 dp.add_argument("tocheck", help="CU Reference # to filter scan results", nargs="?", default=None)
 dp.add_argument("-f", "--floor", help="Beginning of scan range", dest="floor", nargs="?", type=int, default=0)
 dp.add_argument("-c", "--ceiling", help="End of scan range", dest="ceiling", nargs="?", type=int, default=999)
+dp.add_argument("-l", "--local", help="Force using local database", dest="local", action="store_true", default=False)
 args = dp.parse_args(sys.argv[1:])
 
 floor = args.floor
@@ -36,7 +37,7 @@ if ceiling < floor:
     raise SystemExit
 
 print("Loading list of devices...", end="", flush=True)
-prd_db = devlist.get_devicelist()
+prd_db = devlist.get_devicelist(local=args.local)
 print(" OK")
 
 print("Valid PRDs not already in database:")

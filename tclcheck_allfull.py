@@ -24,12 +24,13 @@ dpdesc = """
     """
 dp = tcllib.argparser.DefaultParser(__file__, dpdesc)
 dp.add_argument("-p", "--prd", help="CU Reference # to filter scan results", dest="tocheck", nargs="?", default=None, metavar="PRD")
+dp.add_argument("-l", "--local", help="Force using local database", dest="local", action="store_true", default=False)
 args = dp.parse_args(sys.argv[1:])
 
 prdcheck = "" if args.tocheck is None else args.tocheck
 
 print("Loading list of devices.")
-prds = devlist.get_devicelist()
+prds = devlist.get_devicelist(local=args.local)
 
 print("List of latest FULL firmware by PRD:")
 

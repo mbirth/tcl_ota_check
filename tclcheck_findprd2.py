@@ -28,6 +28,7 @@ dpdesc = """
 dp = tcllib.argparser.DefaultParser(__file__, dpdesc)
 dp.add_argument("floor", nargs="?", help="Model number to start with", type=int, default=63116)
 dp.add_argument("ceiling", nargs="?", help="Model number to end with", type=int, default=99999)
+dp.add_argument("-l", "--local", help="Force using local database", dest="local", action="store_true", default=False)
 args = dp.parse_args(sys.argv[1:])
 
 floor = args.floor
@@ -37,7 +38,7 @@ if ceiling < floor:
     raise SystemExit
 
 print("Loading list of known devices...", end="", flush=True)
-prd_db = devlist.get_devicelist()
+prd_db = devlist.get_devicelist(local=args.local)
 print(" OK")
 
 print("Valid PRDs not already in database:")
