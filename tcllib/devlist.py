@@ -33,9 +33,12 @@ def load_local_devicelist():
         return None, True
 
 
-def get_devicelist(force=False, output_diff=True):
+def get_devicelist(force=False, output_diff=True, local=False):
     """Return device list from saved database."""
     old_prds, need_download = load_local_devicelist()
+
+    if local:
+        return old_prds
 
     if need_download or force:
         prds_json = requests.get(DEVICELIST_URL).text
