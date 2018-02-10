@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from . import tcl
+from .tclrequest import TclRequest
 from . import http
 from . import serverselector
 
@@ -25,7 +25,7 @@ class RequestRunner:
         """Returns a master server."""
         return self.server_selector.get_master_server()
 
-    def run(self, query: tcl.TclRequest, timeout: int=10) -> bool:
+    def run(self, query: TclRequest, timeout: int=10) -> bool:
         """Runs the actual query."""
         for _ in range(0, self.max_tries):
             url = "{}{}{}".format(self.protocol, self.get_server(), query.uri)

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import xml.dom.minidom
+
 from defusedxml import ElementTree
 
 from . import dumpmgr
@@ -13,6 +15,11 @@ class TclResult:
 
     def delete_dump(self):
         self.dumper.delete_last_dump()
+
+    def pretty_xml(self):
+        """Return prettified input XML with ``xml.dom.minidom``."""
+        mdx = xml.dom.minidom.parseString(self.raw_xml)
+        return mdx.toprettyxml(indent="  ")
 
 class CheckResult(TclResult):
     def __init__(self, xml: str):
