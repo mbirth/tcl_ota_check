@@ -34,3 +34,21 @@ class CheckResult(TclResult):
         self.filename = fileinfo.find("FILENAME").text
         self.filesize = fileinfo.find("SIZE").text
         self.filehash = fileinfo.find("CHECKSUM").text
+
+class DownloadResult(TclResult):
+    def __init__(self, xml: str):
+        super().__init__(xml)
+        root = ElementTree.fromstring(xml)
+        file = root.find("FILE_LIST").find("FILE")
+        self.fileid = file.find("FILE_ID").text
+        self.fileurl = file.find("DOWNLOAD_URL").text
+        s3_fileurl_node = file.find("S3_DOWNLOAD_URL")
+        self.s3_fileurl = None
+        if s3_fileurl_node:
+            self.s3_fileurl = s3_fileurl_node.text
+        slave_list = root.find("SLAVE_LIST").findall("SLAVE")
+        enc_list = root.find("SLAVE_LIST").findall("ENCRYPT_SLAVE")
+        s3_slave_list = root.find("SLAVE_LIST").findall("S3_SLAVE")
+        self.slaves = [s.text for s in slave_list]
+        self.encslaves = [s.text for s in enc_list]
+        self.s3_slaves = [s.text for s in s3_slave_list]
