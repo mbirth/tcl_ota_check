@@ -5,6 +5,7 @@ from . import tclresult
 class TclRequest:
     def __init__(self):
         self.uri = ""
+        self.rawmode = False
         self.response = None
         self.result = None
         self.error = None

@@ -36,8 +36,11 @@ class RequestRunner:
             self.server_selector.hook_prerequest()
             try:
                 req = http_handler.run()
-                req.encoding = "utf-8"
-                done = query.is_done(req.status_code, req.text)
+                if query.rawmode:
+                    done = query.is_done(req.status_code, req.content)
+                else:
+                    req.encoding = "utf-8"
+                    done = query.is_done(req.status_code, req.text)
                 self.server_selector.hook_postrequest(done)
                 if done:
                     return done
