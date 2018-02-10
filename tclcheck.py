@@ -12,10 +12,9 @@ import sys
 import tcllib
 import tcllib.argparser
 from tcllib.devices import Device
+from tcllib.requests import RequestRunner, CheckRequest, DownloadRequest, ServerSelector, write_info_if_dumps_found
 from tcllib.xmltools import pretty_xml
 
-
-fc = tcllib.FotaCheck()
 
 dpdesc = """
     Checks for the latest FULL updates for the specified PRD number or for an OTA from the
@@ -68,16 +67,27 @@ else:
 print("Mode: {}".format(dev.mode))
 print("CLTP: {}".format(dev.cltp))
 
-fc.reset_session(dev)
-check_xml = fc.do_check(dev)
-print(pretty_xml(check_xml))
-curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
+runner = RequestRunner(ServerSelector())
 
-req_xml = fc.do_request(curef, fv, tv, fw_id)
-print(pretty_xml(req_xml))
-fileid, fileurl, slaves, encslaves, s3_fileurl, s3_slaves = fc.parse_request(req_xml)
+# Check for update
+chk = CheckRequest(dev)
+runner.run(chk)
+if not chk.success:
+    print("{}".format(chk.error))
+    sys.exit(2)
+chkres = chk.get_result()
+print(chkres.pretty_xml())
 
-if encslaves:
+# Request download
+dlr = DownloadRequest(dev, chkres.tvver, chkres.fw_id)
+runner.run(dlr)
+if not dlr.success:
+    print("{}".format(dlr.error))
+    sys.exit(3)
+dlrres = dlr.get_result()
+print(dlrres.pretty_xml())
+
+if dlrres.encslaves:
     chksum_xml = fc.do_checksum(random.choice(encslaves), fileurl, fileurl)
     print(pretty_xml(chksum_xml))
     file_addr, sha1_body, sha1_enc_footer, sha1_footer = fc.parse_checksum(chksum_xml)
