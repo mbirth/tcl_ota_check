@@ -44,7 +44,7 @@ class DownloadResult(TclResult):
         self.fileurl = file.find("DOWNLOAD_URL").text
         s3_fileurl_node = file.find("S3_DOWNLOAD_URL")
         self.s3_fileurl = None
-        if s3_fileurl_node:
+        if s3_fileurl_node is not None:
             self.s3_fileurl = s3_fileurl_node.text
         slave_list = root.find("SLAVE_LIST").findall("SLAVE")
         enc_list = root.find("SLAVE_LIST").findall("ENCRYPT_SLAVE")
