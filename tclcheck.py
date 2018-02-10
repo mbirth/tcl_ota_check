@@ -9,10 +9,11 @@ import os
 import random
 import sys
 
-import tcllib
-import tcllib.argparser
+from tcllib import argparser
 from tcllib.devices import Device
-from tcllib.requests import RequestRunner, CheckRequest, DownloadRequest, ChecksumRequest, ServerSelector, write_info_if_dumps_found
+from tcllib.requests import RequestRunner, CheckRequest, DownloadRequest, \
+        ChecksumRequest, EncryptHeaderRequest, ServerSelector, \
+        write_info_if_dumps_found
 from tcllib.xmltools import pretty_xml
 
 
@@ -20,7 +21,7 @@ dpdesc = """
     Checks for the latest FULL updates for the specified PRD number or for an OTA from the
     version specified as fvver.
     """
-dp = tcllib.argparser.DefaultParser(__file__, dpdesc)
+dp = argparser.DefaultParser(__file__, dpdesc)
 dp.add_argument("prd", nargs=1, help="CU Reference #, e.g. PRD-63117-011")
 dp.add_argument("fvver", nargs="?", help="Firmware version to check for OTA updates, e.g. AAM481 (omit to run FULL check)", default="AAA000")
 dp.add_argument("-i", "--imei", help="use specified IMEI instead of default", type=str)
@@ -88,9 +89,9 @@ dlrres = dlr.get_result()
 print(dlrres.pretty_xml())
 
 if dlrres.encslaves:
-    cksrunner = RequestRunner(ServerSelector(dlrres.encslaves), https=False)
+    encrunner = RequestRunner(ServerSelector(dlrres.encslaves), https=False)
     cks = ChecksumRequest(dlrres.fileurl, dlrres.fileurl)
-    cksrunner.run(cks)
+    encrunner.run(cks)
     if not cks.success:
         print("{}".format(cks.error))
         sys.exit(4)
@@ -104,17 +105,22 @@ for s in dlrres.s3_slaves:
     print("http://{}{}".format(s, dlrres.s3_fileurl))
 
 if dev.mode == dev.MODE_STATES["FULL"]:
-    header = fc.do_encrypt_header(random.choice(encslaves), fileurl)
-    headname = "header_{}.bin".format(tv)
+    hdr = EncryptHeaderRequest(dlrres.fileurl)
+    encrunner.run(hdr)
+    if not hdr.success:
+        print("{}".format(hdr.error))
+        sys.exit(5)
+    hdrres = hdr.get_result()
+    headname = "header_{}.bin".format(chkres.tvver)
     headdir = "headers"
     if not os.path.exists(headdir):
         os.makedirs(headdir)
-    if len(header) == 4194320:
+    if len(hdrres.rawdata) == 4194320:
         # TODO: Check sha1sum
         print("Header length check passed. Writing to {}.".format(headname))
         with open(os.path.join(headdir, headname), "wb") as f:
-            f.write(header)
+            f.write(hdrres.rawdata)
     else:
-        print("Header length invalid ({}).".format(len(header)))
+        print("Header length invalid ({}).".format(len(hdrres.rawdata)))
 
-tcllib.FotaCheck.write_info_if_dumps_found()
+write_info_if_dumps_found()

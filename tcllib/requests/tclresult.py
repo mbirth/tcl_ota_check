@@ -62,3 +62,7 @@ class ChecksumResult(TclResult):
         self.sha1_enc_footer = file.find("ENCRYPT_FOOTER").text
         self.sha1_footer = file.find("FOOTER").text
         self.sha1_body = file.find("BODY").text
+
+class EncryptHeaderResult(TclResult):
+    def __init__(self, contents: str):
+        self.rawdata = contents
