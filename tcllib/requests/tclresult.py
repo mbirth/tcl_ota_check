@@ -52,3 +52,13 @@ class DownloadResult(TclResult):
         self.slaves = [s.text for s in slave_list]
         self.encslaves = [s.text for s in enc_list]
         self.s3_slaves = [s.text for s in s3_slave_list]
+
+class ChecksumResult(TclResult):
+    def __init__(self, xml: str):
+        super().__init__(xml)
+        root = ElementTree.fromstring(xml)
+        file = root.find("FILE_CHECKSUM_LIST").find("FILE")
+        self.file_addr = file.find("ADDRESS").text
+        self.sha1_enc_footer = file.find("ENCRYPT_FOOTER").text
+        self.sha1_footer = file.find("FOOTER").text
+        self.sha1_body = file.find("BODY").text

@@ -12,7 +12,7 @@ import sys
 import tcllib
 import tcllib.argparser
 from tcllib.devices import Device
-from tcllib.requests import RequestRunner, CheckRequest, DownloadRequest, ServerSelector, write_info_if_dumps_found
+from tcllib.requests import RequestRunner, CheckRequest, DownloadRequest, ChecksumRequest, ServerSelector, write_info_if_dumps_found
 from tcllib.xmltools import pretty_xml
 
 
@@ -88,15 +88,20 @@ dlrres = dlr.get_result()
 print(dlrres.pretty_xml())
 
 if dlrres.encslaves:
-    chksum_xml = fc.do_checksum(random.choice(encslaves), fileurl, fileurl)
-    print(pretty_xml(chksum_xml))
-    file_addr, sha1_body, sha1_enc_footer, sha1_footer = fc.parse_checksum(chksum_xml)
+    cksrunner = RequestRunner(ServerSelector(dlrres.encslaves), https=False)
+    cks = ChecksumRequest(dlrres.fileurl, dlrres.fileurl)
+    cksrunner.run(cks)
+    if not cks.success:
+        print("{}".format(cks.error))
+        sys.exit(4)
+    cksres = cks.get_result()
+    print(cksres.pretty_xml())
 
-for s in slaves:
-    print("http://{}{}".format(s, fileurl))
+for s in dlrres.slaves:
+    print("http://{}{}".format(s, dlrres.fileurl))
 
-for s in s3_slaves:
-    print("http://{}{}".format(s, s3_fileurl))
+for s in dlrres.s3_slaves:
+    print("http://{}{}".format(s, dlrres.s3_fileurl))
 
 if dev.mode == dev.MODE_STATES["FULL"]:
     header = fc.do_encrypt_header(random.choice(encslaves), fileurl)
