@@ -1,31 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from .. import devices
-from . import tclresult
 from collections import OrderedDict
-from defusedxml import ElementTree
-
-class TclRequest:
-    def __init__(self):
-        self.uri = ""
-        self.response = None
-        self.result = None
-        self.error = None
-        self.success = False
-
-    def get_headers(self):
-        return {}
-
-    def get_params(self):
-        return {}
-
-    def is_done(self, http_status: int, contents: str):
-        """Checks if query is done or needs retry."""
-        return False
-
-    def get_result(self):
-        """Returns Result object."""
-        return self.result
+from .. import devices
+from .tclrequest import TclRequest
+from .tclresult import CheckResult
 
 class CheckRequest(TclRequest):
     def __init__(self, device: devices.Device):
@@ -59,7 +37,7 @@ class CheckRequest(TclRequest):
         }
         if http_status == 200:
             self.response = contents
-            self.result = tclresult.CheckResult(contents)
+            self.result = CheckResult(contents)
             self.success = True
             return True
         elif http_status in ok_states:
@@ -79,15 +57,3 @@ class CheckRequest(TclRequest):
 # 2. HTTP 204 - means: no newer update available
 # 3. HTTP 404 - means: invalid device or firmware version
 # 4. anything else: server problem (esp. 500, 502, 503)
-
-
-
-class DownloadRequest(TclRequest):
-    def __init__(self, device: devices.Device):
-        super().__init__()
-        self.uri = "/download_request.php"
-        self.method = "POST"
-        self.device = device
-
-    def get_headers(self):
-        return {"User-Agent": self.device.ua}

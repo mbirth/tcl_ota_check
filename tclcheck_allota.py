@@ -7,9 +7,7 @@
 
 import sys
 
-import tcllib
-import tcllib.argparser
-from tcllib import ansi, devlist
+from tcllib import ansi, argparser, devlist
 from tcllib.devices import MobileDevice
 from tcllib.requests import RequestRunner, CheckRequest, ServerVoteSelector, write_info_if_dumps_found
 
@@ -20,7 +18,7 @@ dpdesc = """
     Checks for the latest OTA updates for all PRD numbers or only for the PRD specified
     as prd. Initial software version can be specified with forcever.
     """
-dp = tcllib.argparser.DefaultParser(__file__, dpdesc)
+dp = argparser.DefaultParser(__file__, dpdesc)
 dp.add_argument("forcever", help="Initial software version to check for OTA updates, e.g. AAM481", nargs="?", default=None)
 dp.add_argument("-p", "--prd", help="CU Reference # to filter scan results", dest="tocheck", nargs="?", default=None, metavar="PRD")
 dp.add_argument("-l", "--local", help="Force using local database", dest="local", action="store_true", default=False)
