@@ -5,14 +5,10 @@
 
 """Return checksum for given firmware."""
 
-import random
 import sys
 
-import tcllib
-import tcllib.argparser
-from tcllib.xmltools import pretty_xml
-
-fc = tcllib.FotaCheck()
+from tcllib import argparser
+from tcllib.requests import RequestRunner, ChecksumRequest, ServerSelector
 
 encslaves = [
     "54.238.56.196",
@@ -29,7 +25,7 @@ encslaves = [
 dpdesc = """
     Returns the checksum for a given firmware URI.
     """
-dp = tcllib.argparser.DefaultParser(__file__, dpdesc)
+dp = argparser.DefaultParser(__file__, dpdesc)
 dp.add_argument("uri", help="URI to firmware, starts with '/body/...'")
 args = dp.parse_args(sys.argv[1:])
 
@@ -38,6 +34,13 @@ fileurl = args.uri
 # /body/ce570ddc079e2744558f191895e524d02a60476f/32/268932
 #fileurl = "/body/ce570ddc079e2744558f191895e524d02a60476f/2c23717bb747f3c321195419f451de52efa8ea51/263790/268932"
 
-chksum_xml = fc.do_checksum(random.choice(encslaves), fileurl, fileurl)
-print(pretty_xml(chksum_xml))
-file_addr, sha1_body, sha1_enc_footer, sha1_footer = fc.parse_checksum(chksum_xml)
+runner = RequestRunner(ServerSelector(encslaves), https=False)
+
+cks = ChecksumRequest(fileurl, fileurl)
+runner.run(cks)
+
+if not cks.success:
+    print("{}".format(cks.error))
+    sys.exit(4)
+cksres = cks.get_result()
+print(cksres.pretty_xml())
