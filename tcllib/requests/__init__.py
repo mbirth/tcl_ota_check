@@ -6,4 +6,3 @@ from .checksumrequest import ChecksumRequest
 from .encryptheaderrequest import EncryptHeaderRequest
 from .runner import *
 from .serverselector import *
-from .dumpmgr import write_info_if_dumps_found

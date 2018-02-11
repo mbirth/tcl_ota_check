@@ -11,9 +11,9 @@ import sys
 
 from tcllib import argparser
 from tcllib.devices import Device
+from tcllib.dumpmgr import write_info_if_dumps_found
 from tcllib.requests import RequestRunner, CheckRequest, DownloadRequest, \
-        ChecksumRequest, EncryptHeaderRequest, ServerSelector, \
-        write_info_if_dumps_found
+        ChecksumRequest, EncryptHeaderRequest, ServerSelector
 
 
 dpdesc = """

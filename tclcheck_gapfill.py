@@ -10,8 +10,8 @@ import requests
 
 from tcllib import ansi
 from tcllib.devices import MobileDevice
-from tcllib.requests import RequestRunner, CheckRequest, ServerVoteSelector, \
-        write_info_if_dumps_found
+from tcllib.dumpmgr import write_info_if_dumps_found
+from tcllib.requests import RequestRunner, CheckRequest, ServerVoteSelector
 
 
 # 1. Fetch list of missing OTAs (e.g. from ancient versions to current)

@@ -4,7 +4,7 @@ import xml.dom.minidom
 
 from defusedxml import ElementTree
 
-from . import dumpmgr
+from .. import dumpmgr
 
 
 class TclResult:
