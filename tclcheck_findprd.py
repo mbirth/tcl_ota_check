@@ -8,10 +8,7 @@
 import collections
 import sys
 
-from requests.exceptions import RequestException, Timeout
-
-import tcllib.argparser
-from tcllib import ansi, devlist
+from tcllib import ansi, argparser, devlist
 from tcllib.devices import DesktopDevice
 from tcllib.requests import RequestRunner, CheckRequest, ServerVoteSelector, \
         write_info_if_dumps_found
@@ -21,7 +18,7 @@ dpdesc = """
     Finds new PRD numbers for all known variants, or specified variants with tocheck. Scan range
     can be set by floor and ceiling switches.
     """
-dp = tcllib.argparser.DefaultParser(__file__, dpdesc)
+dp = argparser.DefaultParser(__file__, dpdesc)
 dp.add_argument("tocheck", help="CU Reference # to filter scan results", nargs="?", default=None)
 dp.add_argument("-f", "--floor", help="Beginning of scan range", dest="floor", nargs="?", type=int, default=0)
 dp.add_argument("-c", "--ceiling", help="End of scan range", dest="ceiling", nargs="?", type=int, default=999)
