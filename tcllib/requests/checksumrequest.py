@@ -1,13 +1,21 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from collections import OrderedDict
+"""Generic file checksum request."""
+
 import json
-from .. import credentials, devices
+from collections import OrderedDict
+
+from .. import credentials
 from .tclrequest import TclRequest
 from .tclresult import ChecksumResult
 
+
 class ChecksumRequest(TclRequest):
+    """Generic file checksum request."""
+
     def __init__(self, address, file_uri):
+        """Populate variables."""
         super().__init__()
         # NOTE: THIS HAS TO BE RUN ON AN ENCSLAVE
         self.uri = "/checksum.php"
@@ -16,9 +24,11 @@ class ChecksumRequest(TclRequest):
         self.file_uri = file_uri
 
     def get_headers(self):
+        """Return request headers."""
         return {"User-Agent": "tcl"}
 
     def get_params(self):
+        """Return request parameters."""
         params = OrderedDict()
         params.update(credentials.get_creds2())
         payload = {self.address: self.file_uri}
@@ -27,6 +37,7 @@ class ChecksumRequest(TclRequest):
         return params
 
     def is_done(self, http_status: int, contents: str) -> bool:
+        """Handle request result."""
         if http_status == 200:
             # <ENCRYPT_FOOTER>2abfa6f6507044fec995efede5d818e62a0b19b5</ENCRYPT_FOOTER> means ERROR (invalid ADDRESS!)
             if "<ENCRYPT_FOOTER>2abfa6f6507044fec995efede5d818e62a0b19b5</ENCRYPT_FOOTER>" in contents:

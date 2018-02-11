@@ -7,10 +7,10 @@
 
 import sys
 
-from tcllib import ansi, argparser, devlist
+from tcllib import ansi, argparser
 from tcllib.devices import MobileDevice
 from tcllib.dumpmgr import write_info_if_dumps_found
-from tcllib.requests import RequestRunner, CheckRequest, ServerVoteSelector
+from tcllib.requests import CheckRequest, RequestRunner, ServerVoteSelector
 
 
 dpdesc = """

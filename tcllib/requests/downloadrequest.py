@@ -1,4 +1,7 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
+"""Generic file download request."""
 
 import binascii
 import hashlib
@@ -7,6 +10,7 @@ import time
 import zlib
 from collections import OrderedDict
 from math import floor
+
 from .. import devices
 from .tclrequest import TclRequest
 from .tclresult import DownloadResult
@@ -20,6 +24,7 @@ def get_salt():
     millis = floor(time.time() * 1000)
     tail = "{:06d}".format(random.randint(0, 999999))
     return "{}{}".format(str(millis), tail)
+
 
 def get_vk2(params_dict, cltp):
     """Generate salted hash of API parameters."""
@@ -36,8 +41,12 @@ def get_vk2(params_dict, cltp):
     hexhash = engine.hexdigest()
     return hexhash
 
+
 class DownloadRequest(TclRequest):
+    """Generic file download request."""
+
     def __init__(self, device: devices.Device, tvver: str, fw_id: str):
+        """Populate variables."""
         super().__init__()
         self.uri = "/download_request.php"
         self.method = "POST"
@@ -46,9 +55,11 @@ class DownloadRequest(TclRequest):
         self.fw_id = fw_id
 
     def get_headers(self):
-        return {"User-Agent": self.device.ua}
+        """Return request headers."""
+        return {"User-Agent": self.device.uagent}
 
     def get_params(self):
+        """Return request parameters."""
         params = OrderedDict()
         params["id"] = self.device.imei
         params["salt"] = get_salt()
@@ -68,6 +79,7 @@ class DownloadRequest(TclRequest):
         return params
 
     def is_done(self, http_status: int, contents: str) -> bool:
+        """Handle request result."""
         if http_status == 200:
             self.response = contents
             self.result = DownloadResult(contents)

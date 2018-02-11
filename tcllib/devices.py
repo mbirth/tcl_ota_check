@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 """Pseudo-devices for desktop/mobile requests"""
@@ -27,7 +28,7 @@ class Device():
         self.chnl = self.CHNL_STATES["WIFI"]
         self.cktp = self.CKTP_STATES["MANUAL"]
         self.ckot = self.CKOT_STATES["ALL"]
-        self.ua = "tcl"
+        self.uagent = "tcl"
 
     def is_rooted(self):
         """Get RTD as boolean."""
@@ -71,7 +72,7 @@ class MobileDevice(Device):
         self.imei = "3531510"
         self.set_cltp("MOBILE")
         self.set_mode("OTA")
-        self.ua = "com.tcl.fota/5.1.0.2.0029.0, Android"
+        self.uagent = "com.tcl.fota/5.1.0.2.0029.0, Android"
 
 
 class DesktopDevice(Device):

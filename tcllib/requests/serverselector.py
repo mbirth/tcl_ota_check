@@ -1,11 +1,13 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 # pylint: disable=C0111,C0326,C0103
 
 """Tools to sort API servers to find the least awful one."""
 
-import numpy
 import time
+
+import numpy
 
 
 MASTER_SERVERS = [
@@ -16,6 +18,7 @@ MASTER_SERVERS = [
     "g2master-ap-north.tclclouds.com",
     "g2master-sa-east.tclclouds.com",
 ]
+
 
 class ServerSelector:
     """Returns a random server to use."""
@@ -44,6 +47,7 @@ class ServerSelector:
     def hook_postrequest(self, successful: bool):
         """Hook to be called after request finished"""
         pass
+
 
 class ServerVoteSelector(ServerSelector):
     """Tries to return faster servers more often."""

@@ -8,7 +8,7 @@
 import sys
 
 from tcllib import argparser
-from tcllib.requests import RequestRunner, ChecksumRequest, ServerSelector
+from tcllib.requests import ChecksumRequest, RequestRunner, ServerSelector
 
 encslaves = [
     "54.238.56.196",

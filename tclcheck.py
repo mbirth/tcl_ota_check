@@ -6,14 +6,14 @@
 """Checks for the latest FULL or OTA updates for specified PRD number."""
 
 import os
-import random
 import sys
 
 from tcllib import argparser
 from tcllib.devices import Device
 from tcllib.dumpmgr import write_info_if_dumps_found
-from tcllib.requests import RequestRunner, CheckRequest, DownloadRequest, \
-        ChecksumRequest, EncryptHeaderRequest, ServerSelector
+from tcllib.requests import (CheckRequest, ChecksumRequest, DownloadRequest,
+                             EncryptHeaderRequest, RequestRunner,
+                             ServerSelector)
 
 
 dpdesc = """
@@ -33,6 +33,7 @@ args = dp.parse_args(sys.argv[1:])
 dev = Device(args.prd[0], args.fvver)
 dev.imei = "3531510"
 
+
 def sel_mode(txtmode, autoval, rawval):
     """Handle custom mode."""
     if rawval:
@@ -43,6 +44,7 @@ def sel_mode(txtmode, autoval, rawval):
         return dev.MODE_STATES["OTA"]
     return dev.MODE_STATES["FULL"]
 
+
 def sel_cltp(txtmode, autoval, rawval):
     """Handle custom CLTP."""
     if rawval:
@@ -52,6 +54,7 @@ def sel_cltp(txtmode, autoval, rawval):
     elif txtmode == "desktop":
         return dev.CLTP_STATES["DESKTOP"]
     return dev.CLTP_STATES["MOBILE"]
+
 
 if args.imei:
     print("Use specified IMEI: {}".format(args.imei))

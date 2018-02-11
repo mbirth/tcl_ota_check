@@ -1,20 +1,28 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""Generic request executors."""
+
+from . import http, serverselector
 from .tclrequest import TclRequest
-from . import http
-from . import serverselector
+
 
 class UnknownMethodException(Exception):
+    """Ignore unknown methods."""
     pass
 
+
 class RequestRunner:
+    """Generic request executor."""
+
     def __init__(self, server_selector: serverselector.ServerSelector, https=True):
+        """Populate variables."""
         self.server_selector = server_selector
         self.protocol = "https://" if https else "http://"
         self.max_tries = 5
 
     def get_http(self, method="GET") -> http.HttpRequest:
-        """Returns the http class according to desired method."""
+        """Return the http class according to desired method."""
         if method == "GET":
             return http.HttpRequest
         elif method == "POST":
@@ -22,11 +30,11 @@ class RequestRunner:
         raise UnknownMethodException("Unknown http method: {}".format(method))
 
     def get_server(self) -> str:
-        """Returns a master server."""
+        """Return a master server."""
         return self.server_selector.get_master_server()
 
     def run(self, query: TclRequest, timeout: int=10) -> bool:
-        """Runs the actual query."""
+        """Run the actual query."""
         for _ in range(0, self.max_tries):
             url = "{}{}{}".format(self.protocol, self.get_server(), query.uri)
             http_handler = self.get_http(query.method)(url, timeout)

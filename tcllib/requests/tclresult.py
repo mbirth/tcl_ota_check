@@ -1,4 +1,7 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
+"""Generic TCL API result handlers."""
 
 import xml.dom.minidom
 
@@ -8,12 +11,16 @@ from .. import dumpmgr
 
 
 class TclResult:
+    """Generic TCL API result."""
+
     def __init__(self, xmlstr: str):
+        """Populate variables."""
         self.raw_xml = xmlstr
         self.dumper = dumpmgr.DumpMgr()
         self.dumper.write_dump(xmlstr)
 
     def delete_dump(self):
+        """Delete last dump."""
         self.dumper.delete_last_dump()
 
     def pretty_xml(self):
@@ -21,8 +28,12 @@ class TclResult:
         mdx = xml.dom.minidom.parseString(self.raw_xml)
         return mdx.toprettyxml(indent="  ")
 
+
 class CheckResult(TclResult):
+    """Handle check request result."""
+
     def __init__(self, xmlstr: str):
+        """Extract data from check request result."""
         super().__init__(xmlstr)
         root = ElementTree.fromstring(xmlstr)
         self.curef = root.find("CUREF").text
@@ -35,8 +46,12 @@ class CheckResult(TclResult):
         self.filesize = fileinfo.find("SIZE").text
         self.filehash = fileinfo.find("CHECKSUM").text
 
+
 class DownloadResult(TclResult):
+    """Handle download request result."""
+
     def __init__(self, xmlstr: str):
+        """Extract data from download request result."""
         super().__init__(xmlstr)
         root = ElementTree.fromstring(xmlstr)
         file = root.find("FILE_LIST").find("FILE")
@@ -53,8 +68,12 @@ class DownloadResult(TclResult):
         self.encslaves = [s.text for s in enc_list]
         self.s3_slaves = [s.text for s in s3_slave_list]
 
+
 class ChecksumResult(TclResult):
+    """Handle checksum request result."""
+
     def __init__(self, xmlstr: str):
+        """Extract data from checksum request result."""
         super().__init__(xmlstr)
         root = ElementTree.fromstring(xmlstr)
         file = root.find("FILE_CHECKSUM_LIST").find("FILE")
@@ -63,6 +82,10 @@ class ChecksumResult(TclResult):
         self.sha1_footer = file.find("FOOTER").text
         self.sha1_body = file.find("BODY").text
 
+
 class EncryptHeaderResult(TclResult):
+    """Handle encrypted header request result."""
+
     def __init__(self, contents: str):
+        """Extract data from encrypted header request result."""
         self.rawdata = contents

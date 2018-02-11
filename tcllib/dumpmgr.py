@@ -21,6 +21,7 @@ def get_timestamp_random():
     tail = "{:06d}".format(random.randint(0, 999999))
     return "{}_{}".format(str(millis), tail)
 
+
 def write_info_if_dumps_found():
     """Notify user to upload dumps if present."""
     # To disable this info, uncomment the following line.
@@ -30,6 +31,7 @@ def write_info_if_dumps_found():
         print()
         print("{}There are {} logs collected in the logs/ directory.{} Please consider uploading".format(ansi.YELLOW, len(files), ansi.RESET))
         print("them to https://tclota.birth-online.de/ by running {}./upload_logs.py{}.".format(ansi.CYAN, ansi.RESET))
+
 
 class DumpMgr:
     """A class for XML dump management."""

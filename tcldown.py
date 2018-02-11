@@ -11,8 +11,8 @@ import sys
 from tcllib import argparser
 from tcllib.devices import DesktopDevice
 from tcllib.dumpmgr import write_info_if_dumps_found
-from tcllib.requests import RequestRunner, CheckRequest, DownloadRequest, \
-        ChecksumRequest, EncryptHeaderRequest, ServerSelector
+from tcllib.requests import (DownloadRequest, EncryptHeaderRequest,
+                             RequestRunner, ServerSelector)
 
 
 dpdesc = """
@@ -30,6 +30,7 @@ dp.add_argument("--rawcltp", help="override --type with raw value (10=MOBILE, 20
 args = dp.parse_args(sys.argv[1:])
 
 dev = DesktopDevice()
+
 
 def sel_mode(defaultmode, rawval):
     """Handle custom mode."""
