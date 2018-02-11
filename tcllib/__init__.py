@@ -4,4 +4,6 @@
 
 from .ansi import *
 from .argparser import *
-from .dumpmgr import write_info_if_dumps_found
+from .devices import *
+from .devlist import *
+from .dumpmgr import *
