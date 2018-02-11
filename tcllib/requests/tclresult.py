@@ -8,10 +8,10 @@ from .. import dumpmgr
 
 
 class TclResult:
-    def __init__(self, xml: str):
-        self.raw_xml = xml
+    def __init__(self, xmlstr: str):
+        self.raw_xml = xmlstr
         self.dumper = dumpmgr.DumpMgr()
-        self.dumper.write_dump(xml)
+        self.dumper.write_dump(xmlstr)
 
     def delete_dump(self):
         self.dumper.delete_last_dump()
@@ -22,9 +22,9 @@ class TclResult:
         return mdx.toprettyxml(indent="  ")
 
 class CheckResult(TclResult):
-    def __init__(self, xml: str):
-        super().__init__(xml)
-        root = ElementTree.fromstring(xml)
+    def __init__(self, xmlstr: str):
+        super().__init__(xmlstr)
+        root = ElementTree.fromstring(xmlstr)
         self.curef = root.find("CUREF").text
         self.fvver = root.find("VERSION").find("FV").text
         self.tvver = root.find("VERSION").find("TV").text
@@ -36,9 +36,9 @@ class CheckResult(TclResult):
         self.filehash = fileinfo.find("CHECKSUM").text
 
 class DownloadResult(TclResult):
-    def __init__(self, xml: str):
-        super().__init__(xml)
-        root = ElementTree.fromstring(xml)
+    def __init__(self, xmlstr: str):
+        super().__init__(xmlstr)
+        root = ElementTree.fromstring(xmlstr)
         file = root.find("FILE_LIST").find("FILE")
         self.fileid = file.find("FILE_ID").text
         self.fileurl = file.find("DOWNLOAD_URL").text
@@ -54,9 +54,9 @@ class DownloadResult(TclResult):
         self.s3_slaves = [s.text for s in s3_slave_list]
 
 class ChecksumResult(TclResult):
-    def __init__(self, xml: str):
-        super().__init__(xml)
-        root = ElementTree.fromstring(xml)
+    def __init__(self, xmlstr: str):
+        super().__init__(xmlstr)
+        root = ElementTree.fromstring(xmlstr)
         file = root.find("FILE_CHECKSUM_LIST").find("FILE")
         self.file_addr = file.find("ADDRESS").text
         self.sha1_enc_footer = file.find("ENCRYPT_FOOTER").text
