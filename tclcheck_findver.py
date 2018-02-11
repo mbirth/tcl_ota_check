@@ -64,7 +64,7 @@ for fv in allvers:
     if chk.success:
         chkres = chk.get_result()
         txt_tv = chkres.tvver
-        print("{}: {} ⇨ {} {}".format(curef, fv, txt_tv, chkres.filehash))
+        print("{}: {} ⇨ {} {}".format(dev.curef, fv, txt_tv, chkres.filehash))
 
 print("Scan complete.")
 write_info_if_dumps_found()
