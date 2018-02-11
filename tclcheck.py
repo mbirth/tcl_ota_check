@@ -14,7 +14,6 @@ from tcllib.devices import Device
 from tcllib.requests import RequestRunner, CheckRequest, DownloadRequest, \
         ChecksumRequest, EncryptHeaderRequest, ServerSelector, \
         write_info_if_dumps_found
-from tcllib.xmltools import pretty_xml
 
 
 dpdesc = """
