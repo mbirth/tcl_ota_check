@@ -9,19 +9,18 @@ import os
 import random
 import sys
 
-import tcllib
-import tcllib.argparser
+from tcllib import argparser
 from tcllib.devices import Device
-from tcllib.xmltools import pretty_xml
+from tcllib.dumpmgr import write_info_if_dumps_found
+from tcllib.requests import RequestRunner, CheckRequest, DownloadRequest, \
+        ChecksumRequest, EncryptHeaderRequest, ServerSelector
 
-
-fc = tcllib.FotaCheck()
 
 dpdesc = """
     Checks for the latest FULL updates for the specified PRD number or for an OTA from the
     version specified as fvver.
     """
-dp = tcllib.argparser.DefaultParser(__file__, dpdesc)
+dp = argparser.DefaultParser(__file__, dpdesc)
 dp.add_argument("prd", nargs=1, help="CU Reference #, e.g. PRD-63117-011")
 dp.add_argument("fvver", nargs="?", help="Firmware version to check for OTA updates, e.g. AAM481 (omit to run FULL check)", default="AAA000")
 dp.add_argument("-i", "--imei", help="use specified IMEI instead of default", type=str)
@@ -68,38 +67,59 @@ else:
 print("Mode: {}".format(dev.mode))
 print("CLTP: {}".format(dev.cltp))
 
-fc.reset_session(dev)
-check_xml = fc.do_check(dev)
-print(pretty_xml(check_xml))
-curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
+runner = RequestRunner(ServerSelector())
 
-req_xml = fc.do_request(curef, fv, tv, fw_id)
-print(pretty_xml(req_xml))
-fileid, fileurl, slaves, encslaves, s3_fileurl, s3_slaves = fc.parse_request(req_xml)
+# Check for update
+chk = CheckRequest(dev)
+runner.run(chk)
+if not chk.success:
+    print("{}".format(chk.error))
+    sys.exit(2)
+chkres = chk.get_result()
+print(chkres.pretty_xml())
 
-if encslaves:
-    chksum_xml = fc.do_checksum(random.choice(encslaves), fileurl, fileurl)
-    print(pretty_xml(chksum_xml))
-    file_addr, sha1_body, sha1_enc_footer, sha1_footer = fc.parse_checksum(chksum_xml)
+# Request download
+dlr = DownloadRequest(dev, chkres.tvver, chkres.fw_id)
+runner.run(dlr)
+if not dlr.success:
+    print("{}".format(dlr.error))
+    sys.exit(3)
+dlrres = dlr.get_result()
+print(dlrres.pretty_xml())
 
-for s in slaves:
-    print("http://{}{}".format(s, fileurl))
+if dlrres.encslaves:
+    encrunner = RequestRunner(ServerSelector(dlrres.encslaves), https=False)
+    cks = ChecksumRequest(dlrres.fileurl, dlrres.fileurl)
+    encrunner.run(cks)
+    if not cks.success:
+        print("{}".format(cks.error))
+        sys.exit(4)
+    cksres = cks.get_result()
+    print(cksres.pretty_xml())
 
-for s in s3_slaves:
-    print("http://{}{}".format(s, s3_fileurl))
+for s in dlrres.slaves:
+    print("http://{}{}".format(s, dlrres.fileurl))
+
+for s in dlrres.s3_slaves:
+    print("http://{}{}".format(s, dlrres.s3_fileurl))
 
 if dev.mode == dev.MODE_STATES["FULL"]:
-    header = fc.do_encrypt_header(random.choice(encslaves), fileurl)
-    headname = "header_{}.bin".format(tv)
+    hdr = EncryptHeaderRequest(dlrres.fileurl)
+    encrunner.run(hdr)
+    if not hdr.success:
+        print("{}".format(hdr.error))
+        sys.exit(5)
+    hdrres = hdr.get_result()
+    headname = "header_{}.bin".format(chkres.tvver)
     headdir = "headers"
     if not os.path.exists(headdir):
         os.makedirs(headdir)
-    if len(header) == 4194320:
+    if len(hdrres.rawdata) == 4194320:
         # TODO: Check sha1sum
         print("Header length check passed. Writing to {}.".format(headname))
         with open(os.path.join(headdir, headname), "wb") as f:
-            f.write(header)
+            f.write(hdrres.rawdata)
     else:
-        print("Header length invalid ({}).".format(len(header)))
+        print("Header length invalid ({}).".format(len(hdrres.rawdata)))
 
-tcllib.FotaCheck.write_info_if_dumps_found()
+write_info_if_dumps_found()

@@ -8,22 +8,17 @@
 import collections
 import sys
 
-from requests.exceptions import RequestException, Timeout
+from tcllib import ansi, argparser, devlist
+from tcllib.devices import DesktopDevice
+from tcllib.dumpmgr import write_info_if_dumps_found
+from tcllib.requests import RequestRunner, CheckRequest, ServerVoteSelector
 
-import tcllib
-import tcllib.argparser
-from tcllib import ansi, devlist
-from tcllib.devices import DesktopDevice, MobileDevice
-
-
-dev = DesktopDevice()
-fc = tcllib.FotaCheck()
 
 dpdesc = """
     Finds new PRD numbers for all known variants, or specified variants with tocheck. Scan range
     can be set by floor and ceiling switches.
     """
-dp = tcllib.argparser.DefaultParser(__file__, dpdesc)
+dp = argparser.DefaultParser(__file__, dpdesc)
 dp.add_argument("tocheck", help="CU Reference # to filter scan results", nargs="?", default=None)
 dp.add_argument("-f", "--floor", help="Beginning of scan range", dest="floor", nargs="?", type=int, default=0)
 dp.add_argument("-c", "--ceiling", help="End of scan range", dest="ceiling", nargs="?", type=int, default=999)
@@ -58,6 +53,11 @@ if args.tocheck is not None:
     if not prddict:
         prddict[args.tocheck] = []
 
+dev = DesktopDevice()
+
+runner = RequestRunner(ServerVoteSelector(), https=False)
+runner.max_tries = 20
+
 for center in sorted(prddict.keys()):
     tails = [int(i) for i in prddict[center]]
     safes = [g for g in range(floor, ceiling) if g not in tails]
@@ -69,15 +69,13 @@ for center in sorted(prddict.keys()):
         done_count += 1
         print("Checking {} ({}/{})".format(curef, done_count, total_count))
         print(ansi.UP_DEL, end="")
-        try:
-            dev.curef = curef
-            fc.reset_session(dev)
-            check_xml = fc.do_check(dev, https=False, max_tries=20)
-            curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
-            txt_tv = tv
-            print("{}: {} {}".format(curef, txt_tv, fhash))
-        except (SystemExit, RequestException, Timeout) as e:
-            continue
+        dev.curef = curef
+        chk = CheckRequest(dev)
+        runner.run(chk)
+        if chk.success:
+            chkres = chk.get_result()
+            txt_tv = chkres.tvver
+            print("{}: {} {}".format(curef, txt_tv, chkres.filehash))
 
 print("Scan complete.")
-tcllib.FotaCheck.write_info_if_dumps_found()
+write_info_if_dumps_found()

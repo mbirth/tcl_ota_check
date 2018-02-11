@@ -6,22 +6,19 @@
 """Download a given firmware file."""
 
 import os
-import random
 import sys
 
-import tcllib
-import tcllib.argparser
+from tcllib import argparser
 from tcllib.devices import DesktopDevice
-from tcllib.xmltools import pretty_xml
+from tcllib.dumpmgr import write_info_if_dumps_found
+from tcllib.requests import RequestRunner, CheckRequest, DownloadRequest, \
+        ChecksumRequest, EncryptHeaderRequest, ServerSelector
 
-
-fc = tcllib.FotaCheck()
-dev = DesktopDevice()
 
 dpdesc = """
     Downloads the given firmware file.
     """
-dp = tcllib.argparser.DefaultParser(__file__, dpdesc)
+dp = argparser.DefaultParser(__file__, dpdesc)
 dp.add_argument("prd", nargs=1, help="CU Reference #, e.g. PRD-63117-011")
 dp.add_argument("targetversion", nargs=1, help="Firmware version to download, e.g. AAN990")
 dp.add_argument("fwid", nargs=1, help="Numeric firmware file id, e.g. 268932")
@@ -32,6 +29,7 @@ dp.add_argument("--rawmode", help="override --mode with raw value (2=OTA, 4=FULL
 dp.add_argument("--rawcltp", help="override --type with raw value (10=MOBILE, 2010=DESKTOP)", metavar="CLTP")
 args = dp.parse_args(sys.argv[1:])
 
+dev = DesktopDevice()
 
 def sel_mode(defaultmode, rawval):
     """Handle custom mode."""
@@ -65,30 +63,42 @@ dev.cltp = sel_cltp(args.type, args.rawcltp)
 print("Mode: {}".format(dev.mode))
 print("CLTP: {}".format(dev.cltp))
 
-fv = dev.fwver
+runner = RequestRunner(ServerSelector())
+runner.max_tries = 20
+
 tv = args.targetversion[0]
 fw_id = args.fwid[0]
-req_xml = fc.do_request(dev.curef, fv, tv, fw_id)
-print(pretty_xml(req_xml))
-fileid, fileurl, slaves, encslaves, s3_fileurl, s3_slaves = fc.parse_request(req_xml)
+dlr = DownloadRequest(dev, tv, fw_id)
+runner.run(dlr)
+if not dlr.success:
+    print("ERROR: {}".format(dlr.error))
+    sys.exit(3)
 
-for s in slaves:
-    print("http://{}{}".format(s, fileurl))
+dlrres = dlr.get_result()
+print(dlrres.pretty_xml())
 
-for s in s3_slaves:
-    print("http://{}{}".format(s, s3_fileurl))
+for s in dlrres.slaves:
+    print("http://{}{}".format(s, dlrres.fileurl))
+
+for s in dlrres.s3_slaves:
+    print("http://{}{}".format(s, dlrres.s3_fileurl))
 
 if dev.mode == dev.MODE_STATES["FULL"]:
-    header = fc.do_encrypt_header(random.choice(encslaves), fileurl)
-    headname = "header_{}.bin".format(tv)
-    headdir = "headers"
-    if not os.path.exists(headdir):
-        os.makedirs(headdir)
-    if len(header) == 4194320:
-        print("Header length check passed. Writing to {}.".format(headname))
-        with open(os.path.join(headdir, headname), "wb") as f:
-            f.write(header)
-    else:
-        print("Header length invalid ({}).".format(len(header)))
+    encrun = RequestRunner(ServerSelector(dlrres.encslaves), https=False)
+    encrun.max_tries = 20
+    hdr = EncryptHeaderRequest(dlrres.fileurl)
+    encrun.run(hdr)
+    if hdr.success:
+        hdrres = hdr.get_result()
+        headname = "header_{}.bin".format(tv)
+        headdir = "headers"
+        if not os.path.exists(headdir):
+            os.makedirs(headdir)
+        if len(hdrres.rawdata) == 4194320:
+            print("Header length check passed. Writing to {}.".format(headname))
+            with open(os.path.join(headdir, headname), "wb") as f:
+                f.write(hdrres.rawdata)
+        else:
+            print("Header length invalid ({}).".format(len(hdrres.rawdata)))
 
-tcllib.FotaCheck.write_info_if_dumps_found()
+write_info_if_dumps_found()

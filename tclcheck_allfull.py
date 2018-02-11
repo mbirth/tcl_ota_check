@@ -7,22 +7,19 @@
 
 import sys
 
-from requests.exceptions import RequestException
-
-import tcllib
-import tcllib.argparser
-from tcllib import ansi, devlist
+from tcllib import ansi, argparser, devlist
 from tcllib.devices import DesktopDevice
+from tcllib.dumpmgr import write_info_if_dumps_found
+from tcllib.requests import RequestRunner, CheckRequest, ServerVoteSelector
 
 
 dev = DesktopDevice()
-fc = tcllib.FotaCheck()
 
 dpdesc = """
     Checks for the latest FULL updates for all PRD numbers or only for
     the PRD specified as prd.
     """
-dp = tcllib.argparser.DefaultParser(__file__, dpdesc)
+dp = argparser.DefaultParser(__file__, dpdesc)
 dp.add_argument("-p", "--prd", help="CU Reference # to filter scan results", dest="tocheck", nargs="?", default=None, metavar="PRD")
 dp.add_argument("-l", "--local", help="Force using local database", dest="local", action="store_true", default=False)
 args = dp.parse_args(sys.argv[1:])
@@ -34,27 +31,30 @@ prds = devlist.get_devicelist(local=args.local)
 
 print("List of latest FULL firmware by PRD:")
 
+runner = RequestRunner(ServerVoteSelector())
+runner.max_tries = 20
+
 for prd, variant in prds.items():
     model = variant["variant"]
     lastver = variant["last_full"]
-    if prdcheck in prd:
-        try:
-            dev.curef = prd
-            fc.reset_session(dev)
-            check_xml = fc.do_check(dev, max_tries=20)
-            curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
-            txt_tv = tv
-            if tv != lastver:
-                txt_tv = "{} (old: {} / OTA: {})".format(
-                    ansi.CYAN + txt_tv + ansi.RESET,
-                    ansi.CYAN_DARK + variant["last_full"] + ansi.RESET,
-                    variant["last_ota"]
-                )
-            else:
-                fc.delete_last_dump()
-            print("{}: {} {} ({})".format(prd, txt_tv, fhash, model))
-        except RequestException as e:
-            print("{}: {}".format(prd, str(e)))
-            continue
+    if not prdcheck in prd:
+        continue
+    dev.curef = prd
+    chk = CheckRequest(dev)
+    runner.run(chk)
+    if chk.success:
+        result = chk.get_result()
+        txt_tv = result.tvver
+        if result.tvver != lastver:
+            txt_tv = "{} (old: {} / OTA: {})".format(
+                ansi.CYAN + txt_tv + ansi.RESET,
+                ansi.CYAN_DARK + variant["last_full"] + ansi.RESET,
+                variant["last_ota"]
+            )
+        else:
+            result.delete_dump()
+        print("{}: {} {} ({})".format(prd, txt_tv, result.filehash, model))
+    else:
+        print("{}: {}".format(prd, str(chk.error)))
 
-tcllib.FotaCheck.write_info_if_dumps_found()
+write_info_if_dumps_found()

@@ -7,22 +7,19 @@
 
 import sys
 
-from requests.exceptions import RequestException
-
-import tcllib
-import tcllib.argparser
-from tcllib import ansi, devlist
+from tcllib import ansi, argparser, devlist
 from tcllib.devices import MobileDevice
+from tcllib.dumpmgr import write_info_if_dumps_found
+from tcllib.requests import RequestRunner, CheckRequest, ServerVoteSelector
 
 
 dev = MobileDevice()
-fc = tcllib.FotaCheck()
 
 dpdesc = """
     Checks for the latest OTA updates for all PRD numbers or only for the PRD specified
     as prd. Initial software version can be specified with forcever.
     """
-dp = tcllib.argparser.DefaultParser(__file__, dpdesc)
+dp = argparser.DefaultParser(__file__, dpdesc)
 dp.add_argument("forcever", help="Initial software version to check for OTA updates, e.g. AAM481", nargs="?", default=None)
 dp.add_argument("-p", "--prd", help="CU Reference # to filter scan results", dest="tocheck", nargs="?", default=None, metavar="PRD")
 dp.add_argument("-l", "--local", help="Force using local database", dest="local", action="store_true", default=False)
@@ -40,23 +37,26 @@ prds = devlist.get_devicelist(local=args.local)
 
 print("List of latest OTA firmware{} by PRD:".format(force_ver_text))
 
+runner = RequestRunner(ServerVoteSelector())
+runner.max_tries = 20
+
 for prd, variant in prds.items():
     model = variant["variant"]
     lastver = variant["last_ota"]
     lastver = variant["last_full"] if lastver is None else lastver
     if args.forcever is not None:
         lastver = args.forcever
-    if prdcheck in prd:
-        try:
-            dev.curef = prd
-            dev.fwver = lastver
-            fc.reset_session(dev)
-            check_xml = fc.do_check(dev, max_tries=20)
-            curef, fv, tv, fw_id, fileid, fn, fsize, fhash = fc.parse_check(check_xml)
-            versioninfo = ansi.YELLOW_DARK + fv + ansi.RESET + " ⇨ " + ansi.YELLOW + tv + ansi.RESET + " (FULL: {})".format(variant["last_full"])
-            print("{}: {} {} ({})".format(prd, versioninfo, fhash, model))
-        except RequestException as e:
-            print("{} ({}): {}".format(prd, lastver, str(e)))
-            continue
+    if not prdcheck in prd:
+        continue
+    dev.curef = prd
+    dev.fwver = lastver
+    chk = CheckRequest(dev)
+    runner.run(chk)
+    if chk.success:
+        result = chk.get_result()
+        versioninfo = ansi.YELLOW_DARK + result.fvver + ansi.RESET + " ⇨ " + ansi.YELLOW + result.tvver + ansi.RESET + " (FULL: {})".format(variant["last_full"])
+        print("{}: {} {} ({})".format(prd, versioninfo, result.filehash, model))
+    else:
+        print("{} ({}): {}".format(prd, lastver, chk.error))
 
-tcllib.FotaCheck.write_info_if_dumps_found()
+write_info_if_dumps_found()
