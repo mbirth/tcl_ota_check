@@ -71,12 +71,22 @@ def print_versions_diff(old_data: dict, new_data: dict):
         print("> {}: {} ⇨ {} (OTA)".format(prd, ansi.YELLOW_DARK + str(old_data["last_ota"]) + ansi.RESET, ansi.YELLOW + str(new_data["last_ota"]) + ansi.RESET))
 
 def print_removed_prds(prds_data: dict, removed_prds: list):
+    """Print details of selected PRDs as removed."""
     for prd in removed_prds:
         print("> Removed device {} (was at {} / OTA: {}).".format(ansi.RED + prd + ansi.RESET, prds_data[prd]["last_full"], prds_data[prd]["last_ota"]))
 
 def print_added_prds(prds_data: dict, added_prds: list):
+    """Print details of selected PRDs as added."""
     for prd in added_prds:
         print("> New device {} ({} / OTA: {}).".format(ansi.GREEN + prd + ansi.RESET, prds_data[prd]["last_full"], prds_data[prd]["last_ota"]))
+
+def print_changed_prds(old_prds: dict, new_prds: dict, skip_prds: list):
+    """Print details of changed PRDs."""
+    for prd, pdata in new_prds.items():
+        if prd in skip_prds:
+            continue
+        odata = old_prds[prd]
+        print_versions_diff(odata, pdata)
 
 def print_prd_diff(old_prds: dict, new_prds: dict):
     """Print PRD changes between old and new databases."""
@@ -84,8 +94,4 @@ def print_prd_diff(old_prds: dict, new_prds: dict):
     removed_prds = [prd for prd in old_prds if prd not in new_prds]
     print_removed_prds(old_prds, removed_prds)
     print_added_prds(new_prds, added_prds)
-    for prd, pdata in new_prds.items():
-        if prd in added_prds:
-            continue
-        odata = old_prds[prd]
-        print_versions_diff(odata, pdata)
+    print_changed_prds(old_prds, new_prds, added_prds)
