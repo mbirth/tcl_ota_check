@@ -33,7 +33,7 @@ def load_local_devicelist():
         return None, True
 
 
-def get_devicelist(force=False, output_diff=True, local=False):
+def get_devicelist(force: bool=False, output_diff: bool=True, local: bool=False) -> dict:
     """Return device list from saved database."""
     old_prds, need_download = load_local_devicelist()
 
@@ -54,7 +54,7 @@ def get_devicelist(force=False, output_diff=True, local=False):
     return prds
 
 
-def print_versions_diff(old_data, new_data):
+def print_versions_diff(old_data: dict, new_data: dict):
     """Print version changes between old and new databases."""
     prd = new_data["curef"]
     if new_data["last_full"] != old_data["last_full"] and new_data["last_ota"] != old_data["last_ota"]:
@@ -70,15 +70,20 @@ def print_versions_diff(old_data, new_data):
     elif new_data["last_ota"] != old_data["last_ota"]:
         print("> {}: {} ⇨ {} (OTA)".format(prd, ansi.YELLOW_DARK + str(old_data["last_ota"]) + ansi.RESET, ansi.YELLOW + str(new_data["last_ota"]) + ansi.RESET))
 
+def print_removed_prds(prds_data: dict, removed_prds: list):
+    for prd in removed_prds:
+        print("> Removed device {} (was at {} / OTA: {}).".format(ansi.RED + prd + ansi.RESET, prds_data[prd]["last_full"], prds_data[prd]["last_ota"]))
 
-def print_prd_diff(old_prds, new_prds):
+def print_added_prds(prds_data: dict, added_prds: list):
+    for prd in added_prds:
+        print("> New device {} ({} / OTA: {}).".format(ansi.GREEN + prd + ansi.RESET, prds_data[prd]["last_full"], prds_data[prd]["last_ota"]))
+
+def print_prd_diff(old_prds: dict, new_prds: dict):
     """Print PRD changes between old and new databases."""
     added_prds = [prd for prd in new_prds if prd not in old_prds]
     removed_prds = [prd for prd in old_prds if prd not in new_prds]
-    for prd in removed_prds:
-        print("> Removed device {} (was at {} / OTA: {}).".format(ansi.RED + prd + ansi.RESET, old_prds[prd]["last_full"], old_prds[prd]["last_ota"]))
-    for prd in added_prds:
-        print("> New device {} ({} / OTA: {}).".format(ansi.GREEN + prd + ansi.RESET, new_prds[prd]["last_full"], new_prds[prd]["last_ota"]))
+    print_removed_prds(old_prds, removed_prds)
+    print_added_prds(new_prds, added_prds)
     for prd, pdata in new_prds.items():
         if prd in added_prds:
             continue
