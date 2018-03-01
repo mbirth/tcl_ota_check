@@ -29,7 +29,7 @@ def _load_local_devicelist():
             need_download = False
         with open(DEVICELIST_FILE, "rt") as dlfile:
             return json.load(dlfile), need_download
-    except FileNotFoundError:
+    except (FileNotFoundError, json.decoder.JSONDecodeError):
         return None, True
 
 def _download_devicelist(doit: bool):
