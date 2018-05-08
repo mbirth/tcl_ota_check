@@ -23,6 +23,7 @@ dp.add_argument("tocheck", help="CU Reference # to filter scan results", nargs="
 dp.add_argument("-f", "--floor", help="Beginning of scan range", dest="floor", nargs="?", type=int, default=0)
 dp.add_argument("-c", "--ceiling", help="End of scan range", dest="ceiling", nargs="?", type=int, default=999)
 dp.add_argument("-l", "--local", help="Force using local database", dest="local", action="store_true", default=False)
+dp.add_argument("-np", "--no-prefix", help="Skip 'PRD-' prefix", dest="noprefix", action="store_true", default=False)
 args = dp.parse_args(sys.argv[1:])
 
 floor = args.floor
@@ -58,6 +59,8 @@ dev = DesktopDevice()
 runner = RequestRunner(ServerVoteSelector(), https=False)
 runner.max_tries = 20
 
+prefix = "" if args.noprefix else "PRD-"
+
 for center in sorted(prddict.keys()):
     tails = [int(i) for i in prddict[center]]
     safes = [g for g in range(floor, ceiling) if g not in tails]
@@ -65,7 +68,7 @@ for center in sorted(prddict.keys()):
     done_count = 0
     print("Checking {} variant codes for model {}.".format(total_count, center))
     for j in safes:
-        curef = "PRD-{}-{:03}".format(center, j)
+        curef = "{}{}-{:03}".format(prefix, center, j)
         done_count += 1
         print("Checking {} ({}/{})".format(curef, done_count, total_count))
         print(ansi.UP_DEL, end="")
