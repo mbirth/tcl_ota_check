@@ -43,8 +43,15 @@ for prd, data in versions.items():
         chk = CheckRequest(dev)
         runner.run(chk)
         if chk.success:
-            print("✔", end="", flush=True)
-            num_item += 1
+            if chk.result.tvver == data["latest_ota"]:
+                print("✔", end="", flush=True)
+                num_item += 1
+            elif chk.result.tvver in data["update_map"] and ver in data["update_map"][chk.result.tvver]:
+                # Delete dump as we already know the information
+                chk.result.delete_dump()
+                print("%", end="", flush=True)
+            else:
+                print("~", end="", flush=True)
         else:
             print("✖", end="", flush=True)
     print("")
