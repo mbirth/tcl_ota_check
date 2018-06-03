@@ -111,6 +111,16 @@ Universal tool to query TCL's servers in different ways to manually check for a 
 Queries the checksum for a specific FULL file.
 
 
+### tcldown.py
+
+Downloads a firmware file from given file ID.
+
+
+### tclupdatedb.py
+
+Updates local copy of database.
+
+
 ### upload_logs.py
 
 Uploads all collected server answers to the [database server](https://tclota.birth-online.de/).
