@@ -24,6 +24,7 @@ dp.add_argument("-f", "--floor", help="Beginning of scan range", dest="floor", n
 dp.add_argument("-c", "--ceiling", help="End of scan range", dest="ceiling", nargs="?", type=int, default=999)
 dp.add_argument("-l", "--local", help="Force using local database", dest="local", action="store_true", default=False)
 dp.add_argument("-np", "--no-prefix", help="Skip 'PRD-' prefix", dest="noprefix", action="store_true", default=False)
+dp.add_argument("-k2", "--key2", help="V2 syntax", dest="key2mode", action="store_true", default=False)
 args = dp.parse_args(sys.argv[1:])
 
 floor = args.floor
@@ -38,15 +39,19 @@ print(" OK")
 
 print("Valid PRDs not already in database:")
 
-prds = [x.replace("PRD-", "").split("-") for x in prd_db]
-prdx = list({x[0]: x[1]} for x in prds)
+if args.key2mode:
+    prds = [x.replace("APBI-PRD", "")for x in prd_db]
+    prdx = list({x[0:5]: x[5:]} for x in prds)
+else:
+    prds = [x.replace("PRD-", "").split("-") for x in prd_db]
+    prdx = list({x[0]: x[1]} for x in prds)
 prddict = collections.defaultdict(list)
 for prdc in prdx:
     for key, value in prdc.items():
         prddict[key].append(value)
 
 if args.tocheck is not None:
-    args.tocheck = args.tocheck.replace("PRD-", "")
+    args.tocheck = args.tocheck.replace("PRD-", "").replace("APBI-PRD", "")
     prdkeys = list(prddict.keys())
     for k in prdkeys:
         if k != args.tocheck:
@@ -59,7 +64,12 @@ dev = DesktopDevice()
 runner = RequestRunner(ServerVoteSelector(), https=False)
 runner.max_tries = 20
 
-prefix = "" if args.noprefix else "PRD-"
+if args.key2mode:
+    prefix = "APBI-PRD"
+    suffix = ""
+else:
+    prefix = "" if args.noprefix else "PRD-"
+    suffix = "-"
 
 for center in sorted(prddict.keys()):
     tails = [int(i) for i in prddict[center]]
@@ -68,7 +78,7 @@ for center in sorted(prddict.keys()):
     done_count = 0
     print("Checking {} variant codes for model {}.".format(total_count, center))
     for j in safes:
-        curef = "{}{}-{:03}".format(prefix, center, j)
+        curef = "{}{}{}{:03}".format(prefix, center, suffix, j)
         done_count += 1
         print("Checking {} ({}/{})".format(curef, done_count, total_count))
         print(ansi.UP_DEL, end="")
