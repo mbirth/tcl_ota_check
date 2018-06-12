@@ -24,6 +24,7 @@ dp = argparser.DefaultParser(__file__, dpdesc)
 dp.add_argument("floor", nargs="?", help="Model number to start with", type=int, default=63116)
 dp.add_argument("ceiling", nargs="?", help="Model number to end with", type=int, default=99999)
 dp.add_argument("-l", "--local", help="Force using local database", dest="local", action="store_true", default=False)
+dp.add_argument("-k2", "--key2", help="V2 syntax", dest="key2mode", action="store_true", default=False)
 args = dp.parse_args(sys.argv[1:])
 
 floor = args.floor
@@ -38,7 +39,7 @@ print(" OK")
 
 print("Valid PRDs not already in database:")
 
-known_centers = set(int(x.replace("PRD-", "").split("-")[0]) for x in prd_db)
+known_centers = set(int(x.replace("PRD-", "").replace("APBI-PRD", "")[0:5]) for x in prd_db)
 scan_list = set(range(floor, ceiling))
 
 to_scan = scan_list - known_centers
@@ -52,7 +53,10 @@ runner.max_tries = 20
 
 for center in to_scan:
     for j in SCAN_VARIANTS:
-        curef = "PRD-{:05}-{:3}".format(center, j)
+        if args.key2mode:
+            curef = "APBI-PRD{:05}{:3}".format(center, j)
+        else:
+            curef = "PRD-{:05}-{:3}".format(center, j)
         done_count += 1
         print("Checking {} ({}/{})".format(curef, done_count, total_count))
         print(ansi.UP_DEL, end="")
