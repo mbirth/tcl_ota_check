@@ -41,7 +41,7 @@ runner = RequestRunner(ServerVoteSelector())
 runner.max_tries = 20
 
 for prd, variant in prds.items():
-    if prd[:3] != "PRD":
+    if "PRD" not in prd:
         continue
     model = variant["variant"]
     lastver = variant["last_ota"]
