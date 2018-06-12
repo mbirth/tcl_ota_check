@@ -13,7 +13,6 @@ from tcllib.devices import DesktopDevice
 from tcllib.dumpmgr import write_info_if_dumps_found
 from tcllib.requests import CheckRequest, RequestRunner, ServerVoteSelector
 
-
 dpdesc = """
     Finds new PRD numbers for all known variants, or specified variants with tocheck. Scan range
     can be set by floor and ceiling switches.
@@ -39,19 +38,15 @@ print(" OK")
 
 print("Valid PRDs not already in database:")
 
-if args.key2mode:
-    prds = [x.replace("APBI-PRD", "")for x in prd_db]
-    prdx = list({x[0:5]: x[5:]} for x in prds)
-else:
-    prds = [x.replace("PRD-", "").split("-") for x in prd_db]
-    prdx = list({x[0]: x[1]} for x in prds)
+prds = [x.replace("APBI-PRD", "").replace("PRD-", "").replace("-", "") for x in prd_db]
+prdx = list({x[0:5]: x[5:]} for x in prds)
 prddict = collections.defaultdict(list)
 for prdc in prdx:
     for key, value in prdc.items():
         prddict[key].append(value)
 
 if args.tocheck is not None:
-    args.tocheck = args.tocheck.replace("PRD-", "").replace("APBI-PRD", "")
+    args.tocheck = args.tocheck.replace("APBI-PRD", "").replace("PRD-", "")
     prdkeys = list(prddict.keys())
     for k in prdkeys:
         if k != args.tocheck:
