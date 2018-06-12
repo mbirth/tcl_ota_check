@@ -9,8 +9,17 @@
 
 import glob
 import os
+import sys
 
 import requests
+
+from tcllib import argparser
+dpdesc = """
+    Uploads contents of logs folder to remote database.
+    """
+dp = argparser.DefaultParser(__file__, dpdesc)
+args = dp.parse_args(sys.argv[1:])
+del args
 
 
 # This is the URL to an installation of https://github.com/mbirth/tcl_update_db

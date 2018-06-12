@@ -6,12 +6,22 @@
 """Query existence of missing OTAs."""
 
 import json
+import sys
 
 import requests
 
+from tcllib import argparser
 from tcllib.devices import MobileDevice
 from tcllib.dumpmgr import write_info_if_dumps_found
 from tcllib.requests import CheckRequest, RequestRunner, ServerVoteSelector
+
+
+dpdesc = """
+    Queries the database server for known versions and tries to find OTA files not yet in the database.
+"""
+dp = argparser.DefaultParser(__file__, dpdesc)
+args = dp.parse_args(sys.argv[1:])
+del args
 
 
 # 1. Fetch list of missing OTAs (e.g. from ancient versions to current)
