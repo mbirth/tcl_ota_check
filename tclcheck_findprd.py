@@ -18,7 +18,7 @@ dpdesc = """
     can be set by floor and ceiling switches.
     """
 dp = argparser.DefaultParser(__file__, dpdesc)
-dp.add_argument("tocheck", help="CU Reference # to filter scan results", nargs="?", default=None)
+dp.add_argument("tocheck", help="CU Reference #(s) to filter scan results", nargs="*", default=None)
 dp.add_argument("-f", "--floor", help="Beginning of scan range", dest="floor", nargs="?", type=int, default=0)
 dp.add_argument("-c", "--ceiling", help="End of scan range", dest="ceiling", nargs="?", type=int, default=999)
 dp.add_argument("-l", "--local", help="Force using local database", dest="local", action="store_true", default=False)
@@ -46,13 +46,16 @@ for prdc in prdx:
         prddict[key].append(value)
 
 if args.tocheck is not None:
-    args.tocheck = args.tocheck.replace("APBI-PRD", "").replace("PRD-", "")
+    if not isinstance(args.tocheck, list):
+        args.tocheck = [args.tocheck]
+    args.tocheck = [toch.replace("APBI-PRD", "").replace("PRD-", "") for toch in args.tocheck]
     prdkeys = list(prddict.keys())
     for k in prdkeys:
-        if k != args.tocheck:
+        if k not in args.tocheck:
             del prddict[k]
-    if not prddict:
-        prddict[args.tocheck] = []
+    for toch in args.tocheck:
+        if toch not in prddict.keys():
+            prddict[toch] = []
 
 dev = DesktopDevice()
 
