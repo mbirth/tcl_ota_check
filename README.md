@@ -80,22 +80,22 @@ Checks for the latest OTA (i.e. partial updates for over-the-air installation) v
 for all different models and variants.
 
 
-### tclcheck_findprd.py
+### tclfindprd.py
 
 Scans for not yet known variants of a model.
 
 
-### tclcheck_findprd2.py
+### tclfindprd2.py
 
 Scans for not yet known models.
 
 
-### tclcheck_findver.py
+### tclfindver.py
 
 Scans for not yet known firmware versions.
 
 
-### tclcheck_gapfill.py
+### tclgapfill.py
 
 Queries the [database server](https://tclota.birth-online.de/) for known versions and tries to find
 OTA files not yet in the database.
@@ -116,7 +116,7 @@ Queries the checksum for a specific FULL file.
 Downloads a firmware file from given file ID.
 
 
-### tclupdatedb.py
+### update_db.py
 
 Updates local copy of database.
 
